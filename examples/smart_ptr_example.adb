@@ -22,7 +22,13 @@ with Smart_Ptrs;
 
 procedure Smart_Ptr_Example is
 
-   package String_Ptrs is new Smart_Ptrs(T => String);
+   procedure Custom_Deleter(X : in out String) is
+   begin
+      Put_Line("Freeing resources relating to a string: " & X);
+   end Custom_Deleter;
+
+   package String_Ptrs is new Smart_Ptrs(T => String,
+                                         Delete => Custom_Deleter);
    use String_Ptrs;
 
    SP1 : constant Smart_Ptr := Make_Smart_Ptr(new String'("Hello, World!"));
