@@ -23,18 +23,23 @@ generic
 package Smart_Ptrs is
 
    type T_Ptr is access T;
+   type T_Ref(Element : access T) is null record
+     with Implicit_Dereference => Element;
 
    Smart_Ptr_Error : exception;
 
-   type Smart_Ptr(E : access T) is
-     new Ada.Finalization.Controlled with private
-     with Implicit_Dereference => E;
+   type Smart_Ptr(<>) is
+     new Ada.Finalization.Controlled with private;
 
+   function P(S : in Smart_Ptr) return T_Ref with Inline;
+   function Get(S : in Smart_Ptr) return T_Ptr with Inline;
    function Make_Smart_Ptr(X : T_Ptr) return Smart_Ptr;
    function Use_Count(S : in Smart_Ptr) return Natural;
    function Unique(S : in Smart_Ptr) return Boolean is
      (Use_Count(S) = 1);
    function Weak_Ptr_Count(S : in Smart_Ptr) return Natural;
+
+   Null_Smart_Ptr : constant Smart_Ptr;
 
    type Weak_Ptr(<>) is new Ada.Finalization.Controlled with private;
 
@@ -49,16 +54,22 @@ private
    type Smart_Ptr_Counter;
    type Counter_Ptr is access Smart_Ptr_Counter;
 
-   type Smart_Ptr(E : access T) is new Ada.Finalization.Controlled
+   type Smart_Ptr is new Ada.Finalization.Controlled
      with
       record
          Element : T_Ptr;
          Counter : Counter_Ptr;
+         Null_Ptr : Boolean;
       end record;
 
     procedure Initialize (Object : in out Smart_Ptr);
     procedure Adjust     (Object : in out Smart_Ptr);
     procedure Finalize   (Object : in out Smart_Ptr);
+
+   Null_Smart_Ptr : constant Smart_Ptr := (Ada.Finalization.Controlled with
+                                           Element => null,
+                                           Counter => null,
+                                           Null_Ptr => True);
 
    type Weak_Ptr is
      new Ada.Finalization.Controlled with

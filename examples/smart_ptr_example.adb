@@ -31,36 +31,47 @@ procedure Smart_Ptr_Example is
                                          Delete => Custom_Deleter);
    use String_Ptrs;
 
-   SP1 : constant Smart_Ptr := Make_Smart_Ptr(new String'("Hello, World!"));
+   SP1 : Smart_Ptr := Make_Smart_Ptr(new String'("Hello, World!"));
 
 begin
 
    Put_Line("An example of using the Smart_Ptrs package."); New_Line;
 
-   Put_Line("SP1 => " & SP1);
+   Put_Line("SP1 => " & SP1.P);
    Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
    New_Line;
 
    declare
-      SP2 : constant Smart_Ptr := SP1;
+      SP2 : Smart_Ptr := Null_Smart_Ptr;
    begin
       Put_Line("- In a new block");
 
       Put_Line("- SP2 := SP1");
-      Put_Line("- SP2 => " & SP2);
+      SP2 := SP1;
+      Put_Line("- SP2 => " & SP2.P);
       Put("- SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
       Put("- SP2.Use_Count => "); Put(SP2.Use_Count); New_Line;
-      Put_Line("- SP2(6) := ';'");
-      SP2(6) := ';';
-      Put_Line("- SP2 => " & SP2);
+      Put_Line("- SP2.Get(6) := ';'");
+      SP2.Get(6) := ';';
+      Put_Line("- SP2 => " & SP2.P);
       Put_Line("- End of block");
    end;
    New_Line;
 
    Put_Line("Now SP2 should have been destroyed.");
    Put_Line("SP1 should still show the changes made via SP2.");
-   Put_Line("SP1 => " & SP1);
+   Put_Line("SP1 => " & SP1.P);
    Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
    New_Line;
+
+   Put_Line("SP1 should not have been affected.");
+   Put_Line("SP1 => " & SP1.P);
+   Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
+   New_Line;
+
+   Put_Line("Reassigning SP1...");
+   SP1 := Make_Smart_Ptr(new String'("Goodbye, World!"));
+   Put_Line("SP1 => " & SP1.P);
+   Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
 
 end Smart_Ptr_Example;

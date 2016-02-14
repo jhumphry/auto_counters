@@ -34,21 +34,38 @@ package body Smart_Ptrs is
      new Ada.Unchecked_Deallocation(Object => Smart_Ptr_Counter,
                                     Name => Counter_Ptr);
 
+   -------
+   -- P --
+   -------
+
+   function P(S : in Smart_Ptr) return T_Ref is
+     (T_Ref'(Element => S.Element));
+
+   ---------
+   -- Get --
+   ---------
+
+   function Get(S : in Smart_Ptr) return T_Ptr is
+     (S.Element);
+
    --------------------
    -- Make_Smart_Ptr --
    --------------------
 
    function Make_Smart_Ptr(X : T_Ptr) return Smart_Ptr is
    begin
-      return Smart_Ptr'(Ada.Finalization.Controlled with
-                          E => X,
-                        Element => X,
-                        Counter => new Smart_Ptr_Counter'(Element => X,
-                                                          SP_Count => 1,
-                                                          WP_Count => 0,
-                                                          Expired => False)
-                       );
-
+      if X = null then
+         return Null_Smart_Ptr;
+      else
+         return Smart_Ptr'(Ada.Finalization.Controlled with
+                           Element => X,
+                           Counter => new Smart_Ptr_Counter'(Element => X,
+                                                             SP_Count => 1,
+                                                             WP_Count => 0,
+                                                             Expired => False),
+                           Null_Ptr => False
+                          );
+      end if;
    end Make_Smart_Ptr;
 
    ---------------
@@ -112,10 +129,7 @@ package body Smart_Ptrs is
 
    procedure Initialize (Object : in out Smart_Ptr) is
    begin
-      if Object.E /= null and Object.Element = null then
-         raise Smart_Ptr_Error
-           with "Use Make_Smart_Pointer to initialize Smart_Ptr.";
-      end if;
+
       Object.Counter := new Smart_Ptr_Counter'(Element => null,
                                                SP_Count => 1,
                                                WP_Count => 0,
@@ -129,23 +143,13 @@ package body Smart_Ptrs is
    procedure Adjust (Object : in out Smart_Ptr) is
    begin
 
-      -- Smart_Ptr.Counter is pointed to a valid Smart_Ptr_Counter by the
-      -- Make_Smart_Ptr whenever a Smart_Ptr is created. No Smart_Ptr with null
-      -- Counter or with the Expired flag set should ever be seen by a Smart_Ptr
-      -- routine, as these are set by the Smart_Ptr Finalization routine. This
-      -- erroneous state can arise if a self-assignment statement such as "SP
-      -- := SP;" is executed. SP (left) will be finalised and therefore have its
-      -- contents deallocated before SP (right) is copied on top and Adjust is
-      -- called on the now-defunct SP, as in this case SP (Left) and SP (Right)
-      -- are aliases of the same object. If there are no Weak_Ptr then the
-      -- Smart_Ptr_Counter will also be deallocated and Counter nulled, or
-      -- else if Weak_Ptr remain then the Counter.Expired flag is set.
-
-      if Object.Counter = null or else Object.Counter.Expired then
-         raise Smart_Ptr_Error with "Self-assignment detected.";
+      if not Object.Null_Ptr then
+         if Object.Counter = null then
+            raise Smart_Ptr_Error with "Possible self-assignment detected!";
+         else
+            Object.Counter.SP_Count := Object.Counter.SP_Count + 1;
+         end if;
       end if;
-
-      Object.Counter.SP_Count := Object.Counter.SP_Count + 1;
    end Adjust;
 
    --------------
@@ -165,11 +169,8 @@ package body Smart_Ptrs is
 
          if Object.Counter.SP_Count = 0 then
 
-            -- Remember that Smart_Ptr can be a null pointer...
-            if Object.Element /= null then
-               Delete(Object.Element.all);
-               Deallocate_T(Object.Counter.Element);
-            end if;
+            Delete(Object.Element.all);
+            Deallocate_T(Object.Counter.Element);
 
             if Object.Counter.WP_Count = 0 then
                Deallocate_Smart_Ptr_Counter(Counter_Ptr(Object.Counter));
