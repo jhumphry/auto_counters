@@ -78,6 +78,13 @@ package body Smart_Ptrs is
    function Weak_Ptr_Count (S : in Smart_Ptr) return Natural is
       (S.Counter.WP_Count);
 
+   -------------
+   -- Is_Null --
+   -------------
+
+   function Is_Null(S : in Smart_Ptr) return Boolean is
+     (S.Null_Ptr);
+
    -------------------
    -- Make_Weak_Ptr --
    -------------------

@@ -37,6 +37,7 @@ package Smart_Ptrs is
    function Unique(S : in Smart_Ptr) return Boolean is
      (Use_Count(S) = 1);
    function Weak_Ptr_Count(S : in Smart_Ptr) return Natural with Inline;
+   function Is_Null(S : in Smart_Ptr) return Boolean with Inline;
 
    Null_Smart_Ptr : constant Smart_Ptr;
 

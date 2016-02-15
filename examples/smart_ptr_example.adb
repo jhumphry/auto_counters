@@ -83,6 +83,8 @@ begin
       Put_Line("Now deleting SP1 and SP3. Resources should be freed here.");
       SP1 := Null_Smart_Ptr;
       SP3 := Null_Smart_Ptr;
+      Put_Line("Check: SP1.Is_Null => " &
+               (if SP1.Is_Null then "True" else "False"));
       Put("WP1.Use_Count => "); Put(WP1.Use_Count); New_Line;
       Put_Line("WP1.Expired => " & (if WP1.Expired then "True" else "False"));
    end;
