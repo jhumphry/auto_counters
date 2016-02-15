@@ -201,7 +201,12 @@ package body Smart_Ptrs is
 
    procedure Adjust (Object : in out Weak_Ptr) is
    begin
-      Object.Counter.WP_Count := Object.Counter.WP_Count + 1;
+      if Object.Counter = null then
+         raise Smart_Ptr_Error
+           with "Corruption during Weak_Ptr assignment.";
+      else
+         Object.Counter.WP_Count := Object.Counter.WP_Count + 1;
+      end if;
    end Adjust;
 
    --------------
