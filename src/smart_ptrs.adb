@@ -110,6 +110,13 @@ package body Smart_Ptrs is
    function Use_Count (W : in Weak_Ptr) return Natural is
      (W.Counter.SP_Count);
 
+   ---------------
+   -- Use_Count --
+   ---------------
+
+   function Weak_Ptr_Count (W : in Weak_Ptr) return Natural is
+     (W.Counter.WP_Count);
+
    -------------
    -- Expired --
    -------------

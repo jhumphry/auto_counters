@@ -92,6 +92,9 @@ package Smart_Ptrs is
    function Use_Count (W : in Weak_Ptr) return Natural with Inline;
    -- Use_Count gives the number of Smart_Ptr pointing to the same target.
 
+   function Weak_Ptr_Count (W : in Weak_Ptr) return Natural with Inline;
+   -- Returns the number of Weak_Ptr currently pointing to the object.
+
    function Expired (W : in Weak_Ptr) return Boolean with Inline;
    -- Indicates if the target of the Weak_Ptr no longer exists because all
    -- associated Smart_Ptr have been released.
