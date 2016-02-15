@@ -84,9 +84,14 @@ package body Smart_Ptrs is
 
    function Make_Weak_Ptr (S : in Smart_Ptr'Class) return Weak_Ptr is
    begin
-      S.Counter.WP_Count := S.Counter.WP_Count + 1;
-      return Weak_Ptr'(Ada.Finalization.Controlled with
-                         Counter => S.Counter);
+      if S.Null_Ptr then
+         raise Smart_Ptr_Error
+           with "Cannot create Weak_Ptr from a null pointer.";
+      else
+         S.Counter.WP_Count := S.Counter.WP_Count + 1;
+         return Weak_Ptr'(Ada.Finalization.Controlled with
+                          Counter => S.Counter);
+      end if;
    end Make_Weak_Ptr;
 
    ---------------
@@ -116,7 +121,7 @@ package body Smart_Ptrs is
       return Smart_Ptr'(Ada.Finalization.Controlled with
                           Element => W.Counter.Element,
                         Counter => W.Counter,
-                        Null_Ptr => (W.Counter.Element = null));
+                        Null_Ptr => False);
    end Lock;
 
    ------------
