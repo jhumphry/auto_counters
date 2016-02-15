@@ -130,10 +130,10 @@ package body Smart_Ptrs is
 
    procedure Adjust (Object : in out Smart_Ptr) is
    begin
-
       if not Object.Null_Ptr then
          if Object.Counter = null then
-            raise Smart_Ptr_Error with "Possible self-assignment detected!";
+            raise Smart_Ptr_Error
+              with "Corruption during Smart_Ptr assignment.";
          else
             Object.Counter.SP_Count := Object.Counter.SP_Count + 1;
          end if;
@@ -158,7 +158,7 @@ package body Smart_Ptrs is
          if Object.Counter.SP_Count = 0 then
 
             Delete(Object.Element.all);
-            Deallocate_T(Object.Counter.Element);
+            Deallocate_T(Object.Element);
 
             if Object.Counter.WP_Count = 0 then
                Deallocate_Smart_Ptr_Counter(Counter_Ptr(Object.Counter));
