@@ -69,14 +69,14 @@ package body Smart_Ptrs is
    ---------------
 
    function Use_Count (S : in Smart_Ptr) return Natural is
-      (S.Counter.SP_Count);
+      (if S.Null_Ptr then 1 else S.Counter.SP_Count);
 
    --------------------
    -- Weak_Ptr_Count --
    --------------------
 
    function Weak_Ptr_Count (S : in Smart_Ptr) return Natural is
-      (S.Counter.WP_Count);
+      (if S.Null_Ptr then 0 else S.Counter.WP_Count);
 
    -------------
    -- Is_Null --
