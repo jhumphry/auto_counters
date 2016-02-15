@@ -32,20 +32,20 @@ package Smart_Ptrs is
 
    function P(S : in Smart_Ptr) return T_Ref with Inline;
    function Get(S : in Smart_Ptr) return T_Ptr with Inline;
-   function Make_Smart_Ptr(X : T_Ptr) return Smart_Ptr;
-   function Use_Count(S : in Smart_Ptr) return Natural;
+   function Make_Smart_Ptr(X : T_Ptr) return Smart_Ptr with Inline;
+   function Use_Count(S : in Smart_Ptr) return Natural with Inline;
    function Unique(S : in Smart_Ptr) return Boolean is
      (Use_Count(S) = 1);
-   function Weak_Ptr_Count(S : in Smart_Ptr) return Natural;
+   function Weak_Ptr_Count(S : in Smart_Ptr) return Natural with Inline;
 
    Null_Smart_Ptr : constant Smart_Ptr;
 
    type Weak_Ptr(<>) is new Ada.Finalization.Controlled with private;
 
-   function Make_Weak_Ptr(S : in Smart_Ptr'Class) return Weak_Ptr;
+   function Make_Weak_Ptr(S : in Smart_Ptr'Class) return Weak_Ptr with Inline;
 
-   function Use_Count(W : in Weak_Ptr) return Natural;
-   function Expired(W : in Weak_Ptr) return Boolean;
+   function Use_Count(W : in Weak_Ptr) return Natural with Inline;
+   function Expired(W : in Weak_Ptr) return Boolean with Inline;
    function Lock(W : in Weak_Ptr'Class) return Smart_Ptr;
 
 private
@@ -61,9 +61,9 @@ private
          Null_Ptr : Boolean := True;
       end record;
 
-    procedure Initialize (Object : in out Smart_Ptr) is null;
-    procedure Adjust     (Object : in out Smart_Ptr);
-    procedure Finalize   (Object : in out Smart_Ptr);
+    overriding procedure Initialize (Object : in out Smart_Ptr) is null;
+    overriding procedure Adjust     (Object : in out Smart_Ptr);
+    overriding procedure Finalize   (Object : in out Smart_Ptr);
 
    Null_Smart_Ptr : constant Smart_Ptr := (Ada.Finalization.Controlled with
                                            Element => null,
@@ -76,8 +76,8 @@ private
          Counter : Counter_Ptr;
       end record;
 
-    procedure Initialize (Object : in out Weak_Ptr) is null;
-    procedure Adjust     (Object : in out Weak_Ptr);
-    procedure Finalize   (Object : in out Weak_Ptr);
+    overriding procedure Initialize (Object : in out Weak_Ptr) is null;
+    overriding procedure Adjust     (Object : in out Weak_Ptr);
+    overriding procedure Finalize   (Object : in out Weak_Ptr);
 
 end Smart_Ptrs;
