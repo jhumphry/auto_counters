@@ -94,8 +94,14 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
       SP1.P := "World, Hello!";
 
       Assert(SP2.P = "World, Hello!",
-             "Changing a value via one Smart_Ptr does not change the value " &
-               "accessed via an equal Smart_Ptr");
+             "Changing a value via a reference from one Smart_Ptr does not " &
+               "change the value accessed via an equal Smart_Ptr");
+
+      SP2.Get(6) := ':';
+
+      Assert(SP1.Get.all = "World: Hello!",
+             "Changing a value via an access value from one Smart_Ptr does " &
+               "not change the value accessed via an equal Smart_Ptr");
 
       Resources_Released := 0;
       declare
@@ -148,6 +154,14 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
       SP2 : Smart_Ptr;
       WP1 : constant Weak_Ptr := Make_Weak_Ptr(SP1);
 
+      procedure Make_WP_From_Null is
+         WP2 : constant Weak_Ptr := Make_Weak_Ptr(SP2);
+         pragma Unreferenced (WP2);
+      begin
+         null;
+      end Make_WP_From_Null;
+
+      Caught_Making_WP_From_Null : Boolean := False;
       Caught_Lock_On_Expired_WP : Boolean := False;
 
    begin
@@ -157,6 +171,17 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
              "Weak_Ptr not reflecting the correct Use_Count");
       Assert(not WP1.Expired,
              "Weak_Ptr is (incorrectly) already expired just after creation");
+
+      begin
+         Make_WP_From_Null;
+      exception
+         when Smart_Ptr_Error =>
+            Caught_Making_WP_From_Null := True;
+      end;
+
+      Assert(Caught_Making_WP_From_Null,
+             "Make_Weak_ptr failed to raise exception when called on a null" &
+               "Smart_Ptr");
 
       SP2 := WP1.Lock;
       Assert(SP1 = SP2,
@@ -180,6 +205,8 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
              "Resources released incorrectly when 1 Smart_Ptr remains");
 
       SP1 := Null_Smart_Ptr;
+      Assert(SP1.Weak_Ptr_Count = 0,
+             "Smart_Ptr does not have correct Weak_Ptr_Count after nulling");
       Assert(Resources_Released = 1,
              "Resources released incorrectly when only a Weak_Ptr remains");
       Assert(WP1.Expired,
