@@ -32,6 +32,8 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
    begin
       Register_Routine (T, Check_Reference_Counting'Access,
                         "Check basic reference-counting functionality");
+      Register_Routine (T, Check_Weak_Ptrs'Access,
+                        "Check basic Weak_Ptrs functionality");
    end Register_Tests;
 
    ----------
@@ -134,5 +136,70 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
       Assert(SP1 = SP2, "Null Smart_Ptrs are not equal");
 
    end Check_Reference_Counting;
+
+   ---------------------
+   -- Check_Weak_Ptrs --
+   ---------------------
+
+   procedure Check_Weak_Ptrs (T : in out Test_Cases.Test_Case'Class) is
+      pragma Unreferenced(T);
+
+      SP1 : Smart_Ptr := Make_Smart_Ptr(new String'("Hello, World!"));
+      SP2 : Smart_Ptr;
+      WP1 : constant Weak_Ptr := Make_Weak_Ptr(SP1);
+
+      Caught_Lock_On_Expired_WP : Boolean := False;
+
+   begin
+      Assert(SP1.Weak_Ptr_Count = 1,
+             "Initialized Weak_Ptr not reflected in Smart_Ptr");
+      Assert(WP1.Use_Count = 1,
+             "Weak_Ptr not reflecting the correct Use_Count");
+      Assert(not WP1.Expired,
+             "Weak_Ptr is (incorrectly) already expired just after creation");
+
+      SP2 := WP1.Lock;
+      Assert(SP1 = SP2,
+             "Smart_Ptr recovered from Weak_Ptr /= original Smart_Ptr");
+      Assert(WP1.Use_Count = 2,
+             "Weak_Ptr has incorrect Use_Count after making new Smart_Ptr");
+      Assert(SP1.Use_Count = 2,
+             "Smart_Ptr made from Weak_Ptr has incorrect Use_Count");
+
+      Resources_Released := 0;
+      SP2 := Null_Smart_Ptr;
+
+      Assert(SP1.Weak_Ptr_Count = 1,
+             "Weak_Ptr_Count incorrect after discarding Smart_Ptr");
+      Assert(WP1.Use_Count = 1,
+             "Weak_Ptr not reflecting the correct Use_Count");
+      Assert(not WP1.Expired,
+             "Weak_Ptr is already expired after only 1/2 Smart_Ptrs deleted");
+
+      Assert(Resources_Released = 0,
+             "Resources released incorrectly when 1 Smart_Ptr remains");
+
+      SP1 := Null_Smart_Ptr;
+      Assert(Resources_Released = 1,
+             "Resources released incorrectly when only a Weak_Ptr remains");
+      Assert(WP1.Expired,
+             "Weak_Ptr should be expired as all Smart_Ptrs deleted");
+      Assert(WP1.Weak_Ptr_Count = 1,
+             "Weak_Ptr_Count incorrect after discarding all Smart_Ptr");
+      Assert(WP1.Use_Count = 0,
+             "Weak_Ptr not reflecting the correct Use_Count of 0");
+
+      begin
+         SP1 := WP1.Lock;
+      exception
+         when Smart_Ptr_Error =>
+            Caught_Lock_On_Expired_WP := True;
+      end;
+
+      Assert(Caught_Lock_On_Expired_WP,
+             "Weak_Ptr.Lock failed to raise exception when Lock was called " &
+               "on an expired Weak_Ptr");
+
+   end Check_Weak_Ptrs;
 
 end Auto_Counters_Suite.Smart_Ptrs_Tests;
