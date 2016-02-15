@@ -167,6 +167,16 @@ package body Smart_Ptrs is
       end if;
    end Finalize;
 
+   -----------
+   -- Valid --
+   -----------
+
+   function Valid(S : in Smart_Ptr) return Boolean is
+     (if S.Null_Ptr then (S.Element = null and S.Counter = null) else
+          ((S.Element /= null and S.Counter /= null) and then
+             (S.Counter.SP_Count > 0 and not S.Counter.Expired))
+     );
+
    ------------
    -- Adjust --
    ------------
