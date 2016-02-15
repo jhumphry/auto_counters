@@ -115,7 +115,6 @@ private
          Null_Ptr : Boolean     := True;
       end record;
 
-   overriding procedure Initialize (Object : in out Smart_Ptr) is null;
    overriding procedure Adjust (Object : in out Smart_Ptr);
    overriding procedure Finalize (Object : in out Smart_Ptr);
 
@@ -131,7 +130,6 @@ private
          Counter : Counter_Ptr;
       end record;
 
-   overriding procedure Initialize (Object : in out Weak_Ptr) is null;
    overriding procedure Adjust (Object : in out Weak_Ptr);
    overriding procedure Finalize (Object : in out Weak_Ptr);
 
