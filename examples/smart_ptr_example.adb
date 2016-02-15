@@ -64,11 +64,6 @@ begin
    Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
    New_Line;
 
-   Put_Line("SP1 should not have been affected.");
-   Put_Line("SP1 => " & SP1.P);
-   Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
-   New_Line;
-
    Put_Line("Reassigning SP1...");
    SP1 := Make_Smart_Ptr(new String'("Goodbye, World!"));
    Put_Line("SP1 => " & SP1.P);
