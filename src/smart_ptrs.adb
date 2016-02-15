@@ -123,19 +123,6 @@ package body Smart_Ptrs is
                         Null_Ptr => (W.Counter.Element = null));
    end Lock;
 
-   ----------------
-   -- Initialize --
-   ----------------
-
-   procedure Initialize (Object : in out Smart_Ptr) is
-   begin
-
-      Object.Counter := new Smart_Ptr_Counter'(Element => null,
-                                               SP_Count => 1,
-                                               WP_Count => 0,
-                                               Expired => False);
-   end Initialize;
-
    ------------
    -- Adjust --
    ------------

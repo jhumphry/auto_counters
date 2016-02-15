@@ -42,7 +42,7 @@ begin
    New_Line;
 
    declare
-      SP2 : Smart_Ptr := Null_Smart_Ptr;
+      SP2 : Smart_Ptr;
    begin
       Put_Line("- In a new block");
 
@@ -75,7 +75,7 @@ begin
    Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
    declare
       WP1 : constant Weak_Ptr := Make_Weak_Ptr(SP1);
-      SP3 : Smart_Ptr := Null_Smart_Ptr;
+      SP3 : Smart_Ptr;
    begin
       Put_Line("Made a Weak_Ptr WP1 from SP1.");
       Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;

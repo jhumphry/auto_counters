@@ -28,8 +28,7 @@ package Smart_Ptrs is
 
    Smart_Ptr_Error : exception;
 
-   type Smart_Ptr(<>) is
-     new Ada.Finalization.Controlled with private;
+   type Smart_Ptr is new Ada.Finalization.Controlled with private;
 
    function P(S : in Smart_Ptr) return T_Ref with Inline;
    function Get(S : in Smart_Ptr) return T_Ptr with Inline;
@@ -57,12 +56,12 @@ private
    type Smart_Ptr is new Ada.Finalization.Controlled
      with
       record
-         Element : T_Ptr;
-         Counter : Counter_Ptr;
-         Null_Ptr : Boolean;
+         Element : T_Ptr := null;
+         Counter : Counter_Ptr := null;
+         Null_Ptr : Boolean := True;
       end record;
 
-    procedure Initialize (Object : in out Smart_Ptr);
+    procedure Initialize (Object : in out Smart_Ptr) is null;
     procedure Adjust     (Object : in out Smart_Ptr);
     procedure Finalize   (Object : in out Smart_Ptr);
 
