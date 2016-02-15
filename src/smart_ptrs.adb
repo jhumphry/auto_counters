@@ -53,20 +53,16 @@ package body Smart_Ptrs is
    --------------------
 
    function Make_Smart_Ptr(X : T_Ptr) return Smart_Ptr is
-   begin
-      if X = null then
-         return Null_Smart_Ptr;
-      else
-         return Smart_Ptr'(Ada.Finalization.Controlled with
-                           Element => X,
-                           Counter => new Smart_Ptr_Counter'(Element => X,
-                                                             SP_Count => 1,
-                                                             WP_Count => 0,
-                                                             Expired => False),
-                           Null_Ptr => False
-                          );
-      end if;
-   end Make_Smart_Ptr;
+     (Smart_Ptr'(Ada.Finalization.Controlled with
+                 Element => X,
+                 Counter => (if X = null then null
+                             else new Smart_Ptr_Counter'(Element => X,
+                                                         SP_Count => 1,
+                                                         WP_Count => 0,
+                                                         Expired => False)),
+                 Null_Ptr => (X = null)
+                )
+     );
 
    ---------------
    -- Use_Count --
