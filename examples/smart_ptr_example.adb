@@ -73,5 +73,24 @@ begin
    SP1 := Make_Smart_Ptr(new String'("Goodbye, World!"));
    Put_Line("SP1 => " & SP1.P);
    Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
+   declare
+      WP1 : constant Weak_Ptr := Make_Weak_Ptr(SP1);
+      SP3 : Smart_Ptr := Null_Smart_Ptr;
+   begin
+      Put_Line("Made a Weak_Ptr WP1 from SP1.");
+      Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
+      Put("SP1.Weak_Ptr_Count => "); Put(SP1.Weak_Ptr_Count); New_Line;
+      Put_Line("Recovering a Smart_Ptr SP3 from WP1");
+      SP3 := WP1.Lock;
+      Put_Line("SP3 => " & SP3.P);
+      Put("SP3.Use_Count => "); Put(SP3.Use_Count); New_Line;
+      Put("SP3.Weak_Ptr_Count => "); Put(SP3.Weak_Ptr_Count); New_Line;
+      Put_Line("Now deleting SP1 and SP3. Resources should be freed here.");
+      SP1 := Null_Smart_Ptr;
+      SP3 := Null_Smart_Ptr;
+      Put("WP1.Use_Count => "); Put(WP1.Use_Count); New_Line;
+      Put_Line("WP1.Expired => " & (if WP1.Expired then "True" else "False"));
+   end;
+   New_Line;
 
 end Smart_Ptr_Example;

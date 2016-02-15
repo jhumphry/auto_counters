@@ -90,8 +90,7 @@ package body Smart_Ptrs is
    begin
       S.Counter.WP_Count := S.Counter.WP_Count + 1;
       return Weak_Ptr'(Ada.Finalization.Controlled with
-                         Counter => S.Counter,
-                       Expired => False);
+                         Counter => S.Counter);
    end Make_Weak_Ptr;
 
    ---------------
@@ -112,16 +111,17 @@ package body Smart_Ptrs is
    -- Lock --
    ----------
 
---     function Lock (W : in Weak_Ptr) return Smart_Ptr'Class is
---     begin
---        if W.Counter.Expired then
---           raise Smart_Ptr_Error with "Attempt to lock an expired Weak_Ptr.";
---        end if;
---        return Smart_Ptr'(Ada.Finalization.Controlled with
---                            E => W.Counter.Element,
---                            Element => W.Counter.Element,
---                          Counter => W.Counter);
---     end Lock;
+   function Lock (W : in Weak_Ptr'Class) return Smart_Ptr is
+   begin
+      if W.Counter.Expired then
+         raise Smart_Ptr_Error with "Attempt to lock an expired Weak_Ptr.";
+      end if;
+      W.Counter.SP_Count := W.Counter.SP_Count + 1;
+      return Smart_Ptr'(Ada.Finalization.Controlled with
+                          Element => W.Counter.Element,
+                        Counter => W.Counter,
+                        Null_Ptr => (W.Counter.Element = null));
+   end Lock;
 
    ----------------
    -- Initialize --
@@ -199,10 +199,9 @@ package body Smart_Ptrs is
 
    procedure Finalize (Object : in out Weak_Ptr) is
    begin
-      -- The Weak_Ptr.Expired flag is used to make sure this procedure is
-      -- idempotent.
+      -- Make sure this procedure is idempotent.
 
-      if not Object.Expired then
+      if Object.Counter /= null then
          Object.Counter.WP_Count := Object.Counter.WP_Count - 1;
          if Object.Counter.WP_Count = 0 and Object.Counter.Expired then
             -- Expired indicates that the last Smart_Ptr was Finalized some time
@@ -211,7 +210,6 @@ package body Smart_Ptrs is
 
             Deallocate_Smart_Ptr_Counter(Object.Counter);
          end if;
-         Object.Expired := True;
       end if;
    end Finalize;
 

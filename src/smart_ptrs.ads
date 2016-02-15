@@ -47,7 +47,7 @@ package Smart_Ptrs is
 
    function Use_Count(W : in Weak_Ptr) return Natural;
    function Expired(W : in Weak_Ptr) return Boolean;
---     function Lock(W : in Weak_Ptr) return Smart_Ptr'Class;
+   function Lock(W : in Weak_Ptr'Class) return Smart_Ptr;
 
 private
 
@@ -75,7 +75,6 @@ private
      new Ada.Finalization.Controlled with
       record
          Counter : Counter_Ptr;
-         Expired : Boolean;
       end record;
 
     procedure Initialize (Object : in out Weak_Ptr) is null;
