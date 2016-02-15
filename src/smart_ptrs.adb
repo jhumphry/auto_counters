@@ -27,7 +27,6 @@ package body Smart_Ptrs is
       Element  : T_Ptr;
       SP_Count : Natural;
       WP_Count : Natural;
-      Expired  : Boolean;
    end record;
 
    procedure Deallocate_Smart_Ptr_Counter is new Ada.Unchecked_Deallocation
@@ -60,8 +59,7 @@ package body Smart_Ptrs is
                              else
                                 new Smart_Ptr_Counter'(Element  => X,
                                                        SP_Count => 1,
-                                                       WP_Count => 0,
-                                                       Expired  => False
+                                                       WP_Count => 0
                                                       )
                             ),
                  Null_Ptr => (X = null)
@@ -125,7 +123,7 @@ package body Smart_Ptrs is
 
    function Lock (W : in Weak_Ptr'Class) return Smart_Ptr is
    begin
-      if W.Counter.Expired then
+      if W.Counter.SP_Count = 0 then
          raise Smart_Ptr_Error with "Attempt to lock an expired Weak_Ptr.";
       end if;
       W.Counter.SP_Count := W.Counter.SP_Count + 1;
@@ -175,7 +173,6 @@ package body Smart_Ptrs is
             if Object.Counter.WP_Count = 0 then
                Deallocate_Smart_Ptr_Counter (Counter_Ptr (Object.Counter));
             else
-               Object.Counter.Expired := True;
                Object.Counter.Element := null;
             end if;
 
@@ -194,7 +191,7 @@ package body Smart_Ptrs is
       else
         (
              (S.Element /= null and S.Counter /= null) and then
-             (S.Counter.SP_Count > 0 and not S.Counter.Expired)
+             (S.Counter.SP_Count > 0)
         )
      );
 
@@ -217,14 +214,11 @@ package body Smart_Ptrs is
 
       if Object.Counter /= null then
          Object.Counter.WP_Count := Object.Counter.WP_Count - 1;
-         if Object.Counter.WP_Count = 0 and Object.Counter.Expired then
-         -- Expired indicates that the last Smart_Ptr was Finalized some time
-         -- beforehand, so the only remaining user of this Smart_Ptr_Counter is
-         -- the weak reference.
-
+         if Object.Counter.WP_Count = 0 and Object.Counter.SP_Count = 0 then
             Deallocate_Smart_Ptr_Counter (Object.Counter);
          end if;
       end if;
+
    end Finalize;
 
 end Smart_Ptrs;
