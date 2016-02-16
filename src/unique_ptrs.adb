@@ -18,6 +18,7 @@
 pragma Profile (No_Implementation_Extensions);
 
 with Ada.Unchecked_Deallocation;
+with Ada.Unchecked_Conversion;
 
 package body Unique_Ptrs is
 
@@ -25,12 +26,20 @@ package body Unique_Ptrs is
      (Object => T,
       Name   => T_Ptr);
 
+   type Access_T is not null access all T;
+
+   function Access_T_to_T_Ptr is new Ada.Unchecked_Conversion
+     (Source => Access_T,
+      Target => T_Ptr);
+
    ---------
    -- Get --
    ---------
 
    function Get (U : in Unique_Ptr) return T_Ptr is
-      (U.E);
+      (Access_T_to_T_Ptr(U.Element));
+   -- We know U.Element was set from a T_Ptr so the unchecked conversion will in
+   -- fact always be valid.
 
    ---------------------
    -- Make_Unique_Ptr --
@@ -43,8 +52,7 @@ package body Unique_Ptrs is
       end if;
       return Unique_Ptr'(Ada.Finalization.Limited_Controlled with
                            Element => X,
-                         E => X,
-                         Finalized => False);
+                         Invalid => False);
    end;
 
    ----------------
@@ -53,9 +61,7 @@ package body Unique_Ptrs is
 
    overriding procedure Initialize (Object : in out Unique_Ptr) is
    begin
-      if Object.Element = null then
-         raise Unique_Ptr_Error with "Cannot create null Unique_Ptr";
-      elsif Object.E = null then
+      if Object.Invalid then
          raise Unique_Ptr_Error
            with "Unique_Ptr should be created via Make_Unique_Ptr only";
       end if;
@@ -66,11 +72,17 @@ package body Unique_Ptrs is
    --------------
 
    overriding procedure Finalize (Object : in out Unique_Ptr) is
+      Converted_Ptr : T_Ptr;
    begin
-      if not Object.Finalized then
-         Object.Finalized := True;
+      if not Object.Invalid then
+         Object.Invalid := True;
+
          Delete (Object.Element.all);
-         Deallocate_T (Object.E);
+
+         Converted_Ptr := Access_T_to_T_Ptr(Object.Element);
+         -- We know U.Element was set from a T_Ptr so the unchecked conversion
+         -- will in fact always be valid.
+         Deallocate_T (Converted_Ptr);
       end if;
    end Finalize;
 

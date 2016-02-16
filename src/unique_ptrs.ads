@@ -42,8 +42,7 @@ private
      new Ada.Finalization.Limited_Controlled
      with
       record
-         E : T_Ptr;
-         Finalized : Boolean := False;
+         Invalid : Boolean := True;
       end record;
 
    overriding procedure Initialize (Object : in out Unique_Ptr);
