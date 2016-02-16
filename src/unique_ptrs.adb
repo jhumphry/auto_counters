@@ -45,15 +45,10 @@ package body Unique_Ptrs is
    -- Make_Unique_Ptr --
    ---------------------
 
-   function Make_Unique_Ptr (X : T_Ptr) return Unique_Ptr is
-   begin
-      if X = null then
-         raise Unique_Ptr_Error with "Cannot create null Unique_Ptr";
-      end if;
-      return Unique_Ptr'(Ada.Finalization.Limited_Controlled with
-                           Element => X,
-                         Invalid => False);
-   end;
+   function Make_Unique_Ptr (X : T_Ptr_Not_Null) return Unique_Ptr is
+     (Unique_Ptr'(Ada.Finalization.Limited_Controlled with
+                  Element => X,
+                  Invalid => False));
 
    ----------------
    -- Initialize --

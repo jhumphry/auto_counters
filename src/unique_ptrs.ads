@@ -25,6 +25,7 @@ generic
 package Unique_Ptrs is
 
    type T_Ptr is access T;
+   subtype T_Ptr_Not_Null is not null T_Ptr;
 
    Unique_Ptr_Error : exception;
 
@@ -34,7 +35,7 @@ package Unique_Ptrs is
 
    function Get (U : in Unique_Ptr) return T_Ptr with Inline;
 
-   function Make_Unique_Ptr (X : T_Ptr) return Unique_Ptr with Inline;
+   function Make_Unique_Ptr (X : T_Ptr_Not_Null) return Unique_Ptr with Inline;
 
 private
 
