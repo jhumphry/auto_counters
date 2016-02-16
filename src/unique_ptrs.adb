@@ -32,6 +32,16 @@ package body Unique_Ptrs is
      (Source => Access_T,
       Target => T_Ptr);
 
+   type Access_Const_T is not null access constant T;
+
+   function Access_Const_T_to_T_Const_Ptr is new Ada.Unchecked_Conversion
+     (Source => Access_Const_T,
+      Target => T_Const_Ptr);
+
+   function Access_Const_T_to_T_Ptr is new Ada.Unchecked_Conversion
+     (Source => Access_Const_T,
+      Target => T_Ptr);
+
    ---------
    -- Get --
    ---------
@@ -49,6 +59,25 @@ package body Unique_Ptrs is
      (Unique_Ptr'(Ada.Finalization.Limited_Controlled with
                   Element => X,
                   Invalid => False));
+
+   ---------
+   -- Get --
+   ---------
+
+   function Get (U : in Unique_Const_Ptr) return T_Const_Ptr is
+      (Access_Const_T_to_T_Const_Ptr(U.Element));
+   -- We know U.Element was set from a T_Ptr so the unchecked conversion will in
+   -- fact always be valid.
+
+   ---------------------------
+   -- Make_Unique_Conts_Ptr --
+   ---------------------------
+
+   function Make_Unique_Const_Ptr (X : T_Ptr_Not_Null)
+                                   return Unique_Const_Ptr is
+     (Unique_Const_Ptr'(Ada.Finalization.Limited_Controlled with
+                        Element => X,
+                        Invalid => False));
 
    ----------------
    -- Initialize --
@@ -77,6 +106,39 @@ package body Unique_Ptrs is
          Converted_Ptr := Access_T_to_T_Ptr(Object.Element);
          -- We know U.Element was set from a T_Ptr so the unchecked conversion
          -- will in fact always be valid.
+         Deallocate_T (Converted_Ptr);
+      end if;
+   end Finalize;
+
+   ----------------
+   -- Initialize --
+   ----------------
+
+   overriding procedure Initialize (Object : in out Unique_Const_Ptr) is
+   begin
+      if Object.Invalid then
+         raise Unique_Ptr_Error
+           with "Unique_Const_Ptr should be created via Make_Unique_Const_Ptr "
+             & "only";
+      end if;
+   end Initialize;
+
+   --------------
+   -- Finalize --
+   --------------
+
+   overriding procedure Finalize (Object : in out Unique_Const_Ptr) is
+      Converted_Ptr : T_Ptr;
+   begin
+      if not Object.Invalid then
+         Object.Invalid := True;
+
+         Converted_Ptr := Access_Const_T_to_T_Ptr(Object.Element);
+         -- We know U.Element was set from a T_Ptr so the unchecked conversion
+         -- will in fact always be valid.
+
+         Delete (Converted_Ptr.all);
+
          Deallocate_T (Converted_Ptr);
       end if;
    end Finalize;

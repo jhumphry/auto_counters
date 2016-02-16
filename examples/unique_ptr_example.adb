@@ -33,10 +33,19 @@ procedure Unique_Ptr_Example is
 
    UP1 : constant Unique_Ptr := Make_Unique_Ptr(new String'("Hello, World!"));
 
+   UCP1 : constant Unique_Const_Ptr
+     := Make_Unique_Const_Ptr(new String'("Hello again, World!"));
+
 begin
 
    Put_Line("An example of using the Unique_Ptrs package."); New_Line;
 
+   Put_Line("Unique_Ptr UP1 => " & UP1);
+   Put_Line("Unique_Const_Ptr UCP1 => " & UCP1);
+   New_Line;
+
+   Put_Line("Changing the comma in UP1 to a colon.");
+   UP1(6) := ':';
    Put_Line("UP1 => " & UP1);
    New_Line;
 
