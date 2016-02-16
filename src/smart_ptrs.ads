@@ -50,21 +50,23 @@ package Smart_Ptrs is
    -- Smart_Ptr.
 
    function Get (S : in Smart_Ptr) return T_Ptr with Inline;
-   -- Returns an access value that points to the target of the Smart_Ptr. This
-   -- should not be saved as it can become invalid without warning if all
-   -- Smart_Ptr values are destroyed and the underlying storage reclaimed.
+   -- Returns an access value that points to the target of the Smart_Ptr.
+   -- This should not be saved as it can become invalid without warning if all
+   -- Smart_Ptr values are destroyed and the underlying storage reclaimed. In
+   -- particular do not attempt to duplicate Smart_Ptr by passing the result
+   -- to Make_Smart_Ptr.
 
    function Make_Smart_Ptr (X : T_Ptr) return Smart_Ptr with Inline;
    -- Make_Smart_Ptr creates a Smart_Ptr from an access value to an object
-   -- stored in a pool. Null can also be passed. Note that mixing regular access
-   -- values and Smart_Ptr types is not wise as the storage may be reclaimed
-   -- when all Smart_Ptr values are destroyed, leaving the access values
-   -- invalid.
+   -- stored in a pool. Null can also be passed. Note that mixing the use of
+   -- regular access values and Smart_Ptr types is not wise, as the storage may
+   -- be reclaimed when all Smart_Ptr values are destroyed, leaving the access
+   -- values invalid.
    --
-   -- Note that if two Smart_Ptr are created using Make_Smart_Ptr they wil not
-   -- share the same reference counters, and so when the first Smart_Ptr leaves
-   -- its scope it will free the target's storage. The second Smart_Ptr will be
-   -- left pointing erroneously to invalid storage.
+   -- Note that if two Smart_Ptr targetting the same object are created using
+   -- Make_Smart_Ptr they wil not share the same reference counters, and so when
+   -- the first Smart_Ptr leaves its scope it will free the target's storage.
+   -- The second Smart_Ptr will be left in an invalid state.
 
    function Use_Count (S : in Smart_Ptr) return Natural with Inline;
    -- Returns the number of Smart_Ptr currently pointing to the object.
