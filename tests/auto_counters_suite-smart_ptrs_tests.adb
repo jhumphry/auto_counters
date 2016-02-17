@@ -30,10 +30,10 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
    procedure Register_Tests (T: in out Smart_Ptrs_Test) is
       use AUnit.Test_Cases.Registration;
    begin
-      Register_Routine (T, Check_Reference_Counting'Access,
-                        "Check basic reference-counting functionality");
+      Register_Routine (T, Check_Smart_Ptr'Access,
+                        "Check basic Smart_Ptr functionality");
       Register_Routine (T, Check_Weak_Ptrs'Access,
-                        "Check basic Weak_Ptrs functionality");
+                        "Check basic Weak_Ptr functionality");
    end Register_Tests;
 
    ----------
@@ -55,11 +55,11 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
       null;
    end Set_Up;
 
-   ------------------------------
-   -- Check_Reference_Counting --
-   ------------------------------
+   ---------------------
+   -- Check_Smart_Ptr --
+   ---------------------
 
-   procedure Check_Reference_Counting (T : in out Test_Cases.Test_Case'Class) is
+   procedure Check_Smart_Ptr (T : in out Test_Cases.Test_Case'Class) is
       pragma Unreferenced(T);
 
       SP1 : Smart_Ptr := Make_Smart_Ptr(new String'("Hello, World!"));
@@ -141,7 +141,7 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
 
       Assert(SP1 = SP2, "Null Smart_Ptrs are not equal");
 
-   end Check_Reference_Counting;
+   end Check_Smart_Ptr;
 
    ---------------------
    -- Check_Weak_Ptrs --

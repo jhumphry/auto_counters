@@ -16,7 +16,7 @@ package Auto_Counters_Suite.Smart_Ptrs_Tests is
 
    procedure Set_Up (T : in out Smart_Ptrs_Test);
 
-   procedure Check_Reference_Counting (T : in out Test_Cases.Test_Case'Class);
+   procedure Check_Smart_Ptr (T : in out Test_Cases.Test_Case'Class);
 
    procedure Check_Weak_Ptrs (T : in out Test_Cases.Test_Case'Class);
 
