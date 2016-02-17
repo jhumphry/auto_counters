@@ -20,4 +20,6 @@ package Auto_Counters_Suite.Smart_Ptrs_Tests is
 
    procedure Check_Weak_Ptrs (T : in out Test_Cases.Test_Case'Class);
 
+   procedure Check_Smart_Ref (T : in out Test_Cases.Test_Case'Class);
+
 end Auto_Counters_Suite.Smart_Ptrs_Tests;

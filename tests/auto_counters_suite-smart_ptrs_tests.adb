@@ -34,6 +34,8 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
                         "Check basic Smart_Ptr functionality");
       Register_Routine (T, Check_Weak_Ptrs'Access,
                         "Check basic Weak_Ptr functionality");
+      Register_Routine (T, Check_Smart_Ref'Access,
+                        "Check basic Smart_Ref functionality");
    end Register_Tests;
 
    ----------
@@ -228,5 +230,87 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
                "on an expired Weak_Ptr");
 
    end Check_Weak_Ptrs;
+
+   ---------------------
+   -- Check_Smart_Ref --
+   ---------------------
+
+   procedure Check_Smart_Ref (T : in out Test_Cases.Test_Case'Class) is
+      pragma Unreferenced(T);
+
+      SR1 : constant Smart_Ref := Make_Smart_Ref(new String'("Hello, World!"));
+
+      procedure Make_SR_from_Local is
+         S : aliased String := "Test";
+         SR : Smart_Ref(Element => S'Access);
+         pragma Unreferenced (SR);
+      begin
+         null;
+      end Make_SR_from_Local;
+
+      Caught_Make_SR_from_Local : Boolean := False;
+
+   begin
+
+      Assert((SR1.Use_Count = 1 and
+                 SR1.Unique and
+                   SR1.Weak_Ptr_Count = 0),
+             "Initialized Smart_Ref has incorrect properties");
+
+      Resources_Released := 0;
+
+      declare
+         SR2 : constant Smart_Ref := SR1;
+      begin
+
+         Assert(SR1.Element = SR2.Element,
+                "Assignment of Smart_Ref does not make them equal");
+
+         Assert(SR1.Use_Count = 2 and
+                  not SR1.Unique and
+                    SR1.Weak_Ptr_Count = 0,
+                "Assignment does not increase reference counts properly");
+
+         SR1 := "World, Hello!";
+
+         Assert(SR2 = "World, Hello!",
+                "Changing a value via a reference from one Smart_Ref does " &
+                  "not change the value accessed via an equal Smart_Ref");
+
+         SR2.Get(6) := ':';
+
+         Assert(SR1.Get.all = "World: Hello!",
+                "Changing a value via an access value from one Smart_Ref " &
+                  "does not change the value accessed via an equal Smart_Ref");
+
+      end;
+
+      Assert(SR1.Use_Count = 1,
+             "Destruction of inner block Smart_Ref does not reduce Use_Count");
+      Assert(Resources_Released = 0,
+             "Resources released incorrectly when 1 Smart_Ref remains");
+
+      Resources_Released := 0;
+
+      declare
+         SR3 : constant Smart_Ref := Make_Smart_Ref(new String'("Goodbye, World!"));
+      begin
+         Assert(SR3 = "Goodbye, World!", "Create of Smart_Ref not working");
+      end;
+
+      Assert(Resources_Released = 1,
+             "Resources not released when no Smart_Ref remain");
+
+      begin
+         Make_SR_from_Local;
+      exception
+         when Smart_Ptr_Error =>
+            Caught_Make_SR_from_Local := True;
+      end;
+
+      Assert(Caught_Make_SR_from_Local,
+             "Failed to identify Smart_Ref being set to a local");
+
+   end Check_Smart_Ref;
 
 end Auto_Counters_Suite.Smart_Ptrs_Tests;
