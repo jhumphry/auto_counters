@@ -18,4 +18,6 @@ package Auto_Counters_Suite.Unique_Ptrs_Tests is
 
    procedure Check_Unique_Ptrs (T : in out Test_Cases.Test_Case'Class);
 
+   procedure Check_Unique_Const_Ptrs (T : in out Test_Cases.Test_Case'Class);
+
 end Auto_Counters_Suite.Unique_Ptrs_Tests;
