@@ -68,6 +68,10 @@ package Smart_Ptrs is
    -- the first Smart_Ptr leaves its scope it will free the target's storage.
    -- The second Smart_Ptr will be left in an invalid state.
 
+   type Smart_Ref;
+
+   function Make_Smart_Ptr (S : Smart_Ref) return Smart_Ptr with Inline;
+
    function Use_Count (S : in Smart_Ptr) return Natural with Inline;
    -- Returns the number of Smart_Ptr currently pointing to the object.
 
@@ -107,6 +111,22 @@ package Smart_Ptrs is
    -- If the target of the Weak_Ptr has not been destroyed, return a Smart_Ptr
    -- that points to it.
 
+   type Smart_Ref (Element : not null access T) is
+     new Ada.Finalization.Controlled with private
+   with Implicit_Dereference => Element;
+
+   function Get (S : in Smart_Ref) return T_Ptr with Inline;
+
+   function Make_Smart_Ref (X : T_Ptr) return Smart_Ref with Inline;
+
+   function Make_Smart_Ref (S : Smart_Ptr'Class) return Smart_Ref with Inline;
+
+   function Use_Count (S : in Smart_Ref) return Natural with Inline;
+
+   function Unique (S : in Smart_Ref) return Boolean is (Use_Count (S) = 1);
+
+   function Weak_Ptr_Count (S : in Smart_Ref) return Natural with Inline;
+
 private
 
    type Smart_Ptr_Counter;
@@ -136,5 +156,16 @@ private
 
    overriding procedure Adjust (Object : in out Weak_Ptr);
    overriding procedure Finalize (Object : in out Weak_Ptr);
+
+   type Smart_Ref (Element : not null access T) is
+     new Ada.Finalization.Controlled with
+      record
+         Counter : Counter_Ptr := null;
+         Invalid : Boolean     := True;
+      end record;
+
+   overriding procedure Initialize (Object : in out Smart_Ref);
+   overriding procedure Adjust (Object : in out Smart_Ref);
+   overriding procedure Finalize (Object : in out Smart_Ref);
 
 end Smart_Ptrs;
