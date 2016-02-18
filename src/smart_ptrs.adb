@@ -127,6 +127,13 @@ package body Smart_Ptrs is
       end if;
    end Make_Weak_Ptr;
 
+   function Make_Weak_Ptr (S : in Smart_Ref'Class) return Weak_Ptr is
+   begin
+      S.Counter.WP_Count := S.Counter.WP_Count + 1;
+      return Weak_Ptr'
+        (Ada.Finalization.Controlled with Counter => S.Counter);
+   end Make_Weak_Ptr;
+
    ---------------
    -- Use_Count --
    ---------------

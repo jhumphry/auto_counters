@@ -97,6 +97,9 @@ package Smart_Ptrs is
    function Make_Weak_Ptr (S : in Smart_Ptr'Class) return Weak_Ptr with Inline;
    -- Make_Weak_Ptr makes a Weak_Ptr from a non-null Smart_Ptr.
 
+   function Make_Weak_Ptr (S : in Smart_Ref'Class) return Weak_Ptr with Inline;
+   -- Make_Weak_Ptr makes a Weak_Ptr from a Smart_Ref.
+
    function Use_Count (W : in Weak_Ptr) return Natural with Inline;
    -- Use_Count gives the number of Smart_Ptr pointing to the same target.
 
