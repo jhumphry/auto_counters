@@ -36,14 +36,10 @@ package Smart_Ptrs is
    type Smart_Ptr is new Ada.Finalization.Controlled with private;
    -- Smart_Ptr is an implementation of a reference-counted pointer type that
    -- automatically releases the storage associated with the underlying value
-   -- when the last Smart_Ptr that points to it is destroyed. An additional
-   -- procedure Delete can be passed when instantiating the package and this
-   -- procedure will be called before the storage is released.
-   --
-   -- Smart_Ptr can only point to values created in a storage pool, not static
-   -- values or local stack values. Smart_Ptr can also be null. All null
-   -- Smart_Ptr act as though they were singletons - all values are
-   -- equivalent. A Smart_Ptr created without initialization will be null.
+   -- when the last Smart_Ptr that points to it is destroyed. Smart_Ptr can
+   -- only point to values created in a storage pool, not static values or local
+   -- stack values. Smart_Ptr can also be null. A Smart_Ptr created without
+   -- initialization will be null.
 
    function P (S : in Smart_Ptr) return T_Ref with Inline;
    -- Returns a generalised reference type that points to the target of the
@@ -62,18 +58,17 @@ package Smart_Ptrs is
    -- regular access values and Smart_Ptr types is not wise, as the storage may
    -- be reclaimed when all Smart_Ptr values are destroyed, leaving the access
    -- values invalid.
-   --
-   -- Note that if two Smart_Ptr targetting the same object are created using
-   -- Make_Smart_Ptr they wil not share the same reference counters, and so when
-   -- the first Smart_Ptr leaves its scope it will free the target's storage.
-   -- The second Smart_Ptr will be left in an invalid state.
 
    type Smart_Ref;
 
    function Make_Smart_Ptr (S : Smart_Ref) return Smart_Ptr with Inline;
+   -- Make_Smart_Ptr creates a Smart_Ptr from an existing Smart_Ref. It will
+   -- share the reference counters with the Smart_Ref so the two types can be
+   -- used together.
 
    function Use_Count (S : in Smart_Ptr) return Natural with Inline;
-   -- Returns the number of Smart_Ptr currently pointing to the object.
+   -- Returns the number of Smart_Ptr and Smart_Ref currently pointing to the
+   -- object.
 
    function Unique (S : in Smart_Ptr) return Boolean is (Use_Count (S) = 1);
    -- Returns True if this is the only Smart_Ptr pointing to the object.
@@ -101,7 +96,8 @@ package Smart_Ptrs is
    -- Make_Weak_Ptr makes a Weak_Ptr from a Smart_Ref.
 
    function Use_Count (W : in Weak_Ptr) return Natural with Inline;
-   -- Use_Count gives the number of Smart_Ptr pointing to the same target.
+   -- Use_Count gives the number of Smart_Ptr and Smart_Ref pointing to the same
+   -- target.
 
    function Weak_Ptr_Count (W : in Weak_Ptr) return Natural with Inline;
    -- Returns the number of Weak_Ptr currently pointing to the object.
@@ -120,19 +116,44 @@ package Smart_Ptrs is
 
    type Smart_Ref (Element : not null access T) is
      new Ada.Finalization.Controlled with private
-   with Implicit_Dereference => Element;
+       with Implicit_Dereference => Element;
+   -- Smart_Ref is an implementation of a reference-counted reference type that
+   -- automatically releases the storage associated with the underlying value
+   -- when the last Smart_Ref that points to it is destroyed. Smart_Ref can
+   -- only point to values created in a storage pool, not static values or local
+   -- stack values. A Smart_Ref cannot be null.
 
    function Get (S : in Smart_Ref) return T_Ptr with Inline;
+   -- Returns an access value that points to the target of the Smart_Ref.
+   -- This should not be saved as it can become invalid without warning if all
+   -- Smart_Ref values are destroyed and the underlying storage reclaimed. In
+   -- particular do not attempt to duplicate Smart_Ref by passing the result
+   -- to Make_Smart_Ptr.
 
    function Make_Smart_Ref (X : T_Ptr) return Smart_Ref with Inline;
+   -- Make_Smart_Ref creates a Smart_Ref from an access value to an object
+   -- stored in a pool. Note that mixing the use of regular access values and
+   -- Smart_Ptr types is not wise, as the storage may be reclaimed when all
+   -- Smart_Ptr values are destroyed, leaving the access values invalid.
+   -- Smart_Ref cannot be null, so if null is passed a Smart_Ptr_Error will
+   -- be raised.
 
    function Make_Smart_Ref (S : Smart_Ptr'Class) return Smart_Ref with Inline;
+   -- Make_Smart_Ptr creates a Smart_Ptr from an existing Smart_Ref. It will
+   -- share the reference counters with the Smart_Ref so the two types can be
+   -- used together. Note that while Smart_Ptr can be null, Smart_Ref cannot,
+   -- so Smart_Ptr_Error will be raised if you try to create a Smart_Ref from
+   -- a null Smart_Ptr.
 
    function Use_Count (S : in Smart_Ref) return Natural with Inline;
+   -- Use_Count gives the number of Smart_Ptr and Smart_Ref pointing to the same
+   -- target.
 
    function Unique (S : in Smart_Ref) return Boolean is (Use_Count (S) = 1);
+   -- Returns True if this is the only Smart_Ref pointing to the object.
 
    function Weak_Ptr_Count (S : in Smart_Ref) return Natural with Inline;
+   -- Returns the number of Weak_Ptr currently pointing to the object.
 
 private
 
