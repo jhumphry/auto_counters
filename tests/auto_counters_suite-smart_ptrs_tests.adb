@@ -33,9 +33,14 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
       Register_Routine (T, Check_Smart_Ptr'Access,
                         "Check basic Smart_Ptr functionality");
       Register_Routine (T, Check_Weak_Ptrs'Access,
-                        "Check basic Weak_Ptr functionality");
+                        "Check basic Weak_Ptr & Smart_Ptr functionality");
+      Register_Routine (T, Check_WP_SR'Access,
+                        "Check basic Weak_Ptr & Smart_Ref functionality");
       Register_Routine (T, Check_Smart_Ref'Access,
                         "Check basic Smart_Ref functionality");
+      Register_Routine (T, Check_SP_SR'Access,
+                        "Check basic Smart_Ptr & Smart_Ref functionality");
+
    end Register_Tests;
 
    ----------
@@ -156,14 +161,14 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
       SP2 : Smart_Ptr;
       WP1 : constant Weak_Ptr := Make_Weak_Ptr(SP1);
 
-      procedure Make_WP_From_Null is
+      procedure Make_WP_From_Null_SP is
          WP2 : constant Weak_Ptr := Make_Weak_Ptr(SP2);
          pragma Unreferenced (WP2);
       begin
          null;
-      end Make_WP_From_Null;
+      end Make_WP_From_Null_SP;
 
-      Caught_Making_WP_From_Null : Boolean := False;
+      Caught_Making_WP_From_Null_SP : Boolean := False;
       Caught_Lock_On_Expired_WP : Boolean := False;
 
    begin
@@ -175,13 +180,13 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
              "Weak_Ptr is (incorrectly) already expired just after creation");
 
       begin
-         Make_WP_From_Null;
+         Make_WP_From_Null_SP;
       exception
          when Smart_Ptr_Error =>
-            Caught_Making_WP_From_Null := True;
+            Caught_Making_WP_From_Null_SP := True;
       end;
 
-      Assert(Caught_Making_WP_From_Null,
+      Assert(Caught_Making_WP_From_Null_SP,
              "Make_Weak_ptr failed to raise exception when called on a null" &
                "Smart_Ptr");
 
@@ -231,6 +236,67 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
 
    end Check_Weak_Ptrs;
 
+   -----------------
+   -- Check_WP_SR --
+   -----------------
+
+   procedure Check_WP_SR (T : in out Test_Cases.Test_Case'Class) is
+      pragma Unreferenced(T);
+
+      SR1 : constant Smart_Ref := Make_Smart_Ref(new String'("Hello, World!"));
+      WP1 : Weak_Ptr := Make_Weak_Ptr(SR1);
+      SP1 : Smart_Ptr;
+
+      Caught_Lock_On_Expired_WP : Boolean := False;
+
+   begin
+      Assert(SR1.Weak_Ptr_Count = 1,
+             "Initialized Weak_Ptr not reflected in Smart_Ref");
+      Assert(WP1.Use_Count = 1,
+             "Weak_Ptr not reflecting the correct Use_Count");
+      Assert(not WP1.Expired,
+             "Weak_Ptr is (incorrectly) already expired just after creation");
+
+      SP1 := WP1.Lock;
+      Assert(SR1 = SP1.P,
+             "Smart_Ptr recovered from Weak_Ptr /= original Smart_Ref");
+      Assert(WP1.Use_Count = 2,
+             "Weak_Ptr has incorrect Use_Count after making new Smart_Ptr");
+      Assert(SP1.Use_Count = 2,
+             "Smart_Ptr made from Weak_Ptr has incorrect Use_Count");
+
+      Resources_Released := 0;
+
+      declare
+         SR2 : constant Smart_Ref
+           := Make_Smart_Ref(new String'("Goodbye, World!"));
+      begin
+         WP1 := SR2.Make_Weak_Ptr;
+      end;
+
+      Assert(Resources_Released = 1,
+             "Creation of Weak_Ptr from Smart_Ref prevented resources from " &
+               "being released.");
+
+      Assert(WP1.Expired,
+             "Weak_Ptr not expired when source Smart_Ref is destroyed");
+
+      Assert(WP1.Use_Count = 0,
+             "Expired Weak_Ptr has incorrect Use_Count");
+
+      begin
+         SP1 := WP1.Lock;
+      exception
+         when Smart_Ptr_Error =>
+            Caught_Lock_On_Expired_WP := True;
+      end;
+
+      Assert(Caught_Lock_On_Expired_WP,
+             "Weak_Ptr.Lock failed to raise exception when Lock was called " &
+               "on an expired Weak_Ptr");
+
+   end Check_WP_SR;
+
    ---------------------
    -- Check_Smart_Ref --
    ---------------------
@@ -248,7 +314,15 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
          null;
       end Make_SR_from_Local;
 
+      procedure Make_SR_from_null is
+         SR : Smart_Ref := Make_Smart_Ref(null);
+         pragma Unreferenced (SR);
+      begin
+         null;
+      end Make_SR_from_null;
+
       Caught_Make_SR_from_Local : Boolean := False;
+      Caught_Make_SR_from_Null : Boolean := False;
 
    begin
 
@@ -311,6 +385,80 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
       Assert(Caught_Make_SR_from_Local,
              "Failed to identify Smart_Ref being set to a local");
 
+      begin
+         Make_SR_from_null;
+      exception
+         when Smart_Ptr_Error =>
+            Caught_Make_SR_from_Null := True;
+      end;
+
+      Assert(Caught_Make_SR_from_Null,
+             "Failed to identify Smart_Ref being made from a null");
+
    end Check_Smart_Ref;
+
+   -----------------
+   -- Check_SP_SR --
+   -----------------
+
+   procedure Check_SP_SR (T : in out Test_Cases.Test_Case'Class) is
+      pragma Unreferenced(T);
+
+      SR1 : constant Smart_Ref := Make_Smart_Ref(new String'("Smart_Ref"));
+      SP1 : constant Smart_Ptr := Make_Smart_Ptr(SR1);
+
+      SP2 : constant Smart_Ptr := Make_Smart_Ptr(new String'("Smart_Ptr"));
+
+      procedure Make_SR_from_null_SP is
+         SP : Smart_Ptr;
+         SR : Smart_Ref := Make_Smart_Ref(SP);
+         pragma Unreferenced (SR);
+      begin
+         null;
+      end Make_SR_from_null_SP;
+
+      Caught_Make_SR_from_Null_SP : Boolean := False;
+
+   begin
+
+      Assert(SR1 = SP1.P,
+             "Smart_Ptr and Smart_Ref do not have same contents after " &
+               "assignment");
+
+      Assert(SR1 = SP1.Get.all,
+             "Smart_Ptr and Smart_Ref do not have same contents after " &
+               "assignment (using Smart_Ptr.Get.all)");
+
+      Assert(SR1.Use_Count = 2 and SP1.Use_Count = 2,
+             "Smart_Ptr and Smart_Ref do not have correct Use_Count");
+
+      Resources_Released := 0;
+
+      declare
+         SR2 : constant Smart_Ref := Make_Smart_Ref(SP2);
+      begin
+         Assert(SR2.Use_Count = 2 and SP2.Use_Count = 2,
+             "Smart_Ptr and Smart_Ref do not have correct Use_Count");
+      end;
+
+      Assert(Resources_Released = 0,
+             "Destruction of Smart_Ref released storage despite remaining "&
+               "Smart_Ptr");
+
+      Assert(SP2.Use_Count = 1,
+             "Smart_Ptr does not have correct Use_Count after creation and" &
+            "destruction of a Smart_Ref linked to it");
+
+      begin
+         Make_SR_from_null_SP;
+      exception
+         when Smart_Ptr_Error =>
+            Caught_Make_SR_from_Null_SP := True;
+      end;
+
+      Assert(Caught_Make_SR_from_Null_SP,
+             "Failed to identify Smart_Ref being made from a null Smart_Ptr");
+
+   end Check_SP_SR;
 
 end Auto_Counters_Suite.Smart_Ptrs_Tests;
