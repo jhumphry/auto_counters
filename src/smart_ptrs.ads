@@ -114,6 +114,10 @@ package Smart_Ptrs is
    -- If the target of the Weak_Ptr has not been destroyed, return a Smart_Ptr
    -- that points to it.
 
+   function Lock (W : in Weak_Ptr'Class) return Smart_Ref;
+   -- If the target of the Weak_Ptr has not been destroyed, return a Smart_Ref
+   -- that points to it.
+
    type Smart_Ref (Element : not null access T) is
      new Ada.Finalization.Controlled with private
    with Implicit_Dereference => Element;

@@ -172,6 +172,19 @@ package body Smart_Ptrs is
            Null_Ptr => False);
    end Lock;
 
+   function Lock (W : in Weak_Ptr'Class) return Smart_Ref is
+   begin
+      if W.Counter.SP_Count = 0 then
+         raise Smart_Ptr_Error with "Attempt to lock an expired Weak_Ptr.";
+      end if;
+      W.Counter.SP_Count := W.Counter.SP_Count + 1;
+      return Smart_Ref'
+          (Ada.Finalization.Controlled with
+           Element => W.Counter.Element,
+           Counter => W.Counter,
+           Invalid => False);
+   end Lock;
+
    ---------
    -- Get --
    ---------

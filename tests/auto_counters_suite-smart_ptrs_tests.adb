@@ -268,10 +268,29 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
       Resources_Released := 0;
 
       declare
-         SR2 : constant Smart_Ref
+         SR2 : constant Smart_Ref := WP1.Lock;
+      begin
+         Assert(SR2 = String'(SR1),
+                "Smart_Ref recovered from Weak_Ptr /= original Smart_Ref");
+         Assert(SR2.Use_Count = 3,
+                "Smart_Ref recovered from Weak_Ptr not adjusting Use_Count");
+      end;
+
+      Assert(Resources_Released = 0,
+             "Recovering and destroying Smart_Ref from Weak_Ptr has released " &
+               "resources despite remaining Smart_Ref and Smart_Ptr");
+
+      Assert(SR1.Use_Count = 2,
+             "Recovering and destroying Smart_Ref from Weak_Ptr has resulted " &
+               "in incorrect Use_Count on remaining Smart_Ref ");
+
+      Resources_Released := 0;
+
+      declare
+         SR3 : constant Smart_Ref
            := Make_Smart_Ref(new String'("Goodbye, World!"));
       begin
-         WP1 := SR2.Make_Weak_Ptr;
+         WP1 := SR3.Make_Weak_Ptr;
       end;
 
       Assert(Resources_Released = 1,
