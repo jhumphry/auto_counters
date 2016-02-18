@@ -83,37 +83,6 @@ package Smart_Ptrs is
    -- A constant that can be used to set a Smart_Ptr to null (and release the
    -- associated target's storage if it was the last Smart_Ptr pointing to it).
 
-   type Weak_Ptr (<>) is new Ada.Finalization.Controlled with private;
-   -- The Weak_Ptr type is a companion to a (non-null) Smart_Ptr. It can be used
-   -- to recreate a Smart_Ptr providing the target object still exists, but it
-   -- does not prevent the release of storage associated with the target if all
-   -- of the associated Smart_Ptr have been destroyed.
-
-   function Make_Weak_Ptr (S : in Smart_Ptr'Class) return Weak_Ptr with Inline;
-   -- Make_Weak_Ptr makes a Weak_Ptr from a non-null Smart_Ptr.
-
-   function Make_Weak_Ptr (S : in Smart_Ref'Class) return Weak_Ptr with Inline;
-   -- Make_Weak_Ptr makes a Weak_Ptr from a Smart_Ref.
-
-   function Use_Count (W : in Weak_Ptr) return Natural with Inline;
-   -- Use_Count gives the number of Smart_Ptr and Smart_Ref pointing to the same
-   -- target.
-
-   function Weak_Ptr_Count (W : in Weak_Ptr) return Natural with Inline;
-   -- Returns the number of Weak_Ptr currently pointing to the object.
-
-   function Expired (W : in Weak_Ptr) return Boolean with Inline;
-   -- Indicates if the target of the Weak_Ptr no longer exists because all
-   -- associated Smart_Ptr have been released.
-
-   function Lock (W : in Weak_Ptr'Class) return Smart_Ptr;
-   -- If the target of the Weak_Ptr has not been destroyed, return a Smart_Ptr
-   -- that points to it.
-
-   function Lock (W : in Weak_Ptr'Class) return Smart_Ref;
-   -- If the target of the Weak_Ptr has not been destroyed, return a Smart_Ref
-   -- that points to it.
-
    type Smart_Ref (Element : not null access T) is
      new Ada.Finalization.Controlled with private
        with Implicit_Dereference => Element;
@@ -155,6 +124,37 @@ package Smart_Ptrs is
    function Weak_Ptr_Count (S : in Smart_Ref) return Natural with Inline;
    -- Returns the number of Weak_Ptr currently pointing to the object.
 
+   type Weak_Ptr (<>) is new Ada.Finalization.Controlled with private;
+   -- The Weak_Ptr type is a companion to a (non-null) Smart_Ptr. It can be used
+   -- to recreate a Smart_Ptr providing the target object still exists, but it
+   -- does not prevent the release of storage associated with the target if all
+   -- of the associated Smart_Ptr have been destroyed.
+
+   function Make_Weak_Ptr (S : in Smart_Ptr'Class) return Weak_Ptr with Inline;
+   -- Make_Weak_Ptr makes a Weak_Ptr from a non-null Smart_Ptr.
+
+   function Make_Weak_Ptr (S : in Smart_Ref'Class) return Weak_Ptr with Inline;
+   -- Make_Weak_Ptr makes a Weak_Ptr from a Smart_Ref.
+
+   function Use_Count (W : in Weak_Ptr) return Natural with Inline;
+   -- Use_Count gives the number of Smart_Ptr and Smart_Ref pointing to the same
+   -- target.
+
+   function Weak_Ptr_Count (W : in Weak_Ptr) return Natural with Inline;
+   -- Returns the number of Weak_Ptr currently pointing to the object.
+
+   function Expired (W : in Weak_Ptr) return Boolean with Inline;
+   -- Indicates if the target of the Weak_Ptr no longer exists because all
+   -- associated Smart_Ptr have been released.
+
+   function Lock (W : in Weak_Ptr'Class) return Smart_Ptr;
+   -- If the target of the Weak_Ptr has not been destroyed, return a Smart_Ptr
+   -- that points to it.
+
+   function Lock (W : in Weak_Ptr'Class) return Smart_Ref;
+   -- If the target of the Weak_Ptr has not been destroyed, return a Smart_Ref
+   -- that points to it.
+
 private
 
    type Smart_Ptr_Counter;
@@ -177,14 +177,6 @@ private
                                            Counter  => null,
                                            Null_Ptr => True);
 
-   type Weak_Ptr is new Ada.Finalization.Controlled with
-      record
-         Counter : Counter_Ptr;
-      end record;
-
-   overriding procedure Adjust (Object : in out Weak_Ptr);
-   overriding procedure Finalize (Object : in out Weak_Ptr);
-
    type Smart_Ref (Element : not null access T) is
      new Ada.Finalization.Controlled with
       record
@@ -195,5 +187,13 @@ private
    overriding procedure Initialize (Object : in out Smart_Ref);
    overriding procedure Adjust (Object : in out Smart_Ref);
    overriding procedure Finalize (Object : in out Smart_Ref);
+
+   type Weak_Ptr is new Ada.Finalization.Controlled with
+      record
+         Counter : Counter_Ptr;
+      end record;
+
+   overriding procedure Adjust (Object : in out Weak_Ptr);
+   overriding procedure Finalize (Object : in out Weak_Ptr);
 
 end Smart_Ptrs;

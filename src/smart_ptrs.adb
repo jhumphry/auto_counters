@@ -111,6 +111,65 @@ package body Smart_Ptrs is
    function Is_Null (S : in Smart_Ptr) return Boolean is
      (S.Null_Ptr);
 
+   ---------
+   -- Get --
+   ---------
+
+   function Get (S : in Smart_Ref) return T_Ptr is
+     (Access_T_to_T_Ptr(S.Element));
+
+   --------------------
+   -- Make_Smart_Ref --
+   --------------------
+
+   function Make_Smart_Ref (X : T_Ptr) return Smart_Ref is
+   begin
+      if X = null then
+         raise Smart_Ptr_Error
+           with "Attempting to make a Smart_Ref from a null access value";
+      end if;
+      return Smart_Ref'(Ada.Finalization.Controlled with
+                          Element => X,
+                        Counter => new Smart_Ptr_Counter'(Element  => X,
+                                                          SP_Count => 1,
+                                                          WP_Count => 0
+                                                         ),
+                        Invalid => False
+                       );
+
+   end Make_Smart_Ref;
+
+   --------------------
+   -- Make_Smart_Ref --
+   --------------------
+
+   function Make_Smart_Ref (S : Smart_Ptr'Class) return Smart_Ref is
+   begin
+      if S.Null_Ptr then
+         raise Smart_Ptr_Error
+           with "Attempting to make a Smart_Ref from a null Smart_Ptr";
+      end if;
+      S.Counter.SP_Count := S.Counter.SP_Count + 1;
+      return Smart_Ref'(Ada.Finalization.Controlled with
+                          Element => S.Element,
+                        Counter => S.Counter,
+                        Invalid => False);
+   end Make_Smart_Ref;
+
+   ---------------
+   -- Use_Count --
+   ---------------
+
+   function Use_Count (S : in Smart_Ref) return Natural is
+     (S.Counter.SP_Count);
+
+   --------------------
+   -- Weak_Ptr_Count --
+   --------------------
+
+   function Weak_Ptr_Count (S : in Smart_Ref) return Natural is
+     (S.Counter.WP_Count);
+
    -------------------
    -- Make_Weak_Ptr --
    -------------------
@@ -185,65 +244,6 @@ package body Smart_Ptrs is
            Invalid => False);
    end Lock;
 
-   ---------
-   -- Get --
-   ---------
-
-   function Get (S : in Smart_Ref) return T_Ptr is
-     (Access_T_to_T_Ptr(S.Element));
-
-   --------------------
-   -- Make_Smart_Ref --
-   --------------------
-
-   function Make_Smart_Ref (X : T_Ptr) return Smart_Ref is
-   begin
-      if X = null then
-         raise Smart_Ptr_Error
-           with "Attempting to make a Smart_Ref from a null access value";
-      end if;
-      return Smart_Ref'(Ada.Finalization.Controlled with
-                          Element => X,
-                        Counter => new Smart_Ptr_Counter'(Element  => X,
-                                                          SP_Count => 1,
-                                                          WP_Count => 0
-                                                         ),
-                        Invalid => False
-                       );
-
-   end Make_Smart_Ref;
-
-   --------------------
-   -- Make_Smart_Ref --
-   --------------------
-
-   function Make_Smart_Ref (S : Smart_Ptr'Class) return Smart_Ref is
-   begin
-      if S.Null_Ptr then
-         raise Smart_Ptr_Error
-           with "Attempting to make a Smart_Ref from a null Smart_Ptr";
-      end if;
-      S.Counter.SP_Count := S.Counter.SP_Count + 1;
-      return Smart_Ref'(Ada.Finalization.Controlled with
-                          Element => S.Element,
-                        Counter => S.Counter,
-                        Invalid => False);
-   end Make_Smart_Ref;
-
-   ---------------
-   -- Use_Count --
-   ---------------
-
-   function Use_Count (S : in Smart_Ref) return Natural is
-     (S.Counter.SP_Count);
-
-   --------------------
-   -- Weak_Ptr_Count --
-   --------------------
-
-   function Weak_Ptr_Count (S : in Smart_Ref) return Natural is
-     (S.Counter.WP_Count);
-
    ------------
    -- Adjust --
    ------------
@@ -305,37 +305,6 @@ package body Smart_Ptrs is
         )
      );
 
-   ------------
-   -- Adjust --
-   ------------
-
-   procedure Adjust (Object : in out Weak_Ptr) is
-   begin
-      if Object.Counter = null then
-         raise Smart_Ptr_Error
-           with "Corruption during Weak_Ptr assignment.";
-      else
-         Object.Counter.WP_Count := Object.Counter.WP_Count + 1;
-      end if;
-   end Adjust;
-
-   --------------
-   -- Finalize --
-   --------------
-
-   procedure Finalize (Object : in out Weak_Ptr) is
-   begin
-      -- Make sure this procedure is idempotent.
-
-      if Object.Counter /= null then
-         Object.Counter.WP_Count := Object.Counter.WP_Count - 1;
-         if Object.Counter.WP_Count = 0 and Object.Counter.SP_Count = 0 then
-            Deallocate_Smart_Ptr_Counter (Object.Counter);
-         end if;
-      end if;
-
-   end Finalize;
-
    ----------------
    -- Initialize --
    ----------------
@@ -395,6 +364,37 @@ package body Smart_Ptrs is
             Object.Invalid := True;
          end if;
       end if;
+   end Finalize;
+
+   ------------
+   -- Adjust --
+   ------------
+
+   procedure Adjust (Object : in out Weak_Ptr) is
+   begin
+      if Object.Counter = null then
+         raise Smart_Ptr_Error
+           with "Corruption during Weak_Ptr assignment.";
+      else
+         Object.Counter.WP_Count := Object.Counter.WP_Count + 1;
+      end if;
+   end Adjust;
+
+   --------------
+   -- Finalize --
+   --------------
+
+   procedure Finalize (Object : in out Weak_Ptr) is
+   begin
+      -- Make sure this procedure is idempotent.
+
+      if Object.Counter /= null then
+         Object.Counter.WP_Count := Object.Counter.WP_Count - 1;
+         if Object.Counter.WP_Count = 0 and Object.Counter.SP_Count = 0 then
+            Deallocate_Smart_Ptr_Counter (Object.Counter);
+         end if;
+      end if;
+
    end Finalize;
 
 end Smart_Ptrs;
