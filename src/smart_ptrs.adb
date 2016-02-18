@@ -22,6 +22,10 @@ with Ada.Unchecked_Conversion;
 
 package body Smart_Ptrs is
 
+   -- *
+   -- * Internal implementation definitions
+   -- *
+
    procedure Deallocate_T is new Ada.Unchecked_Deallocation
      (Object => T,
       Name   => T_Ptr);
@@ -42,23 +46,19 @@ package body Smart_Ptrs is
      (Source => Access_T,
       Target => T_Ptr);
 
-   -------
-   -- P --
-   -------
+   -- *
+   -- * Public routines
+   -- *
+
+   ---------------
+   -- Smart_Ptr --
+   ---------------
 
    function P (S : in Smart_Ptr) return T_Ref is
      (T_Ref'(Element => S.Element));
 
-   ---------
-   -- Get --
-   ---------
-
    function Get (S : in Smart_Ptr) return T_Ptr is
      (S.Element);
-
-   --------------------
-   -- Make_Smart_Ptr --
-   --------------------
 
    function Make_Smart_Ptr (X : T_Ptr) return Smart_Ptr is
      (Smart_Ptr'(Ada.Finalization.Controlled with
@@ -90,37 +90,21 @@ package body Smart_Ptrs is
                         Null_Ptr => False);
    end Make_Smart_Ptr;
 
-   ---------------
-   -- Use_Count --
-   ---------------
-
    function Use_Count (S : in Smart_Ptr) return Natural is
      (if S.Null_Ptr then 1 else S.Counter.SP_Count);
-
-   --------------------
-   -- Weak_Ptr_Count --
-   --------------------
 
    function Weak_Ptr_Count (S : in Smart_Ptr) return Natural is
      (if S.Null_Ptr then 0 else S.Counter.WP_Count);
 
-   -------------
-   -- Is_Null --
-   -------------
-
    function Is_Null (S : in Smart_Ptr) return Boolean is
      (S.Null_Ptr);
-
-   ---------
-   -- Get --
-   ---------
 
    function Get (S : in Smart_Ref) return T_Ptr is
      (Access_T_to_T_Ptr(S.Element));
 
-   --------------------
-   -- Make_Smart_Ref --
-   --------------------
+   ---------------
+   -- Smart_Ref --
+   ---------------
 
    function Make_Smart_Ref (X : T_Ptr) return Smart_Ref is
    begin
@@ -139,10 +123,6 @@ package body Smart_Ptrs is
 
    end Make_Smart_Ref;
 
-   --------------------
-   -- Make_Smart_Ref --
-   --------------------
-
    function Make_Smart_Ref (S : Smart_Ptr'Class) return Smart_Ref is
    begin
       if S.Null_Ptr then
@@ -156,23 +136,15 @@ package body Smart_Ptrs is
                         Invalid => False);
    end Make_Smart_Ref;
 
-   ---------------
-   -- Use_Count --
-   ---------------
-
    function Use_Count (S : in Smart_Ref) return Natural is
      (S.Counter.SP_Count);
-
-   --------------------
-   -- Weak_Ptr_Count --
-   --------------------
 
    function Weak_Ptr_Count (S : in Smart_Ref) return Natural is
      (S.Counter.WP_Count);
 
-   -------------------
-   -- Make_Weak_Ptr --
-   -------------------
+   --------------
+   -- Weak_Ptr --
+   --------------
 
    function Make_Weak_Ptr (S : in Smart_Ptr'Class) return Weak_Ptr is
    begin
@@ -193,30 +165,14 @@ package body Smart_Ptrs is
         (Ada.Finalization.Controlled with Counter => S.Counter);
    end Make_Weak_Ptr;
 
-   ---------------
-   -- Use_Count --
-   ---------------
-
    function Use_Count (W : in Weak_Ptr) return Natural is
      (W.Counter.SP_Count);
-
-   ---------------
-   -- Use_Count --
-   ---------------
 
    function Weak_Ptr_Count (W : in Weak_Ptr) return Natural is
      (W.Counter.WP_Count);
 
-   -------------
-   -- Expired --
-   -------------
-
    function Expired (W : in Weak_Ptr) return Boolean is
      (W.Counter.SP_Count = 0);
-
-   ----------
-   -- Lock --
-   ----------
 
    function Lock (W : in Weak_Ptr'Class) return Smart_Ptr is
    begin
@@ -244,9 +200,14 @@ package body Smart_Ptrs is
            Invalid => False);
    end Lock;
 
-   ------------
-   -- Adjust --
-   ------------
+
+   -- *
+   -- * Private routines
+   -- *
+
+   ---------------
+   -- Smart_Ptr --
+   ---------------
 
    procedure Adjust (Object : in out Smart_Ptr) is
    begin
@@ -259,10 +220,6 @@ package body Smart_Ptrs is
          end if;
       end if;
    end Adjust;
-
-   --------------
-   -- Finalize --
-   --------------
 
    procedure Finalize (Object : in out Smart_Ptr) is
    begin
@@ -291,10 +248,6 @@ package body Smart_Ptrs is
       end if;
    end Finalize;
 
-   -----------
-   -- Valid --
-   -----------
-
    function Valid (S : in Smart_Ptr) return Boolean is
      (if S.Null_Ptr then
         (S.Element = null and S.Counter = null)
@@ -305,9 +258,9 @@ package body Smart_Ptrs is
         )
      );
 
-   ----------------
-   -- Initialize --
-   ----------------
+   ---------------
+   -- Smart_Ref --
+   ---------------
 
    procedure Initialize (Object : in out Smart_Ref) is
    begin
@@ -316,10 +269,6 @@ package body Smart_Ptrs is
            with "Smart_Ref should be created via Make_Smart_Ref only";
       end if;
    end Initialize;
-
-   ------------
-   -- Adjust --
-   ------------
 
    procedure Adjust (Object : in out Smart_Ref) is
    begin
@@ -330,10 +279,6 @@ package body Smart_Ptrs is
          Object.Counter.SP_Count := Object.Counter.SP_Count + 1;
       end if;
    end Adjust;
-
-   --------------
-   -- Finalize --
-   --------------
 
    procedure Finalize (Object : in out Smart_Ref) is
       Converted_Ptr : T_Ptr;
@@ -366,9 +311,9 @@ package body Smart_Ptrs is
       end if;
    end Finalize;
 
-   ------------
-   -- Adjust --
-   ------------
+   --------------
+   -- Weak_Ptr --
+   --------------
 
    procedure Adjust (Object : in out Weak_Ptr) is
    begin
@@ -379,10 +324,6 @@ package body Smart_Ptrs is
          Object.Counter.WP_Count := Object.Counter.WP_Count + 1;
       end if;
    end Adjust;
-
-   --------------
-   -- Finalize --
-   --------------
 
    procedure Finalize (Object : in out Weak_Ptr) is
    begin
