@@ -177,19 +177,21 @@ package body Smart_Ptrs is
    --------------------
 
    function Make_Smart_Ref (X : T_Ptr) return Smart_Ref is
-     (Smart_Ref'(Ada.Finalization.Controlled with
-                 Element => X,
-                 Counter => (if X = null then
-                                null
-                             else
-                                new Smart_Ptr_Counter'(Element  => X,
-                                                       SP_Count => 1,
-                                                       WP_Count => 0
-                                                      )
-                            ),
-                 Invalid => False
-                )
-     );
+   begin
+      if X = null then
+         raise Smart_Ptr_Error
+           with "Attempting to make a Smart_Ref from a null access value";
+      end if;
+      return Smart_Ref'(Ada.Finalization.Controlled with
+                          Element => X,
+                        Counter => new Smart_Ptr_Counter'(Element  => X,
+                                                          SP_Count => 1,
+                                                          WP_Count => 0
+                                                         ),
+                        Invalid => False
+                       );
+
+   end Make_Smart_Ref;
 
    --------------------
    -- Make_Smart_Ref --
