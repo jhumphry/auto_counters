@@ -318,7 +318,12 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
              "Expired Weak_Ptr has incorrect Use_Count");
 
       begin
-         SP1 := WP1.Lock;
+         declare
+            SR4 : constant Smart_Ref := WP1.Lock;
+            pragma Unreferenced (SR4);
+         begin
+            null;
+         end;
       exception
          when Smart_Ptr_Error =>
             Caught_Lock_On_Expired_WP := True;
