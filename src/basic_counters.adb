@@ -41,12 +41,12 @@ package body Basic_Counters is
       end if;
    end Deallocate_If_Unused;
 
-   procedure Increment_Use_Count (C : in out Counter) is
+   procedure Check_Increment_Use_Count (C : in out Counter) is
    begin
       if C.SP_Count > 0 then
          C.SP_Count := C.SP_Count + 1;
       end if;
-   end Increment_Use_Count;
+   end Check_Increment_Use_Count;
 
    procedure Decrement_Use_Count (C : in out Counter)  is
    begin

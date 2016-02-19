@@ -68,7 +68,7 @@ package body Smart_Ptrs is
          raise Smart_Ptr_Error
            with "Attempting to make a Smart_Ptr from an invalid Smart_Ref";
       end if;
-      Increment_Use_Count(S.Counter.all);
+      Check_Increment_Use_Count(S.Counter.all);
       -- As we ensure Smart_Ref is always made from a T_Ptr, the unchecked
       -- reverse conversion is always safe.
       return Smart_Ptr'(Ada.Finalization.Controlled with
@@ -113,7 +113,7 @@ package body Smart_Ptrs is
          raise Smart_Ptr_Error
            with "Attempting to make a Smart_Ref from a null Smart_Ptr";
       end if;
-      Increment_Use_Count(S.Counter.all);
+      Check_Increment_Use_Count(S.Counter.all);
       return Smart_Ref'(Ada.Finalization.Controlled with
                           Element => S.Element,
                         Counter => S.Counter,
@@ -162,7 +162,7 @@ package body Smart_Ptrs is
 
    function Lock (W : in Weak_Ptr'Class) return Smart_Ptr is
    begin
-      Increment_Use_Count(W.Counter.all);
+      Check_Increment_Use_Count(W.Counter.all);
       if Use_Count(W.Counter.all) = 0 then
          raise Smart_Ptr_Error with "Attempt to lock an expired Weak_Ptr.";
       end if;
@@ -179,7 +179,7 @@ package body Smart_Ptrs is
 
    function Lock (W : in Weak_Ptr'Class) return Smart_Ref is
    begin
-      Increment_Use_Count(W.Counter.all);
+      Check_Increment_Use_Count(W.Counter.all);
       if Use_Count(W.Counter.all) = 0 then
          raise Smart_Ptr_Error with "Attempt to lock an expired Weak_Ptr.";
       end if;
@@ -196,7 +196,7 @@ package body Smart_Ptrs is
 
    function Get (W : in Weak_Ptr'Class) return Smart_Ptr is
    begin
-      Increment_Use_Count(W.Counter.all);
+      Check_Increment_Use_Count(W.Counter.all);
       if Use_Count(W.Counter.all) = 0 then
          return Null_Smart_Ptr;
       end if;
@@ -226,7 +226,7 @@ package body Smart_Ptrs is
             raise Smart_Ptr_Error
               with "Corruption during Smart_Ptr assignment.";
          else
-            Increment_Use_Count(Object.Counter.all);
+            Check_Increment_Use_Count(Object.Counter.all);
          end if;
       end if;
    end Adjust;
@@ -274,7 +274,7 @@ package body Smart_Ptrs is
          raise Smart_Ptr_Error
            with "Corruption during Smart_Ptr assignment.";
       else
-         Increment_Use_Count(Object.Counter.all);
+         Check_Increment_Use_Count(Object.Counter.all);
       end if;
    end Adjust;
 

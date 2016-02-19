@@ -36,7 +36,7 @@ generic
    with function Use_Count (C : in Counter) return Natural is <>;
    -- Return the number of Smart_Ptr / Smart_Ref using the counter
 
-   with procedure Increment_Use_Count (C : in out Counter) is <>;
+   with procedure Check_Increment_Use_Count (C : in out Counter) is <>;
    -- Increment the Use_Count if the current use count is greater than zero,
    -- otherwise do nothing. These sematics help the Weak_Ptr.Lock code ensure
    -- that the target object does not get deallocated between the Weak_Ptr

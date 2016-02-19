@@ -42,7 +42,7 @@ package Basic_Counters is
    function Use_Count (C : in Counter) return Natural  is
      (C.SP_Count) with Inline;
 
-   procedure Increment_Use_Count (C : in out Counter) with Inline;
+   procedure Check_Increment_Use_Count (C : in out Counter) with Inline;
 
    procedure Decrement_Use_Count (C : in out Counter)  with Inline;
 
