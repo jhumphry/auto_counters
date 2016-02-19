@@ -174,8 +174,6 @@ private
    overriding procedure Adjust (Object : in out Smart_Ptr);
    overriding procedure Finalize (Object : in out Smart_Ptr);
 
-   function Valid (S : in Smart_Ptr) return Boolean with Inline;
-
    Null_Smart_Ptr : constant Smart_Ptr := (Ada.Finalization.Controlled with
                                            Element  => null,
                                            Counter  => null,
