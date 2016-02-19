@@ -17,6 +17,8 @@
 
 pragma Profile (No_Implementation_Extensions);
 
+with Counters_Spec;
+
 generic
    type T (<>) is limited private;
    type T_Ptr is access T;
@@ -50,5 +52,10 @@ package Basic_Counters is
    procedure Increment_Weak_Ptr_Count (C : in out Counter) with Inline;
 
    procedure Decrement_Weak_Ptr_Count (C : in out Counter) with Inline;
+
+   package Basic_Counters_Spec is new Counters_Spec(T => T,
+                                                    T_Ptr => T_Ptr,
+                                                    Counter => Counter,
+                                                    Counter_Ptr => Counter_Ptr);
 
 end Basic_Counters;

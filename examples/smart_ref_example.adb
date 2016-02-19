@@ -18,6 +18,7 @@
 with Ada.Text_IO, Ada.Integer_Text_IO;
 use Ada.Text_IO, Ada.Integer_Text_IO;
 
+with Basic_Counters;
 with Smart_Ptrs;
 
 procedure Smart_Ref_Example is
@@ -27,8 +28,15 @@ procedure Smart_Ref_Example is
       Put_Line("Freeing resources relating to a string: " & X);
    end Custom_Deleter;
 
+   type String_Ptr is access String;
+
+   package String_Counters is new Basic_Counters(T => String,
+                                                 T_Ptr => String_Ptr);
+
    package String_Ptrs is new Smart_Ptrs(T => String,
-                                         Delete => Custom_Deleter);
+                                         T_Ptr => String_Ptr,
+                                         Delete => Custom_Deleter,
+                                         Counters => String_Counters.Basic_Counters_Spec);
    use String_Ptrs;
 
    SR1 : constant Smart_Ref := Make_Smart_Ref(new String'("Hello, World!"));

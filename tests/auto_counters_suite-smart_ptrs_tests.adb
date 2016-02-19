@@ -5,6 +5,7 @@
 
 with AUnit.Assertions;
 
+with Basic_Counters;
 with Smart_Ptrs;
 
 package body Auto_Counters_Suite.Smart_Ptrs_Tests is
@@ -19,9 +20,16 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
       Resources_Released := Resources_Released + 1;
    end Deletion_Recorder;
 
-   package String_Smart_Ptrs is new Smart_Ptrs(T => String,
-                                               Delete => Deletion_Recorder);
-   use String_Smart_Ptrs;
+   type String_Ptr is access String;
+
+   package String_Counters is new Basic_Counters(T => String,
+                                                 T_Ptr => String_Ptr);
+
+   package String_Ptrs is new Smart_Ptrs(T => String,
+                                         T_Ptr => String_Ptr,
+                                         Delete => Deletion_Recorder,
+                                         Counters => String_Counters.Basic_Counters_Spec);
+   use String_Ptrs;
 
    --------------------
    -- Register_Tests --
