@@ -196,7 +196,7 @@ private
 
    type Weak_Ptr is new Ada.Finalization.Controlled with
       record
-         Counter : Counter_Ptr;
+         Counter : Counter_Ptr := null;
       end record;
 
    overriding procedure Adjust (Object : in out Weak_Ptr);

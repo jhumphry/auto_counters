@@ -138,7 +138,8 @@ package body Smart_Ptrs is
       else
          Increment_Weak_Ptr_Count(S.Counter.all);
          return Weak_Ptr'
-             (Ada.Finalization.Controlled with Counter => S.Counter);
+           (Ada.Finalization.Controlled
+            with Counter => S.Counter);
       end if;
    end Make_Weak_Ptr;
 
@@ -146,7 +147,8 @@ package body Smart_Ptrs is
    begin
       Increment_Weak_Ptr_Count(S.Counter.all);
       return Weak_Ptr'
-        (Ada.Finalization.Controlled with Counter => S.Counter);
+        (Ada.Finalization.Controlled
+         with Counter => S.Counter);
    end Make_Weak_Ptr;
 
    function Use_Count (W : in Weak_Ptr) return Natural is
@@ -312,6 +314,7 @@ package body Smart_Ptrs is
       if Object.Counter /= null then
          Decrement_Weak_Ptr_Count(Object.Counter.all);
          Deallocate_If_Unused(Object.Counter);
+         Object.Counter := null;
       end if;
 
    end Finalize;
