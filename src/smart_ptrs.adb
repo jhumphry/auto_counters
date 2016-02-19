@@ -200,6 +200,18 @@ package body Smart_Ptrs is
            Invalid => False);
    end Lock;
 
+   function Get (W : in Weak_Ptr'Class) return Smart_Ptr is
+   begin
+      if W.Counter.SP_Count = 0 then
+         return Null_Smart_Ptr;
+      end if;
+      W.Counter.SP_Count := W.Counter.SP_Count + 1;
+      return Smart_Ptr'
+          (Ada.Finalization.Controlled with
+           Element  => W.Counter.Element,
+           Counter  => W.Counter,
+           Null_Ptr => False);
+   end Get;
 
    -- *
    -- * Private routines

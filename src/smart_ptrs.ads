@@ -149,11 +149,15 @@ package Smart_Ptrs is
 
    function Lock (W : in Weak_Ptr'Class) return Smart_Ptr;
    -- If the target of the Weak_Ptr has not been destroyed, return a Smart_Ptr
-   -- that points to it.
+   -- that points to it, otherwise raise Smart_Ptr_Error.
 
    function Lock (W : in Weak_Ptr'Class) return Smart_Ref;
    -- If the target of the Weak_Ptr has not been destroyed, return a Smart_Ref
-   -- that points to it.
+   -- that points to it, otherwise raise Smart_Ptr_Error.
+
+   function Get (W : in Weak_Ptr'Class) return Smart_Ptr;
+   -- If the target of the Weak_Ptr has not been destroyed, return a Smart_Ptr
+   -- that points to it, otherwise return Null_Smart_Ptr.
 
 private
 
