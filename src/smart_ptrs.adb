@@ -30,21 +30,74 @@ package body Smart_Ptrs is
      (Object => T,
       Name   => T_Ptr);
 
+   type Access_T is not null access all T;
+
+   function Access_T_to_T_Ptr is new Ada.Unchecked_Conversion
+     (Source => Access_T,
+      Target => T_Ptr);
+
+   -- *
+   -- * Internal counter type
+   -- *
+
    type Smart_Ptr_Counter is record
       Element  : T_Ptr;
       SP_Count : Natural;
       WP_Count : Natural;
    end record;
 
+   function Make_New_Smart_Ptr_Counter(Element : T_Ptr)
+                                       return Counter_Ptr is
+     (new Smart_Ptr_Counter'(Element  => Element,
+                             SP_Count => 1,
+                             WP_Count => 0
+                            )
+     );
+
    procedure Deallocate_Smart_Ptr_Counter is new Ada.Unchecked_Deallocation
      (Object => Smart_Ptr_Counter,
       Name   => Counter_Ptr);
 
-   type Access_T is not null access all T;
+   procedure Deallocate_If_Unused (C : in out Counter_Ptr) with Inline is
 
-   function Access_T_to_T_Ptr is new Ada.Unchecked_Conversion
-     (Source => Access_T,
-      Target => T_Ptr);
+   begin
+      if C.SP_Count = 0 and C.WP_Count = 0 then
+         Deallocate_Smart_Ptr_Counter(C);
+      end if;
+   end Deallocate_If_Unused;
+
+   function Element(C : in Smart_Ptr_Counter) return T_Ptr is
+      (C.Element) with Inline;
+
+   function Use_Count (C : in Smart_Ptr_Counter) return Natural  is
+     (C.SP_Count) with Inline;
+
+   procedure Increment_Use_Count (C : in out Smart_Ptr_Counter)
+     with Inline is
+   begin
+      C.SP_Count := C.SP_Count + 1;
+   end Increment_Use_Count;
+
+   procedure Decrement_Use_Count (C : in out Smart_Ptr_Counter)
+     with Inline is
+   begin
+      C.SP_Count := C.SP_Count - 1;
+   end Decrement_Use_Count;
+
+   function Weak_Ptr_Count (C : in Smart_Ptr_Counter) return Natural is
+     (C.WP_Count) with Inline;
+
+   procedure Increment_Weak_Ptr_Count (C : in out Smart_Ptr_Counter)
+     with Inline is
+   begin
+      C.WP_Count := C.WP_Count + 1;
+   end Increment_Weak_Ptr_Count;
+
+   procedure Decrement_Weak_Ptr_Count (C : in out Smart_Ptr_Counter)
+     with Inline is
+   begin
+      C.WP_Count := C.WP_Count - 1;
+   end Decrement_Weak_Ptr_Count;
 
    -- *
    -- * Public routines
@@ -66,10 +119,7 @@ package body Smart_Ptrs is
                  Counter => (if X = null then
                                 null
                              else
-                                new Smart_Ptr_Counter'(Element  => X,
-                                                       SP_Count => 1,
-                                                       WP_Count => 0
-                                                      )
+                                Make_New_Smart_Ptr_Counter(Element  => X)
                             ),
                  Null_Ptr => (X = null)
                 )
@@ -81,7 +131,7 @@ package body Smart_Ptrs is
          raise Smart_Ptr_Error
            with "Attempting to make a Smart_Ptr from an invalid Smart_Ref";
       end if;
-      S.Counter.SP_Count := S.Counter.SP_Count + 1;
+      Increment_Use_Count(S.Counter.all);
       -- As we ensure Smart_Ref is always made from a T_Ptr, the unchecked
       -- reverse conversion is always safe.
       return Smart_Ptr'(Ada.Finalization.Controlled with
@@ -91,10 +141,10 @@ package body Smart_Ptrs is
    end Make_Smart_Ptr;
 
    function Use_Count (S : in Smart_Ptr) return Natural is
-     (if S.Null_Ptr then 1 else S.Counter.SP_Count);
+     (if S.Null_Ptr then 1 else Use_Count(S.Counter.all));
 
    function Weak_Ptr_Count (S : in Smart_Ptr) return Natural is
-     (if S.Null_Ptr then 0 else S.Counter.WP_Count);
+     (if S.Null_Ptr then 0 else Weak_Ptr_Count(S.Counter.all));
 
    function Is_Null (S : in Smart_Ptr) return Boolean is
      (S.Null_Ptr);
@@ -114,10 +164,7 @@ package body Smart_Ptrs is
       end if;
       return Smart_Ref'(Ada.Finalization.Controlled with
                           Element => X,
-                        Counter => new Smart_Ptr_Counter'(Element  => X,
-                                                          SP_Count => 1,
-                                                          WP_Count => 0
-                                                         ),
+                        Counter => Make_New_Smart_Ptr_Counter(Element => X),
                         Invalid => False
                        );
 
@@ -129,7 +176,7 @@ package body Smart_Ptrs is
          raise Smart_Ptr_Error
            with "Attempting to make a Smart_Ref from a null Smart_Ptr";
       end if;
-      S.Counter.SP_Count := S.Counter.SP_Count + 1;
+      Increment_Use_Count(S.Counter.all);
       return Smart_Ref'(Ada.Finalization.Controlled with
                           Element => S.Element,
                         Counter => S.Counter,
@@ -137,10 +184,10 @@ package body Smart_Ptrs is
    end Make_Smart_Ref;
 
    function Use_Count (S : in Smart_Ref) return Natural is
-     (S.Counter.SP_Count);
+     (Use_Count(S.Counter.all));
 
    function Weak_Ptr_Count (S : in Smart_Ref) return Natural is
-     (S.Counter.WP_Count);
+     (Weak_Ptr_Count(S.Counter.all));
 
    --------------
    -- Weak_Ptr --
@@ -152,7 +199,7 @@ package body Smart_Ptrs is
          raise Smart_Ptr_Error
            with "Cannot create Weak_Ptr from a null pointer.";
       else
-         S.Counter.WP_Count := S.Counter.WP_Count + 1;
+         Increment_Weak_Ptr_Count(S.Counter.all);
          return Weak_Ptr'
              (Ada.Finalization.Controlled with Counter => S.Counter);
       end if;
@@ -160,55 +207,55 @@ package body Smart_Ptrs is
 
    function Make_Weak_Ptr (S : in Smart_Ref'Class) return Weak_Ptr is
    begin
-      S.Counter.WP_Count := S.Counter.WP_Count + 1;
+      Increment_Weak_Ptr_Count(S.Counter.all);
       return Weak_Ptr'
         (Ada.Finalization.Controlled with Counter => S.Counter);
    end Make_Weak_Ptr;
 
    function Use_Count (W : in Weak_Ptr) return Natural is
-     (W.Counter.SP_Count);
+     (Use_Count(W.Counter.all));
 
    function Weak_Ptr_Count (W : in Weak_Ptr) return Natural is
-     (W.Counter.WP_Count);
+     (Weak_Ptr_Count(W.Counter.all));
 
    function Expired (W : in Weak_Ptr) return Boolean is
-     (W.Counter.SP_Count = 0);
+     (Use_Count(W.Counter.all) = 0);
 
    function Lock (W : in Weak_Ptr'Class) return Smart_Ptr is
    begin
-      if W.Counter.SP_Count = 0 then
+      if Use_Count(W.Counter.all) = 0 then
          raise Smart_Ptr_Error with "Attempt to lock an expired Weak_Ptr.";
       end if;
-      W.Counter.SP_Count := W.Counter.SP_Count + 1;
+      Increment_Use_Count(W.Counter.all);
       return Smart_Ptr'
           (Ada.Finalization.Controlled with
-           Element  => W.Counter.Element,
+           Element  => Element(W.Counter.all),
            Counter  => W.Counter,
            Null_Ptr => False);
    end Lock;
 
    function Lock (W : in Weak_Ptr'Class) return Smart_Ref is
    begin
-      if W.Counter.SP_Count = 0 then
+      if Use_Count(W.Counter.all) = 0 then
          raise Smart_Ptr_Error with "Attempt to lock an expired Weak_Ptr.";
       end if;
-      W.Counter.SP_Count := W.Counter.SP_Count + 1;
+      Increment_Use_Count(W.Counter.all);
       return Smart_Ref'
           (Ada.Finalization.Controlled with
-           Element => W.Counter.Element,
+           Element => Element(W.Counter.all),
            Counter => W.Counter,
            Invalid => False);
    end Lock;
 
    function Get (W : in Weak_Ptr'Class) return Smart_Ptr is
    begin
-      if W.Counter.SP_Count = 0 then
+      if Use_Count(W.Counter.all) = 0 then
          return Null_Smart_Ptr;
       end if;
-      W.Counter.SP_Count := W.Counter.SP_Count + 1;
+      Increment_Use_Count(W.Counter.all);
       return Smart_Ptr'
           (Ada.Finalization.Controlled with
-           Element  => W.Counter.Element,
+           Element  => Element(W.Counter.all),
            Counter  => W.Counter,
            Null_Ptr => False);
    end Get;
@@ -228,7 +275,7 @@ package body Smart_Ptrs is
             raise Smart_Ptr_Error
               with "Corruption during Smart_Ptr assignment.";
          else
-            Object.Counter.SP_Count := Object.Counter.SP_Count + 1;
+            Increment_Use_Count(Object.Counter.all);
          end if;
       end if;
    end Adjust;
@@ -242,22 +289,20 @@ package body Smart_Ptrs is
          -- Object.Counter to null, I ensure that there can be no
          -- double-decrementing of counters or double-deallocations.
 
-         Object.Counter.SP_Count := Object.Counter.SP_Count - 1;
+         Decrement_Use_Count(Object.Counter.all);
 
-         if Object.Counter.SP_Count = 0 then
+         if Use_Count(Object.Counter.all) = 0 then
 
             Delete (Object.Element.all);
             Deallocate_T (Object.Element);
 
-            if Object.Counter.WP_Count = 0 then
-               Deallocate_Smart_Ptr_Counter (Counter_Ptr (Object.Counter));
-            else
-               Object.Counter.Element := null;
-            end if;
+            Deallocate_If_Unused(Object.Counter);
 
             Object.Counter := null;
          end if;
+
       end if;
+
    end Finalize;
 
    ---------------
@@ -278,7 +323,7 @@ package body Smart_Ptrs is
          raise Smart_Ptr_Error
            with "Corruption during Smart_Ptr assignment.";
       else
-         Object.Counter.SP_Count := Object.Counter.SP_Count + 1;
+         Increment_Use_Count(Object.Counter.all);
       end if;
    end Adjust;
 
@@ -290,9 +335,9 @@ package body Smart_Ptrs is
          -- Finalize is required to be idempotent to cope with rare
          -- situations when it may be called multiple times.
 
-         Object.Counter.SP_Count := Object.Counter.SP_Count - 1;
+         Decrement_Use_Count(Object.Counter.all);
 
-         if Object.Counter.SP_Count = 0 then
+         if Use_Count(Object.Counter.all) = 0 then
 
             Converted_Ptr := Access_T_to_T_Ptr(Object.Element);
             -- We know U.Element was set from a T_Ptr so the unchecked
@@ -301,11 +346,7 @@ package body Smart_Ptrs is
             Delete (Converted_Ptr.all);
             Deallocate_T (Converted_Ptr);
 
-            if Object.Counter.WP_Count = 0 then
-               Deallocate_Smart_Ptr_Counter (Counter_Ptr (Object.Counter));
-            else
-               Object.Counter.Element := null;
-            end if;
+            Deallocate_If_Unused(Object.Counter);
 
             Object.Counter := null;
             Object.Invalid := True;
@@ -323,7 +364,7 @@ package body Smart_Ptrs is
          raise Smart_Ptr_Error
            with "Corruption during Weak_Ptr assignment.";
       else
-         Object.Counter.WP_Count := Object.Counter.WP_Count + 1;
+         Increment_Weak_Ptr_Count(Object.Counter.all);
       end if;
    end Adjust;
 
@@ -332,10 +373,8 @@ package body Smart_Ptrs is
       -- Make sure this procedure is idempotent.
 
       if Object.Counter /= null then
-         Object.Counter.WP_Count := Object.Counter.WP_Count - 1;
-         if Object.Counter.WP_Count = 0 and Object.Counter.SP_Count = 0 then
-            Deallocate_Smart_Ptr_Counter (Object.Counter);
-         end if;
+         Decrement_Weak_Ptr_Count(Object.Counter.all);
+         Deallocate_If_Unused(Object.Counter);
       end if;
 
    end Finalize;
