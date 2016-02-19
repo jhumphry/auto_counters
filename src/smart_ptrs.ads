@@ -19,6 +19,8 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Finalization;
 
+with Basic_Counters;
+
 generic
    type T (<>) is limited private;
    with procedure Delete (X : in out T) is null;
@@ -161,8 +163,9 @@ package Smart_Ptrs is
 
 private
 
-   type Counter;
-   type Counter_Ptr is access Counter;
+   package Smart_Ptr_Basic_Counters is new Basic_Counters(T => T,
+                                                          T_Ptr => T_Ptr);
+   use Smart_Ptr_Basic_Counters;
 
    type Smart_Ptr is new Ada.Finalization.Controlled with
       record
