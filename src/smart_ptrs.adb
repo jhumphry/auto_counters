@@ -40,60 +40,60 @@ package body Smart_Ptrs is
    -- * Internal counter type
    -- *
 
-   type Smart_Ptr_Counter is record
+   type Counter is record
       Element  : T_Ptr;
       SP_Count : Natural;
       WP_Count : Natural;
    end record;
 
-   function Make_New_Smart_Ptr_Counter(Element : T_Ptr)
+   function Make_New_Counter(Element : T_Ptr)
                                        return Counter_Ptr is
-     (new Smart_Ptr_Counter'(Element  => Element,
+     (new Counter'(Element  => Element,
                              SP_Count => 1,
                              WP_Count => 0
                             )
      );
 
-   procedure Deallocate_Smart_Ptr_Counter is new Ada.Unchecked_Deallocation
-     (Object => Smart_Ptr_Counter,
+   procedure Deallocate_Counter is new Ada.Unchecked_Deallocation
+     (Object => Counter,
       Name   => Counter_Ptr);
 
    procedure Deallocate_If_Unused (C : in out Counter_Ptr) with Inline is
 
    begin
       if C.SP_Count = 0 and C.WP_Count = 0 then
-         Deallocate_Smart_Ptr_Counter(C);
+         Deallocate_Counter(C);
       end if;
    end Deallocate_If_Unused;
 
-   function Element(C : in Smart_Ptr_Counter) return T_Ptr is
+   function Element(C : in Counter) return T_Ptr is
       (C.Element) with Inline;
 
-   function Use_Count (C : in Smart_Ptr_Counter) return Natural  is
+   function Use_Count (C : in Counter) return Natural  is
      (C.SP_Count) with Inline;
 
-   procedure Increment_Use_Count (C : in out Smart_Ptr_Counter)
+   procedure Increment_Use_Count (C : in out Counter)
      with Inline is
    begin
       C.SP_Count := C.SP_Count + 1;
    end Increment_Use_Count;
 
-   procedure Decrement_Use_Count (C : in out Smart_Ptr_Counter)
+   procedure Decrement_Use_Count (C : in out Counter)
      with Inline is
    begin
       C.SP_Count := C.SP_Count - 1;
    end Decrement_Use_Count;
 
-   function Weak_Ptr_Count (C : in Smart_Ptr_Counter) return Natural is
+   function Weak_Ptr_Count (C : in Counter) return Natural is
      (C.WP_Count) with Inline;
 
-   procedure Increment_Weak_Ptr_Count (C : in out Smart_Ptr_Counter)
+   procedure Increment_Weak_Ptr_Count (C : in out Counter)
      with Inline is
    begin
       C.WP_Count := C.WP_Count + 1;
    end Increment_Weak_Ptr_Count;
 
-   procedure Decrement_Weak_Ptr_Count (C : in out Smart_Ptr_Counter)
+   procedure Decrement_Weak_Ptr_Count (C : in out Counter)
      with Inline is
    begin
       C.WP_Count := C.WP_Count - 1;
@@ -119,7 +119,7 @@ package body Smart_Ptrs is
                  Counter => (if X = null then
                                 null
                              else
-                                Make_New_Smart_Ptr_Counter(Element  => X)
+                                Make_New_Counter(Element  => X)
                             ),
                  Null_Ptr => (X = null)
                 )
@@ -164,7 +164,7 @@ package body Smart_Ptrs is
       end if;
       return Smart_Ref'(Ada.Finalization.Controlled with
                           Element => X,
-                        Counter => Make_New_Smart_Ptr_Counter(Element => X),
+                        Counter => Make_New_Counter(Element => X),
                         Invalid => False
                        );
 

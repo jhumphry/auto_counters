@@ -161,8 +161,8 @@ package Smart_Ptrs is
 
 private
 
-   type Smart_Ptr_Counter;
-   type Counter_Ptr is access Smart_Ptr_Counter;
+   type Counter;
+   type Counter_Ptr is access Counter;
 
    type Smart_Ptr is new Ada.Finalization.Controlled with
       record
