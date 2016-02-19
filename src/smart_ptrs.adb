@@ -162,10 +162,14 @@ package body Smart_Ptrs is
 
    function Lock (W : in Weak_Ptr'Class) return Smart_Ptr is
    begin
+      Increment_Use_Count(W.Counter.all);
       if Use_Count(W.Counter.all) = 0 then
          raise Smart_Ptr_Error with "Attempt to lock an expired Weak_Ptr.";
       end if;
-      Increment_Use_Count(W.Counter.all);
+      -- The increment will only work if the Use_Count was > 0, and it ensures
+      -- that if the target Element existed at that point, it cannot be
+      -- destroyed after the check but before the new Smart_Ptr is created,
+      -- as the Use_Count will not drop below zero.
       return Smart_Ptr'
           (Ada.Finalization.Controlled with
            Element  => Element(W.Counter.all),
@@ -175,10 +179,14 @@ package body Smart_Ptrs is
 
    function Lock (W : in Weak_Ptr'Class) return Smart_Ref is
    begin
+      Increment_Use_Count(W.Counter.all);
       if Use_Count(W.Counter.all) = 0 then
          raise Smart_Ptr_Error with "Attempt to lock an expired Weak_Ptr.";
       end if;
-      Increment_Use_Count(W.Counter.all);
+      -- The increment will only work if the Use_Count was > 0, and it ensures
+      -- that if the target Element existed at that point, it cannot be
+      -- destroyed after the check but before the new Smart_Ptr is created,
+      -- as the Use_Count will not drop below zero.
       return Smart_Ref'
           (Ada.Finalization.Controlled with
            Element => Element(W.Counter.all),
@@ -188,10 +196,14 @@ package body Smart_Ptrs is
 
    function Get (W : in Weak_Ptr'Class) return Smart_Ptr is
    begin
+      Increment_Use_Count(W.Counter.all);
       if Use_Count(W.Counter.all) = 0 then
          return Null_Smart_Ptr;
       end if;
-      Increment_Use_Count(W.Counter.all);
+      -- The increment will only work if the Use_Count was > 0, and it ensures
+      -- that if the target Element existed at that point, it cannot be
+      -- destroyed after the check but before the new Smart_Ptr is created,
+      -- as the Use_Count will not drop below zero.
       return Smart_Ptr'
           (Ada.Finalization.Controlled with
            Element  => Element(W.Counter.all),
@@ -237,9 +249,9 @@ package body Smart_Ptrs is
 
             Deallocate_If_Unused(Object.Counter);
 
-            Object.Counter := null;
          end if;
 
+         Object.Counter := null;
       end if;
 
    end Finalize;
@@ -286,10 +298,10 @@ package body Smart_Ptrs is
             Deallocate_T (Converted_Ptr);
 
             Deallocate_If_Unused(Object.Counter);
-
-            Object.Counter := null;
-            Object.Invalid := True;
          end if;
+
+         Object.Counter := null;
+         Object.Invalid := True;
       end if;
    end Finalize;
 

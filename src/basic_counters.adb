@@ -43,7 +43,9 @@ package body Basic_Counters is
 
    procedure Increment_Use_Count (C : in out Counter) is
    begin
-      C.SP_Count := C.SP_Count + 1;
+      if C.SP_Count > 0 then
+         C.SP_Count := C.SP_Count + 1;
+      end if;
    end Increment_Use_Count;
 
    procedure Decrement_Use_Count (C : in out Counter)  is
