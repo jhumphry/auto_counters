@@ -1,13 +1,13 @@
--- Auto_Counters_Suite.Smart_Ptrs_Tests
+-- Smart_Ptrs_Tests
 -- Unit tests for Auto_Counters Smart_Ptrs package
 
 -- Copyright (c) 2016, James Humphry - see LICENSE file for details
 
 with AUnit.Assertions;
 
-with Basic_Smart_Ptrs;
+with Smart_Ptrs;
 
-package body Auto_Counters_Suite.Smart_Ptrs_Tests is
+package body Smart_Ptrs_Tests is
 
    use AUnit.Assertions;
 
@@ -19,9 +19,12 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
       Resources_Released := Resources_Released + 1;
    end Deletion_Recorder;
 
-   package String_Ptrs is new Basic_Smart_Ptrs(T => String,
-                                               Delete => Deletion_Recorder);
-   use String_Ptrs.Ptr_Types;
+   package String_Ptrs is new Smart_Ptrs(T => String,
+                                         T_Ptr => Counters.T_Ptr,
+                                         Delete => Deletion_Recorder,
+                                         Counters => Counters);
+
+   use String_Ptrs;
 
    --------------------
    -- Register_Tests --
@@ -30,17 +33,9 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
    procedure Register_Tests (T: in out Smart_Ptrs_Test) is
       use AUnit.Test_Cases.Registration;
    begin
-      Register_Routine (T, Check_Smart_Ptr'Access,
-                        "Check basic Smart_Ptr functionality");
-      Register_Routine (T, Check_Weak_Ptrs'Access,
-                        "Check basic Weak_Ptr & Smart_Ptr functionality");
-      Register_Routine (T, Check_WP_SR'Access,
-                        "Check basic Weak_Ptr & Smart_Ref functionality");
-      Register_Routine (T, Check_Smart_Ref'Access,
-                        "Check basic Smart_Ref functionality");
-      Register_Routine (T, Check_SP_SR'Access,
-                        "Check basic Smart_Ptr & Smart_Ref functionality");
-
+      for I of Test_Details_List loop
+         Register_Routine(T, I.T, To_String(I.D));
+      end loop;
    end Register_Tests;
 
    ----------
@@ -50,7 +45,8 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
    function Name (T : Smart_Ptrs_Test) return Test_String is
       pragma Unreferenced (T);
    begin
-      return Format ("Tests of Smart_Ptrs package functionality");
+      return Format ("Tests of Smart_Ptrs package functionality with " &
+                    Counter_Type_Name);
    end Name;
 
    ------------
@@ -499,4 +495,4 @@ package body Auto_Counters_Suite.Smart_Ptrs_Tests is
 
    end Check_SP_SR;
 
-end Auto_Counters_Suite.Smart_Ptrs_Tests;
+end Smart_Ptrs_Tests;
