@@ -24,10 +24,10 @@ with Counters_Spec;
 generic
    type T (<>) is limited private;
    type T_Ptr is access T;
-   with procedure Delete (X : in out T) is null;
    with package Counters is new Counters_Spec(T => T,
                                               T_Ptr => T_Ptr,
                                               others => <>);
+   with procedure Delete (X : in out T) is null;
 package Smart_Ptrs is
 
    type T_Ref (Element : access T) is null record with

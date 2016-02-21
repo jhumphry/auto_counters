@@ -32,7 +32,8 @@ package Basic_Smart_Ptrs is
 
    package Ptr_Types is new Smart_Ptrs(T => T,
                                        T_Ptr => T_Ptr,
-                                       Delete => Delete,
-                                       Counters => T_Basic_Counters.Basic_Counters_Spec);
+                                       Counters => T_Basic_Counters.Basic_Counters_Spec,
+                                       Delete => Delete
+                                       );
 
 end Basic_Smart_Ptrs;

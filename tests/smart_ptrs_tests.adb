@@ -21,8 +21,9 @@ package body Smart_Ptrs_Tests is
 
    package String_Ptrs is new Smart_Ptrs(T => String,
                                          T_Ptr => Counters.T_Ptr,
-                                         Delete => Deletion_Recorder,
-                                         Counters => Counters);
+                                         Counters => Counters,
+                                         Delete => Deletion_Recorder
+                                         );
 
    use String_Ptrs;
 

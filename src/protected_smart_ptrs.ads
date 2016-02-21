@@ -32,7 +32,8 @@ package Protected_Smart_Ptrs is
 
    package Ptr_Types is new Smart_Ptrs(T => T,
                                        T_Ptr => T_Ptr,
-                                       Delete => Delete,
-                                       Counters => T_Protected_Counters.Protected_Counters_Spec);
+                                       Counters => T_Protected_Counters.Protected_Counters_Spec,
+                                       Delete => Delete
+                                       );
 
 end Protected_Smart_Ptrs;
