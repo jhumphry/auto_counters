@@ -194,7 +194,7 @@ package body Smart_Ptrs_Tests is
       Assert(SP1.Use_Count = 2,
              "Smart_Ptr made from Weak_Ptr has incorrect Use_Count");
 
-      SP2 := WP1.Get;
+      SP2 := WP1.Lock_Or_Null;
       Assert(SP1 = SP2,
              "Smart_Ptr recovered from Weak_Ptr.Get /= original Smart_Ptr");
       Assert(WP1.Use_Count = 2,
@@ -238,7 +238,7 @@ package body Smart_Ptrs_Tests is
              "Weak_Ptr.Lock failed to raise exception when Lock was called " &
                "on an expired Weak_Ptr");
 
-      SP1 := WP1.Get;
+      SP1 := WP1.Lock_Or_Null;
 
       Assert(SP1 = Null_Smart_Ptr,
              "Weak_Ptr.Get failed to return a null Smart_Ptr when Get was " &

@@ -194,7 +194,7 @@ package body Smart_Ptrs is
            Invalid => False);
    end Lock;
 
-   function Get (W : in Weak_Ptr'Class) return Smart_Ptr is
+   function Lock_Or_Null (W : in Weak_Ptr'Class) return Smart_Ptr is
    begin
       Check_Increment_Use_Count(W.Counter.all);
       if Use_Count(W.Counter.all) = 0 then
@@ -209,7 +209,7 @@ package body Smart_Ptrs is
            Element  => Element(W.Counter.all),
            Counter  => W.Counter,
            Null_Ptr => False);
-   end Get;
+   end Lock_Or_Null;
 
    -- *
    -- * Private routines
