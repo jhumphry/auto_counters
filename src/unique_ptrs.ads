@@ -39,9 +39,7 @@ package Unique_Ptrs is
    with Implicit_Dereference => Element;
    -- Unique_Ptr is an implementation of a generalised reference type that
    -- automatically releases the storage associated with the underlying value
-   -- when the Unique_Ptr is destroyed. An additional procedure Delete can be
-   -- passed when instantiating the package and this procedure will be called
-   -- before the storage is released. Unique_Ptr can only point to values
+   -- when the Unique_Ptr is destroyed. Unique_Ptr can only point to values
    -- created in a storage pool, not static values or local stack values.
 
    function Get (U : in Unique_Ptr) return T_Ptr with Inline;
@@ -56,27 +54,15 @@ package Unique_Ptrs is
    -- stored in a pool. Note that mixing the use of regular access values and
    -- Unique_Ptr types is not wise, as the storage may be reclaimed when the
    -- Unique_Ptr is destroyed, leaving the access values invalid.
-   --
-   -- Note that if two Unique_Ptr targetting the same object are created using
-   -- Make_Unique_Ptr they wil not share the same reference counters, and so when
-   -- the first Unique_Ptr leaves its scope it will free the target's storage.
-   -- The second Unique_Ptr will be left in an invalid state.
 
    type Unique_Const_Ptr(Element : not null access constant T) is
      new Ada.Finalization.Limited_Controlled with private
    with Implicit_Dereference => Element;
    -- Unique_Const_Ptr is an implementation of a generalised reference type
    -- that automatically releases the storage associated with the underlying
-   -- constant value when the Unique_Ptr is destroyed. An additional procedure
-   -- Delete can be passed when instantiating the package and this procedure
-   -- will be called before the storage is released. Unique_Const_Ptr can
+   -- constant value when the Unique_Ptr is destroyed. Unique_Const_Ptr can
    -- only point to values created in a storage pool, not static values or
    -- local stack values.
-   --
-   -- Unique_Const_Ptr differs from a regular access-to-const type in that
-   -- it must be able to call the Delete function and destroy the storage
-   -- associated with the target. Therefore they can only point at variables,
-   -- not constants.
 
    function Get (U : in Unique_Const_Ptr) return T_Const_Ptr with Inline;
    -- Returns a named access to constant value that points to the target of the
@@ -95,12 +81,6 @@ package Unique_Ptrs is
    -- it must be able to call the Delete function and destroy the storage
    -- associated with the target. Therefore they can only point at variables,
    -- not constants.
-   --
-   -- Note that if two Unique_Const_Ptr targetting the same object are created
-   -- using Make_Unique_Const_Ptr they wil not share the same reference
-   -- counters, and so when the first Unique_Const_Ptr leaves its scope it will
-   -- free the target's storage. The second Unique_Const_Ptr will be left in an
-   -- invalid state.
 
 private
 
