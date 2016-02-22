@@ -47,7 +47,7 @@ begin
       SR2 : constant Smart_Ref := Make_Smart_Ref(SP1);
    begin
       Put_Line("- New block");
-      Put_Line("- Created Smart_Ptr SP1 from SR1 and Smart_Ref SR2 from SP1");
+      Put_Line("- Created Smart_Ptr SP1 from SR1 and Smart_Ref SR2 from SR1");
       Put_Line("- SP1 => " & SP1.P);
       Put_Line("- SR2 => " & SR2);
       Put("- SR1.Use_Count => "); Put(SR1.Use_Count); New_Line;
