@@ -22,8 +22,16 @@ package body Smart_C_Resources is
    -- Smart_T --
    -------------
 
-   function Element (U : Smart_T) return T is
-     (U.Element);
+   function Make_Smart_T (X : in T) return Smart_T is
+     (Ada.Finalization.Controlled
+      with Element => X,
+      Counter => Make_New_Counter);
+
+   function Element (S : Smart_T) return T is
+     (S.Element);
+
+   function Use_Count (S : in Smart_T) return Natural is
+     (Use_Count(S.Counter.all));
 
    overriding procedure Initialize (Object : in out Smart_T) is
    begin

@@ -31,7 +31,11 @@ package Smart_C_Resources is
 
    type Smart_T is new Ada.Finalization.Controlled with private;
 
-   function Element (U : Smart_T) return T with Inline;
+   function Make_Smart_T (X : in T) return Smart_T with Inline;
+   function Element (S : in Smart_T) return T with Inline;
+   function Use_Count (S : in Smart_T) return Natural with Inline;
+   function Unique (S : in Smart_T) return Boolean is
+      (Use_Count(S) = 1);
 
 private
 

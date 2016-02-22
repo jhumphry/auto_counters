@@ -118,6 +118,10 @@ package body Auto_Counters_Suite.C_Resources_Tests  is
               "Default initialization of a Smart_T did not set up " &
                 "the contents correctly");
 
+      Assert (SDR1.Unique,
+              "Default initialization of a Smart_T did not set up " &
+                "the reference counter properly");
+
       Net_Resources_Allocated := 0;
 
       declare
@@ -129,22 +133,38 @@ package body Auto_Counters_Suite.C_Resources_Tests  is
          Assert (SDR2.Element = True,
                    "Default initialization of a second independent Smart_T " &
                    "did not set up the contents correctly");
+         Assert (SDR2.Use_Count = 1,
+                   "Default initialization of a second independent Smart_T " &
+                   "did not set up the reference counter properly");
       end;
-
       Assert (Net_Resources_Allocated = 0,
               "Destruction of a second independent Smart_T did not call the " &
                 "finalization routine");
 
+      declare
+         SDR3 : constant Smart_Dummy_Resource
+           := Smart_Dummy_Resources.Make_Smart_T(False);
+      begin
+         Assert (SDR3.Element = False,
+                   "Explicit of a second independent Smart_T " &
+                   "did not set up the contents correctly");
+      end;
+
       Net_Resources_Allocated := 0;
 
       declare
-         SDR3 : constant Smart_Dummy_Resource := SDR1;
+         SDR4 : constant Smart_Dummy_Resource := SDR1;
       begin
          Assert (Net_Resources_Allocated = 0,
                  "Copying a Smart_T called the initialization again");
-         Assert (SDR1 = SDR3,
+         Assert (SDR1 = SDR4,
                  "Copying a Smart_T did not copy the contents");
+         Assert (SDR4.Use_Count = 2,
+                 "Copying a Smart_T did not increment the Use_Count");
       end;
+
+      Assert (SDR1.Use_Count = 1,
+                 "Destroying a copied Smart_T did not decrement the Use_Count");
 
       Assert (Net_Resources_Allocated = 0,
               "Destruction of a copied Smart_T called the finalization " &
