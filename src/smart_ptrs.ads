@@ -172,16 +172,24 @@ private
       record
          Element  : T_Ptr       := null;
          Counter  : Counter_Ptr := null;
-         Null_Ptr : Boolean     := True;
-      end record;
+      end record with
+     Type_Invariant => Valid (Smart_Ptr);
+
+   function Valid (S : in Smart_Ptr) return Boolean is
+     (
+        (S.Element = null and S.Counter = null)
+      or
+        ((S.Element /= null and S.Counter/=null)
+         and then
+           Use_Count(S.Counter.all) > 0)
+     ) with Inline;
 
    overriding procedure Adjust (Object : in out Smart_Ptr);
    overriding procedure Finalize (Object : in out Smart_Ptr);
 
    Null_Smart_Ptr : constant Smart_Ptr := (Ada.Finalization.Controlled with
                                            Element  => null,
-                                           Counter  => null,
-                                           Null_Ptr => True);
+                                           Counter  => null);
 
    type Smart_Ref (Element : not null access T) is
      new Ada.Finalization.Controlled with

@@ -57,8 +57,7 @@ package body Smart_Ptrs is
                                 null
                              else
                                 Make_New_Counter(Element  => X)
-                            ),
-                 Null_Ptr => (X = null)
+                            )
                 )
      );
 
@@ -73,18 +72,17 @@ package body Smart_Ptrs is
       -- reverse conversion is always safe.
       return Smart_Ptr'(Ada.Finalization.Controlled with
                           Element => Access_T_to_T_Ptr(S.Element),
-                        Counter => S.Counter,
-                        Null_Ptr => False);
+                        Counter => S.Counter);
    end Make_Smart_Ptr;
 
    function Use_Count (S : in Smart_Ptr) return Natural is
-     (if S.Null_Ptr then 1 else Use_Count(S.Counter.all));
+     (if S.Is_Null then 1 else Use_Count(S.Counter.all));
 
    function Weak_Ptr_Count (S : in Smart_Ptr) return Natural is
-     (if S.Null_Ptr then 0 else Weak_Ptr_Count(S.Counter.all));
+     (if S.Is_Null then 0 else Weak_Ptr_Count(S.Counter.all));
 
    function Is_Null (S : in Smart_Ptr) return Boolean is
-     (S.Null_Ptr);
+     (S.Element = null and S.Counter = null);
 
    function Get (S : in Smart_Ref) return T_Ptr is
      (Access_T_to_T_Ptr(S.Element));
@@ -108,7 +106,7 @@ package body Smart_Ptrs is
 
    function Make_Smart_Ref (S : Smart_Ptr'Class) return Smart_Ref is
    begin
-      if S.Null_Ptr then
+      if S.Is_Null then
          raise Smart_Ptr_Error
            with "Attempting to make a Smart_Ref from a null Smart_Ptr";
       end if;
@@ -130,7 +128,7 @@ package body Smart_Ptrs is
 
    function Make_Weak_Ptr (S : in Smart_Ptr'Class) return Weak_Ptr is
    begin
-      if S.Null_Ptr then
+      if S.Is_Null then
          raise Smart_Ptr_Error
            with "Cannot create Weak_Ptr from a null pointer.";
       else
@@ -171,8 +169,7 @@ package body Smart_Ptrs is
       return Smart_Ptr'
           (Ada.Finalization.Controlled with
            Element  => Element(W.Counter.all),
-           Counter  => W.Counter,
-           Null_Ptr => False);
+           Counter  => W.Counter);
    end Lock;
 
    function Lock (W : in Weak_Ptr'Class) return Smart_Ref is
@@ -204,8 +201,7 @@ package body Smart_Ptrs is
       return Smart_Ptr'
           (Ada.Finalization.Controlled with
            Element  => Element(W.Counter.all),
-           Counter  => W.Counter,
-           Null_Ptr => False);
+           Counter  => W.Counter);
    end Lock_Or_Null;
 
    -- *
@@ -218,7 +214,7 @@ package body Smart_Ptrs is
 
    procedure Adjust (Object : in out Smart_Ptr) is
    begin
-      if not Object.Null_Ptr then
+      if not Object.Is_Null then
          if Object.Counter = null then
             raise Smart_Ptr_Error
               with "Corruption during Smart_Ptr assignment.";
