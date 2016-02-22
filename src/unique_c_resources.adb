@@ -22,9 +22,12 @@ package body Unique_C_Resources is
    -- Unique_T --
    --------------
 
+   function Element (U : Unique_T) return T is
+     (U.Element);
+
    overriding procedure Initialize (Object : in out Unique_T) is
    begin
-     Object.Element := Initialize;
+      Object.Element := Initialize;
    end Initialize;
 
    overriding procedure Finalize (Object : in out Unique_T) is

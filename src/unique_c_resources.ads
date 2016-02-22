@@ -26,12 +26,16 @@ generic
    with procedure Finalize (X : in T);
 package Unique_C_Resources is
 
+   type Unique_T is new Ada.Finalization.Limited_Controlled with private;
+
+   function Element (U : Unique_T) return T with Inline;
+
+private
+
    type Unique_T is new Ada.Finalization.Limited_Controlled with
       record
          Element : T;
       end record;
-
-private
 
    overriding procedure Initialize (Object : in out Unique_T) with Inline;
    overriding procedure Finalize (Object : in out Unique_T) with Inline;
