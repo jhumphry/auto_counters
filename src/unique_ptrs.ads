@@ -84,6 +84,10 @@ package Unique_Ptrs is
 
 private
 
+   -- Note - the Invalid components of these records are required solely to
+   -- cope with the rare cases when the Finalization routine can be called twice
+   -- as it is used to prevent double-deallocation.
+
    type Unique_Ptr(Element : not null access T) is
      new Ada.Finalization.Limited_Controlled
      with

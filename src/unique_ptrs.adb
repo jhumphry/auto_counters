@@ -85,10 +85,8 @@ package body Unique_Ptrs is
 
    overriding procedure Initialize (Object : in out Unique_Ptr) is
    begin
-      if Object.Invalid then
-         raise Unique_Ptr_Error
-           with "Unique_Ptr should be created via Make_Unique_Ptr only";
-      end if;
+      raise Unique_Ptr_Error
+        with "Unique_Ptr should be created via Make_Unique_Ptr only";
    end Initialize;
 
    --------------
@@ -116,11 +114,9 @@ package body Unique_Ptrs is
 
    overriding procedure Initialize (Object : in out Unique_Const_Ptr) is
    begin
-      if Object.Invalid then
-         raise Unique_Ptr_Error
-           with "Unique_Const_Ptr should be created via Make_Unique_Const_Ptr "
-             & "only";
-      end if;
+      raise Unique_Ptr_Error
+        with "Unique_Const_Ptr should be created via Make_Unique_Const_Ptr "
+        & "only";
    end Initialize;
 
    --------------
