@@ -22,6 +22,8 @@ with Interfaces.C;
 
 with System;
 
+with Basic_Counters;
+with Smart_C_Resources;
 with Unique_C_Resources;
 
 procedure C_Resources_Example is
@@ -58,13 +60,21 @@ procedure C_Resources_Example is
    pragma Import (C, net_allocations, "c_resource_net_allocations");
 
    package Unique_C_Resource is new Unique_C_Resources(T => c_resource,
-                                                      Initialize => init,
-                                                      Finalize => destroy);
+                                                       Initialize => init,
+                                                       Finalize => destroy);
    subtype Ada_Unique_Resource is Unique_C_Resource.Unique_T;
+
+   package Smart_C_Resource is new Smart_C_Resources(T => c_resource,
+                                                     Initialize => init,
+                                                     Finalize => destroy,
+                                                     Counters => Basic_Counters.Basic_Counters_Spec);
+   subtype Ada_Smart_Resource is Smart_C_Resource.Smart_T;
 
 begin
 
-   Put_Line("An example of using the Wrap_Resources package to make a " &
+   -- Unique_C_Resources
+
+   Put_Line("An example of using the Unique_C_Resources package to make a " &
            "resource from a C library safe"); New_Line;
 
    Put_Line("A resource is about to be created and should be initialised by "&
@@ -73,12 +83,50 @@ begin
       Unique_Resource : Ada_Unique_Resource;
    begin
       Put_Line("Check status of resource: " &
-               (if is_valid(Unique_Resource.Element) = 1 then
-                     "valid"
+               (if is_valid(Unique_Resource.Element) = 1 then "valid"
                   else "invalid"));
       Put("Net (allocations - deallocations) done in C:");
       Put(C_Int'Image(net_allocations)); New_Line;
       Put_Line("Resource should be destroyed by C code when the block ends.");
+   end;
+
+   Put_Line("Resource should have been freed.");
+   Put("Net (allocations - deallocations) done in C are now:");
+   Put(C_Int'Image(net_allocations)); New_Line;
+   New_Line;
+
+   -- Smart_C_Resources
+
+   Put_Line("An example of using the Smart_C_Resources package to make a " &
+           "resource from a C library safe"); New_Line;
+
+   Put_Line("A resource is about to be created and should be initialised by " &
+              "C code automatically.");
+   declare
+      Smart_Resource : Ada_Smart_Resource;
+   begin
+      Put_Line("Check status of resource: " &
+               (if is_valid(Smart_Resource.Element) = 1 then "valid"
+                  else "invalid"));
+      Put("Net (allocations - deallocations) done in C:");
+      Put(C_Int'Image(net_allocations)); New_Line;
+
+      Put_Line("A copy of the first resource is now going to be created.");
+      declare
+         Smart_Resource_2 : constant Ada_Smart_Resource := Smart_Resource;
+      begin
+         Put_Line("Check status of copied resource: " &
+                  (if is_valid(Smart_Resource_2.Element) = 1 then "valid"
+                     else "invalid"));
+         Put("Net (allocations - deallocations) done in C:");
+         Put(C_Int'Image(net_allocations)); New_Line;
+         Put_Line("No C resource should be destroyed when the copy is " &
+                    "destroyed in Ada");
+      end;
+      Put("Net (allocations - deallocations) done in C:");
+      Put(C_Int'Image(net_allocations)); New_Line;
+      Put_Line("Resource should be destroyed by C code when the last copy " &
+              "of the resource is destroyed in Ada.");
    end;
 
    Put_Line("Resource should have been freed.");
