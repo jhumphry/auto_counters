@@ -22,9 +22,9 @@ with Interfaces.C;
 
 with System;
 
-with Wrap_C_Resources;
+with Unique_C_Resources;
 
-procedure Wrap_C_Resources_Example is
+procedure C_Resources_Example is
 
    use type Interfaces.C.int;
    subtype C_Int is Interfaces.C.int;
@@ -57,10 +57,10 @@ procedure Wrap_C_Resources_Example is
    function net_allocations return Interfaces.C.int;
    pragma Import (C, net_allocations, "c_resource_net_allocations");
 
-   package Wrapped_C_Resource is new Wrap_C_Resources(T => c_resource,
+   package Unique_C_Resource is new Unique_C_Resources(T => c_resource,
                                                       Initialize => init,
                                                       Finalize => destroy);
-   subtype Ada_Resource is Wrapped_C_Resource.Unique_T;
+   subtype Ada_Unique_Resource is Unique_C_Resource.Unique_T;
 
 begin
 
@@ -70,10 +70,10 @@ begin
    Put_Line("A resource is about to be created and should be initialised by "&
               "C code automatically.");
    declare
-      Resource_1 : Ada_Resource;
+      Unique_Resource : Ada_Unique_Resource;
    begin
       Put_Line("Check status of resource: " &
-               (if is_valid(Resource_1.Element) = 1 then
+               (if is_valid(Unique_Resource.Element) = 1 then
                      "valid"
                   else "invalid"));
       Put("Net (allocations - deallocations) done in C:");
@@ -85,4 +85,4 @@ begin
    Put("Net (allocations - deallocations) done in C are now:");
    Put(C_Int'Image(net_allocations)); New_Line;
 
-end Wrap_C_Resources_Example;
+end C_Resources_Example;

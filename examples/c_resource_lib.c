@@ -1,4 +1,4 @@
-// c_resource.c
+// c_resource_lib.c
 // An example C resource that requires initialization and finalization, which
 // needs wrapping for safe use from Ada
 

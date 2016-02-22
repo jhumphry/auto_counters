@@ -1,4 +1,4 @@
--- wrap_c_resources.ads
+-- unique_c_resources.adb
 -- A convenience package to wrap a C type that requires initialization and
 -- finalization.
 
@@ -16,24 +16,20 @@
 -- OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 -- PERFORMANCE OF THIS SOFTWARE.
 
-pragma Profile (No_Implementation_Extensions);
+package body Unique_C_Resources is
 
-with Ada.Finalization;
+   --------------
+   -- Unique_T --
+   --------------
 
-generic
-   type T is private;
-   with function Initialize return T;
-   with procedure Finalize (X : in T);
-package Wrap_C_Resources is
+   overriding procedure Initialize (Object : in out Unique_T) is
+   begin
+     Object.Element := Initialize;
+   end Initialize;
 
-   type Unique_T is new Ada.Finalization.Limited_Controlled with
-      record
-         Element : T;
-      end record;
+   overriding procedure Finalize (Object : in out Unique_T) is
+   begin
+      Finalize(Object.Element);
+   end Finalize;
 
-private
-
-   overriding procedure Initialize (Object : in out Unique_T) with Inline;
-   overriding procedure Finalize (Object : in out Unique_T) with Inline;
-
-end Wrap_C_Resources;
+end Unique_C_Resources;
