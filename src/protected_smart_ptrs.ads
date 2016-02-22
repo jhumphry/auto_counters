@@ -27,12 +27,9 @@ package Protected_Smart_Ptrs is
 
    type T_Ptr is access T;
 
-   package T_Protected_Counters is new Protected_Counters(T => T,
-                                                          T_Ptr => T_Ptr);
-
    package Ptr_Types is new Smart_Ptrs(T => T,
                                        T_Ptr => T_Ptr,
-                                       Counters => T_Protected_Counters.Protected_Counters_Spec,
+                                       Counters => Protected_Counters.Protected_Counters_Spec,
                                        Delete => Delete
                                        );
 

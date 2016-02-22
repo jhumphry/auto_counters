@@ -12,20 +12,14 @@ with Protected_Counters;
 package body Auto_Counters_Suite is
    use AUnit.Test_Suites;
 
-   type String_Ptr is access String;
-
-   package String_Basic_Counters is new Basic_Counters(T => String,
-                                                       T_Ptr => String_Ptr);
    package Basic_Smart_Ptrs_Tests is
-     new Smart_Ptrs_Tests(Counters => String_Basic_Counters.Basic_Counters_Spec,
+     new Smart_Ptrs_Tests(Counters => Basic_Counters.Basic_Counters_Spec,
                           Counter_Type_Name => "basic counters");
 
    Test_Basic_Smart_Ptrs : aliased Basic_Smart_Ptrs_Tests.Smart_Ptrs_Test;
 
-   package String_Protected_Counters is new Protected_Counters(T => String,
-                                                               T_Ptr => String_Ptr);
    package Protected_Smart_Ptrs_Tests is
-     new Smart_Ptrs_Tests(Counters => String_Protected_Counters.Protected_Counters_Spec,
+     new Smart_Ptrs_Tests(Counters => Protected_Counters.Protected_Counters_Spec,
                           Counter_Type_Name => "protected counters");
 
    Test_Protected_Smart_Ptrs : aliased Protected_Smart_Ptrs_Tests.Smart_Ptrs_Test;

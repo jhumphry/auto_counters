@@ -37,16 +37,12 @@ package body Protected_Counters is
          Locked := False;
       end Unlock;
 
-      procedure Initialize_New_Counter (Element : T_Ptr) is
+      procedure Initialize_New_Counter is
       begin
          Locked := False;
-         Element_Ptr := Element;
          SP_Count := 1;
          WP_Count := 0;
       end Initialize_New_Counter;
-
-      function Element return T_Ptr is
-         (Element_Ptr);
 
       function Use_Count return Natural is
          (SP_Count);
@@ -78,10 +74,10 @@ package body Protected_Counters is
 
    end Counter;
 
-   function Make_New_Counter (Element : T_Ptr) return Counter_Ptr is
+   function Make_New_Counter return Counter_Ptr is
       Result : constant Counter_Ptr := new Counter;
    begin
-      Result.Initialize_New_Counter(Element);
+      Result.Initialize_New_Counter;
       return Result;
    end Make_New_Counter;
 

@@ -19,17 +19,13 @@ pragma Profile (No_Implementation_Extensions);
 
 with Counters_Spec;
 
-generic
-   type T (<>) is limited private;
-   type T_Ptr is access T;
 package Protected_Counters is
 
    protected type Counter is
       entry Lock;
       procedure Unlock;
-      procedure Initialize_New_Counter(Element : T_Ptr);
+      procedure Initialize_New_Counter;
 
-      function Element return T_Ptr;
       function Use_Count return Natural;
       entry Check_Increment_Use_Count;
       entry Decrement_Use_Count;
@@ -39,19 +35,15 @@ package Protected_Counters is
 
    private
       Locked : Boolean := True;
-      Element_Ptr  : T_Ptr;
       SP_Count : Natural := 1;
       WP_Count : Natural := 0;
    end Counter;
 
    type Counter_Ptr is access Counter;
 
-   function Make_New_Counter(Element : T_Ptr) return Counter_Ptr;
+   function Make_New_Counter return Counter_Ptr;
 
    procedure Deallocate_If_Unused (C : in out Counter_Ptr) with Inline;
-
-   function Element(C : in Counter) return T_Ptr is
-      (C.Element) with Inline;
 
    function Use_Count (C : in Counter) return Natural  is
      (C.Use_Count) with Inline;
@@ -67,9 +59,7 @@ package Protected_Counters is
 
    procedure Decrement_Weak_Ptr_Count (C : in out Counter) with Inline;
 
-   package Protected_Counters_Spec is new Counters_Spec(T => T,
-                                                        T_Ptr => T_Ptr,
-                                                        Counter => Counter,
+   package Protected_Counters_Spec is new Counters_Spec(Counter => Counter,
                                                         Counter_Ptr => Counter_Ptr);
 
 end Protected_Counters;

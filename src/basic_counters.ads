@@ -19,25 +19,18 @@ pragma Profile (No_Implementation_Extensions);
 
 with Counters_Spec;
 
-generic
-   type T (<>) is limited private;
-   type T_Ptr is access T;
 package Basic_Counters is
 
    type Counter is record
-      Element  : T_Ptr;
       SP_Count : Natural;
       WP_Count : Natural;
    end record;
 
    type Counter_Ptr is access Counter;
 
-   function Make_New_Counter(Element : T_Ptr) return Counter_Ptr;
+   function Make_New_Counter return Counter_Ptr;
 
    procedure Deallocate_If_Unused (C : in out Counter_Ptr) with Inline;
-
-   function Element(C : in Counter) return T_Ptr is
-      (C.Element) with Inline;
 
    function Use_Count (C : in Counter) return Natural  is
      (C.SP_Count) with Inline;
@@ -53,9 +46,7 @@ package Basic_Counters is
 
    procedure Decrement_Weak_Ptr_Count (C : in out Counter) with Inline;
 
-   package Basic_Counters_Spec is new Counters_Spec(T => T,
-                                                    T_Ptr => T_Ptr,
-                                                    Counter => Counter,
+   package Basic_Counters_Spec is new Counters_Spec(Counter => Counter,
                                                     Counter_Ptr => Counter_Ptr);
 
 end Basic_Counters;

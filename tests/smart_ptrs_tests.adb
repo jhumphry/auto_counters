@@ -19,8 +19,10 @@ package body Smart_Ptrs_Tests is
       Resources_Released := Resources_Released + 1;
    end Deletion_Recorder;
 
+   type String_Ptr is access String;
+
    package String_Ptrs is new Smart_Ptrs(T => String,
-                                         T_Ptr => Counters.T_Ptr,
+                                         T_Ptr => String_Ptr,
                                          Counters => Counters,
                                          Delete => Deletion_Recorder
                                          );

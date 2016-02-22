@@ -24,9 +24,7 @@ with Counters_Spec;
 generic
    type T (<>) is limited private;
    type T_Ptr is access T;
-   with package Counters is new Counters_Spec(T => T,
-                                              T_Ptr => T_Ptr,
-                                              others => <>);
+   with package Counters is new Counters_Spec(others => <>);
    with procedure Delete (X : in out T) is null;
 package Smart_Ptrs is
 
@@ -209,13 +207,15 @@ private
 
    type Weak_Ptr is new Ada.Finalization.Controlled with
       record
-         Counter : Counter_Ptr := null;
+         Element  : T_Ptr       := null;
+         Counter  : Counter_Ptr := null;
       end record with
      Type_Invariant => Valid (Weak_Ptr);
 
    function Valid (W : in Weak_Ptr) return Boolean is
      (
-        ((W.Counter/=null and then Weak_Ptr_Count(W.Counter.all) > 0))
+        (W.Element /= null and
+           (W.Counter/=null and then Weak_Ptr_Count(W.Counter.all) > 0))
      ) with Inline;
 
    overriding procedure Adjust (Object : in out Weak_Ptr);

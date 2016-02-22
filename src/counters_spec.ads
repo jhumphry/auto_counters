@@ -18,20 +18,15 @@
 pragma Profile (No_Implementation_Extensions);
 
 generic
-   type T (<>) is limited private;
-   type T_Ptr is access T;
    type Counter(<>) is limited private;
    type Counter_Ptr is access Counter;
 
-   with function Make_New_Counter(Element : T_Ptr) return Counter_Ptr is <>;
+   with function Make_New_Counter return Counter_Ptr is <>;
    -- Make a new counter that points to the Element
 
    with procedure Deallocate_If_Unused (C : in out Counter_Ptr) is <>;
    -- Deallocate the Counter object if the Use_Count and Weak_Ptr_Count are
    -- both zero
-
-   with function Element(C : in Counter) return T_Ptr is <>;
-   -- Return the Element pointed to by the counter
 
    with function Use_Count (C : in Counter) return Natural is <>;
    -- Return the number of Smart_Ptr / Smart_Ref using the counter

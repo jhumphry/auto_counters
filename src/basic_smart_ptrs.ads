@@ -27,12 +27,9 @@ package Basic_Smart_Ptrs is
 
    type T_Ptr is access T;
 
-   package T_Basic_Counters is new Basic_Counters(T => T,
-                                                  T_Ptr => T_Ptr);
-
    package Ptr_Types is new Smart_Ptrs(T => T,
                                        T_Ptr => T_Ptr,
-                                       Counters => T_Basic_Counters.Basic_Counters_Spec,
+                                       Counters => Basic_Counters.Basic_Counters_Spec,
                                        Delete => Delete
                                        );
 

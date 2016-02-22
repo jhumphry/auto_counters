@@ -11,8 +11,7 @@ with AUnit.Test_Cases; use AUnit.Test_Cases;
 with Counters_Spec;
 
 generic
-   with package Counters is new Counters_Spec(T => String,
-                                              others => <>);
+   with package Counters is new Counters_Spec(others => <>);
    Counter_Type_Name : String;
 package Smart_Ptrs_Tests is
 

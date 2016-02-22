@@ -21,12 +21,10 @@ with Ada.Unchecked_Deallocation;
 
 package body Basic_Counters is
 
-   function Make_New_Counter(Element : T_Ptr)
-                                       return Counter_Ptr is
-     (new Counter'(Element  => Element,
-                             SP_Count => 1,
-                             WP_Count => 0
-                            )
+   function Make_New_Counter return Counter_Ptr is
+     (new Counter'(SP_Count => 1,
+                   WP_Count => 0
+                  )
      );
 
    procedure Deallocate_Counter is new Ada.Unchecked_Deallocation

@@ -56,7 +56,7 @@ package body Smart_Ptrs is
                  Counter => (if X = null then
                                 null
                              else
-                                Make_New_Counter(Element  => X)
+                                Make_New_Counter
                             )
                 )
      );
@@ -99,7 +99,7 @@ package body Smart_Ptrs is
       end if;
       return Smart_Ref'(Ada.Finalization.Controlled with
                           Element => X,
-                        Counter => Make_New_Counter(Element => X)
+                        Counter => Make_New_Counter
                        );
 
    end Make_Smart_Ref;
@@ -135,7 +135,8 @@ package body Smart_Ptrs is
          Increment_Weak_Ptr_Count(S.Counter.all);
          return Weak_Ptr'
            (Ada.Finalization.Controlled
-            with Counter => S.Counter);
+            with Element => S.Element,
+            Counter => S.Counter);
       end if;
    end Make_Weak_Ptr;
 
@@ -144,7 +145,8 @@ package body Smart_Ptrs is
       Increment_Weak_Ptr_Count(S.Counter.all);
       return Weak_Ptr'
         (Ada.Finalization.Controlled
-         with Counter => S.Counter);
+         with Element => Access_T_to_T_Ptr(S.Element),
+         Counter => S.Counter);
    end Make_Weak_Ptr;
 
    function Use_Count (W : in Weak_Ptr) return Natural is
@@ -168,7 +170,7 @@ package body Smart_Ptrs is
       -- as the Use_Count will not drop below zero.
       return Smart_Ptr'
           (Ada.Finalization.Controlled with
-           Element  => Element(W.Counter.all),
+           Element  => W.Element,
            Counter  => W.Counter);
    end Lock;
 
@@ -184,7 +186,7 @@ package body Smart_Ptrs is
       -- as the Use_Count will not drop below zero.
       return Smart_Ref'
           (Ada.Finalization.Controlled with
-           Element => Element(W.Counter.all),
+           Element => W.Element,
            Counter => W.Counter);
    end Lock;
 
@@ -200,7 +202,7 @@ package body Smart_Ptrs is
       -- as the Use_Count will not drop below zero.
       return Smart_Ptr'
           (Ada.Finalization.Controlled with
-           Element  => Element(W.Counter.all),
+           Element  => W.Element,
            Counter  => W.Counter);
    end Lock_Or_Null;
 
