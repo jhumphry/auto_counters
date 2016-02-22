@@ -195,7 +195,13 @@ private
      new Ada.Finalization.Controlled with
       record
          Counter : Counter_Ptr := null;
-      end record;
+      end record with
+     Type_Invariant => Valid (Smart_Ref);
+
+   function Valid (S : in Smart_Ref) return Boolean is
+     (
+        (S.Counter/=null and then Use_Count(S.Counter.all) > 0)
+     ) with Inline;
 
    overriding procedure Initialize (Object : in out Smart_Ref);
    overriding procedure Adjust (Object : in out Smart_Ref);
@@ -204,7 +210,13 @@ private
    type Weak_Ptr is new Ada.Finalization.Controlled with
       record
          Counter : Counter_Ptr := null;
-      end record;
+      end record with
+     Type_Invariant => Valid (Weak_Ptr);
+
+   function Valid (W : in Weak_Ptr) return Boolean is
+     (
+        ((W.Counter/=null and then Weak_Ptr_Count(W.Counter.all) > 0))
+     ) with Inline;
 
    overriding procedure Adjust (Object : in out Weak_Ptr);
    overriding procedure Finalize (Object : in out Weak_Ptr);
