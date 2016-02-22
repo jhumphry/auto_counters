@@ -187,7 +187,6 @@ private
      new Ada.Finalization.Controlled with
       record
          Counter : Counter_Ptr := null;
-         Invalid : Boolean     := True;
       end record;
 
    overriding procedure Initialize (Object : in out Smart_Ref);

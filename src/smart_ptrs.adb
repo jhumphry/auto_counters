@@ -64,7 +64,7 @@ package body Smart_Ptrs is
 
    function Make_Smart_Ptr (S : Smart_Ref) return Smart_Ptr is
    begin
-      if S.Invalid then
+      if S.Counter = null then
          raise Smart_Ptr_Error
            with "Attempting to make a Smart_Ptr from an invalid Smart_Ref";
       end if;
@@ -101,8 +101,7 @@ package body Smart_Ptrs is
       end if;
       return Smart_Ref'(Ada.Finalization.Controlled with
                           Element => X,
-                        Counter => Make_New_Counter(Element => X),
-                        Invalid => False
+                        Counter => Make_New_Counter(Element => X)
                        );
 
    end Make_Smart_Ref;
@@ -116,8 +115,7 @@ package body Smart_Ptrs is
       Check_Increment_Use_Count(S.Counter.all);
       return Smart_Ref'(Ada.Finalization.Controlled with
                           Element => S.Element,
-                        Counter => S.Counter,
-                        Invalid => False);
+                        Counter => S.Counter);
    end Make_Smart_Ref;
 
    function Use_Count (S : in Smart_Ref) return Natural is
@@ -190,8 +188,7 @@ package body Smart_Ptrs is
       return Smart_Ref'
           (Ada.Finalization.Controlled with
            Element => Element(W.Counter.all),
-           Counter => W.Counter,
-           Invalid => False);
+           Counter => W.Counter);
    end Lock;
 
    function Lock_Or_Null (W : in Weak_Ptr'Class) return Smart_Ptr is
@@ -262,10 +259,8 @@ package body Smart_Ptrs is
 
    procedure Initialize (Object : in out Smart_Ref) is
    begin
-      if Object.Invalid then
-         raise Smart_Ptr_Error
-           with "Smart_Ref should be created via Make_Smart_Ref only";
-      end if;
+      raise Smart_Ptr_Error
+        with "Smart_Ref should be created via Make_Smart_Ref only";
    end Initialize;
 
    procedure Adjust (Object : in out Smart_Ref) is
@@ -282,7 +277,7 @@ package body Smart_Ptrs is
       Converted_Ptr : T_Ptr;
    begin
 
-      if not Object.Invalid then
+      if not (Object.Counter = null) then
          -- Finalize is required to be idempotent to cope with rare
          -- situations when it may be called multiple times.
 
@@ -301,7 +296,6 @@ package body Smart_Ptrs is
          end if;
 
          Object.Counter := null;
-         Object.Invalid := True;
       end if;
    end Finalize;
 
