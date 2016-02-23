@@ -27,8 +27,10 @@ generic
 package Unique_C_Resources is
 
    type Unique_T is new Ada.Finalization.Limited_Controlled with private;
+   function Make_Unique_T (X : in T) return Unique_T with Inline;
 
    function Element (U : Unique_T) return T with Inline;
+   type Unique_T_No_Default(<>) is new Unique_T with private;
 
 private
 
@@ -39,5 +41,7 @@ private
 
    overriding procedure Initialize (Object : in out Unique_T) with Inline;
    overriding procedure Finalize (Object : in out Unique_T) with Inline;
+
+   type Unique_T_No_Default is new Unique_T with null record;
 
 end Unique_C_Resources;

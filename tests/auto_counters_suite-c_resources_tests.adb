@@ -36,6 +36,8 @@ package body Auto_Counters_Suite.C_Resources_Tests  is
 
    subtype Unique_Dummy_Resource is Unique_Dummy_Resources.Unique_T;
    use type Unique_Dummy_Resources.Unique_T;
+   subtype Unique_Dummy_Resource_No_Default is Unique_Dummy_Resources.Unique_T_No_Default;
+   use type Unique_Dummy_Resources.Unique_T_No_Default;
 
    package Smart_Dummy_Resources is new Smart_C_Resources(T => Dummy_Resource,
                                                           Initialize => Make_Resource,
@@ -103,6 +105,21 @@ package body Auto_Counters_Suite.C_Resources_Tests  is
       Assert (Net_Resources_Allocated = 0,
               "Destruction of a Unique_T did not call the finalization " &
                 "routine");
+
+      declare
+         UDR2 : constant Unique_Dummy_Resource_No_Default
+           := Unique_Dummy_Resources.Make_Unique_T(False);
+      begin
+         Assert (Net_Resources_Allocated = 0,
+                 "Non-default initialization of a Unique_T_No_Default called " &
+                   "the initialization routine");
+         Assert (UDR2.Element = False,
+                   "Default initialization of a Unique_T did not set up " &
+                   "the contents correctly");
+      end;
+      Assert (Net_Resources_Allocated = -1,
+              "Destruction of a Unique_T_No_Default did not call the " &
+                "finalization routine");
 
    end Check_Unique_C_Resource;
 

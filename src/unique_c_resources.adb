@@ -22,6 +22,10 @@ package body Unique_C_Resources is
    -- Unique_T --
    --------------
 
+   function Make_Unique_T (X : in T) return Unique_T is
+     (Unique_T'(Ada.Finalization.Limited_Controlled with
+                Element => X));
+
    function Element (U : Unique_T) return T is
      (U.Element);
 
