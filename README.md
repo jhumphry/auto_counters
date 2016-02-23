@@ -136,5 +136,33 @@ library routines added to types derived from one of the types.
 
 ## Examples and unit tests
 
-Various simple example programs and a suite of unit tests with good coverage
-are provided.
+Various simple example programs and a suite of AUnit-based unit tests with
+good coverage are provided.
+
+## Build files
+
+Two GPRbuild project files are provided. `auto_counters.gpr` builds the core
+packages and `auto_counters_examples.gpr` builds the examples and unit test
+routines. There is a external variable `mode` which has four possible
+settings:
+
+ - `debug` (default) - build with many checks, assertions and compiler
+ warnings enabled.
+
+ - `memdebug` - as with `debug` but includes support for the `gnatmem` tool
+ which can be used to check if the example and unit test programs leak any
+ memory. When used on the unit tests, any memory leaks inside AUnit should be
+ ignored.
+
+ - `coverage` - as with `debug` but make executables produce traces so `gcov`
+ can produce coverage information.
+
+ - `optimize` - build with checks and assertions turned off and optimization
+ turned on.
+
+The project file `auto_counters.gpr` is not a library project file, and so can
+only function as a sub-project included within another project. In this case,
+building the routines directly into the code that uses them is probably more
+sensible than building an intermediate library, given the small size of each
+type's support code and the increased opportunities presented for inlining and
+optimization.
