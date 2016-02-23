@@ -27,10 +27,27 @@ generic
 package Unique_C_Resources is
 
    type Unique_T is new Ada.Finalization.Limited_Controlled with private;
+   -- Unique_T wraps a type T which is anticipated to be a pointer to an opaque
+   -- struct provided by a library written in C. Typically it is necessary
+   -- to call library routines to initialize the underlying resources and to
+   -- release them when no longer required. Unique_T ensures that it is the only
+   -- holder of the resources so they are freed when the Unique_T is destroyed.
+
    function Make_Unique_T (X : in T) return Unique_T with Inline;
+   -- Usually a Unique_T will be default initialized with the function used
+   -- to instantiate the package in the formal parameter Initialize. The
+   -- Make_Unique_T function can be used where an explicit initialization
+   -- is preferred.
 
    function Element (U : Unique_T) return T with Inline;
+   -- Element returns the underlying value of the Unique_T representing the
+   -- resources managed by the C library.
+
    type Unique_T_No_Default(<>) is new Unique_T with private;
+   -- Unique_T_No_Default manages a C resource that requires initialization and
+   -- finalization just as Unique_T does, except that no default initialization
+   -- is felt to be appropriate so values must always be made with
+   -- Make_Unique_T.
 
 private
 

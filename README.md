@@ -113,6 +113,27 @@ instantiation if additional work is required before `Finalization`.
 As with `Smart_Ptrs`, creating two `Unique_Ptr` from a raw access value will
 probably lead to errors and should be avoided.
 
+##`Smart_C_Resources` and `Unique_C_Resources`
+
+It is common for libraries exporting an API written in C to follow a pattern
+of requiring a context or resource handle to be passed to routines. Typically
+these resource handles are pointers to opaque, hidden, 'struct's which are
+created by a library routine and hold pointers to internally allocated
+resources. They must be passed to another library routine when no longer
+needed so the resources can be released.
+
+`Smart_C_Resources` and `Unique_C_Resources` are generic packages that wrap
+these handles inside Ada Controlled types and ensure that they are
+automatically initialized before use and destroyed after use. The `Unique_T`
+type prevents more than on Ada value existing for a given C resource, whereas
+the `Smart_T` type uses one of the reference counting packages discussed above
+to allow copying while ensuring the resources are released at the correct
+point. It is expected that in normal use one of the packages would be
+instantiated and then either the `Smart_T` or `Unique_T` type would be renamed
+to something more meaningful in the user package. Alternatively the type could
+be used as the base for a 'thick' Ada binding, with wrappers around the C
+library routines added to types derived from one of the types.
+
 ## Examples and unit tests
 
 Various simple example programs and a suite of unit tests with good coverage

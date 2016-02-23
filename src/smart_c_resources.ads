@@ -30,14 +30,37 @@ generic
 package Smart_C_Resources is
 
    type Smart_T is new Ada.Finalization.Controlled with private;
+   -- Smart_T wraps a type T which is anticipated to be a pointer to an opaque
+   -- struct provided by a library written in C. Typically it is necessary
+   -- to call library routines to initialize the underlying resources and to
+   -- release them when no longer required. Smart_T ensures this is done in a
+   -- reference counted manner so the resources will only be released when the
+   -- last Smart_T is destroyed.
 
    function Make_Smart_T (X : in T) return Smart_T with Inline;
+   -- Usually a Smart_T will be default initialized with the function used
+   -- to instantiate the package in the formal parameter Initialize. The
+   -- Make_Smart_T function can be used where an explicit initialization
+   -- is preferred.
+
    function Element (S : in Smart_T) return T with Inline;
+   -- Element returns the underlying value of the Smart_T representing the
+   -- resources managed by the C library.
+
    function Use_Count (S : in Smart_T) return Natural with Inline;
+   -- Use_Count returns the number of Smart_T in existence for a given C
+   -- resource.
+
    function Unique (S : in Smart_T) return Boolean is
       (Use_Count(S) = 1);
+   -- Unique tests whether a Smart_T is the only one in existence for a given
+   -- C resource. If it is, then the resource will be freed when the Smart_T
+   -- is destroyed.
 
    type Smart_T_No_Default(<>) is new Smart_T with private;
+   -- Smart_T_No_Default manages a C resource that requires initialization and
+   -- finalization just as Smart_T does, except that no default initialization
+   -- is felt to be appropriate so values must always be made with Make_Smart_T.
 
 private
 
