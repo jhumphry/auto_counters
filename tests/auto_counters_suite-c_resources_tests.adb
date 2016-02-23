@@ -44,6 +44,8 @@ package body Auto_Counters_Suite.C_Resources_Tests  is
 
    subtype Smart_Dummy_Resource is Smart_Dummy_Resources.Smart_T;
    use type Smart_Dummy_Resources.Smart_T;
+   subtype Smart_Dummy_Resource_No_Default is Smart_Dummy_Resources.Smart_T_No_Default;
+   use type Smart_Dummy_Resources.Smart_T_No_Default;
 
    --------------------
    -- Register_Tests --
@@ -142,7 +144,7 @@ package body Auto_Counters_Suite.C_Resources_Tests  is
                 "finalization routine");
 
       declare
-         SDR3 : constant Smart_Dummy_Resource
+         SDR3 : constant Smart_Dummy_Resource_No_Default
            := Smart_Dummy_Resources.Make_Smart_T(False);
       begin
          Assert (SDR3.Element = False,

@@ -37,6 +37,8 @@ package Smart_C_Resources is
    function Unique (S : in Smart_T) return Boolean is
       (Use_Count(S) = 1);
 
+   type Smart_T_No_Default(<>) is new Smart_T with private;
+
 private
 
    use Counters;
@@ -55,5 +57,7 @@ private
    overriding procedure Initialize (Object : in out Smart_T) with Inline;
    overriding procedure Adjust (Object : in out Smart_T) with Inline;
    overriding procedure Finalize (Object : in out Smart_T) with Inline;
+
+   type Smart_T_No_Default is new Smart_T with null record;
 
 end Smart_C_Resources;
