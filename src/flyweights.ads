@@ -21,7 +21,8 @@ pragma Profile (No_Implementation_Extensions);
 with Ada.Containers;
 with Ada.Finalization;
 
-private with Flyweights_Refcount_Lists;
+with Flyweights_Refcount_Lists;
+with Flyweights_Basic_Hashtables;
 
 generic
    type Element(<>) is limited private;
@@ -35,30 +36,25 @@ package Flyweights is
      new Ada.Finalization.Limited_Controlled with private
    with Implicit_Dereference => E;
 
-   type Flyweight is limited private;
+   package Lists is
+     new Flyweights_Refcount_Lists(Element        => Element,
+                                   Element_Access => Element_Access,
+                                   "="            => "=");
+
+   package Flyweight_Hashtables is
+     new Flyweights_Basic_Hashtables(Element        => Element,
+                                     Element_Access => Element_Access,
+                                     Hash           => Hash,
+                                     Lists          => Lists,
+                                     Capacity       => Capacity);
+
+   subtype Flyweight is Flyweight_Hashtables.Flyweight;
+   use all type Flyweight_Hashtables.Flyweight;
 
    function Insert (F : aliased in out Flyweight;
                     E : in out Element_Access) return Refcounted_Element_Ref;
 
 private
-
-   use type Ada.Containers.Hash_Type;
-
-   package Lists is new Flyweights_Refcount_Lists(Element        => Element,
-                                                  Element_Access => Element_Access,
-                                                  "="            => "=");
-   use Lists;
-
-   type List_Array is array (Ada.Containers.Hash_Type range <>) of List;
-
-   type Flyweight is
-      record
-         Lists : List_Array (0..(Capacity-1)) := (others => null);
-      end record;
-
-   procedure Remove (F : in out Flyweight;
-                     Bucket : Ada.Containers.Hash_Type;
-                     Data_Ptr : in Element_Access);
 
    type Refcounted_Element_Ref (E : access Element) is
      new Ada.Finalization.Limited_Controlled with

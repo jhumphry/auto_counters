@@ -18,42 +18,34 @@
 
 pragma Profile (No_Implementation_Extensions);
 
-with Ada.Assertions;
 with Ada.Unchecked_Conversion;
 
 package body Flyweights is
 
+   use Lists;
+
    type Access_Element is access all Element;
 
-   function Access_Element_To_Element_Access is new Ada.Unchecked_Conversion(Source => Access_Element,
-                                                                             Target => Element_Access);
+   function Access_Element_To_Element_Access is
+     new Ada.Unchecked_Conversion(Source => Access_Element,
+                                  Target => Element_Access);
 
    subtype Hash_Type is Ada.Containers.Hash_Type;
+   use type Ada.Containers.Hash_Type;
 
    function Insert (F : aliased in out Flyweight;
                     E : in out Element_Access) return Refcounted_Element_Ref is
-      Bucket_Number : constant Hash_Type := (Hash(E.all) mod Capacity);
+      Bucket : Hash_Type ;
    begin
 
-      Insert(L => F.Lists(Bucket_Number),
-             E => E);
-
+      Insert (F => F,
+              Bucket => Bucket,
+              Data_Ptr => E);
       return Refcounted_Element_Ref'(Ada.Finalization.Limited_Controlled with
                                        E => E,
                                      Containing_Flyweight => F'Access,
-                                     Containing_Bucket    => Bucket_Number);
+                                     Containing_Bucket    => Bucket);
    end Insert;
-
-   procedure Remove (F : in out Flyweight;
-                     Bucket : Ada.Containers.Hash_Type;
-                     Data_Ptr : in Element_Access) is
-      use Ada.Assertions;
-   begin
-      Assert(F.Lists(Bucket) /= null,
-             "Removing a reference to an element that isn't in the flyweight");
-      Remove(L => F.Lists(Bucket),
-             Data_Ptr => Data_Ptr);
-   end Remove;
 
    overriding procedure Initialize (Object : in out Refcounted_Element_Ref) is
    begin
