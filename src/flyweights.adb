@@ -20,6 +20,7 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Assertions;
 with Ada.Unchecked_Deallocation;
+with Ada.Unchecked_Conversion;
 
 package body Flyweights is
 
@@ -28,6 +29,11 @@ package body Flyweights is
 
    procedure Deallocate_Node is new Ada.Unchecked_Deallocation(Object => Node,
                                                                   Name => Node_Access);
+
+   type Access_Element is access all Element;
+
+   function Access_Element_To_Element_Access is new Ada.Unchecked_Conversion(Source => Access_Element,
+                                                                             Target => Element_Access);
 
    subtype Hash_Type is Ada.Containers.Hash_Type;
 
@@ -94,7 +100,7 @@ package body Flyweights is
       Node_Ptr := Object.Containing_Flyweight.Nodes(Object.Containing_Bucket);
       Assert(Node_Ptr /= null, "Null Node_Ptr found unexpectedly");
 
-      if Object.E.all = Node_Ptr.Data.all then
+      if Access_Element_To_Element_Access(Object.E) = Node_Ptr.Data then
 
          Node_Ptr.Use_Count := Node_Ptr.Use_Count - 1;
          if Node_Ptr.Use_Count = 0 then
@@ -110,7 +116,8 @@ package body Flyweights is
          Last_Ptr := Node_Ptr;
          Node_Ptr := Node_Ptr.Next;
          while Node_Ptr /= null loop
-            if Object.E.all = Node_Ptr.Data.all then
+            if Access_Element_To_Element_Access(Object.E) = Node_Ptr.Data
+            then
                Node_Ptr.Use_Count := Node_Ptr.Use_Count - 1;
                if Node_Ptr.Use_Count = 0 then
                   Deallocate_Element(Node_Ptr.Data);
