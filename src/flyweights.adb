@@ -38,7 +38,7 @@ package body Flyweights is
    subtype Hash_Type is Ada.Containers.Hash_Type;
 
    function Insert (F : aliased in out Flyweight;
-                    E : in Element_Access) return Refcounted_Element_Ref is
+                    E : in out Element_Access) return Refcounted_Element_Ref is
       Bucket_Number : constant Hash_Type := (Hash(E.all) mod Capacity);
       List : constant Node_Access := F.Nodes(Bucket_Number);
       Node_Ptr : Node_Access;
@@ -60,6 +60,8 @@ package body Flyweights is
       Node_Ptr := List;
       loop
          if E.all = Node_Ptr.Data.all then
+            Deallocate_Element(E);
+            E := Node_Ptr.Data;
             Node_Ptr.Use_Count := Node_Ptr.Use_Count + 1;
             return Refcounted_Element_Ref'(Ada.Finalization.Limited_Controlled with
                                            E => Node_Ptr.Data,

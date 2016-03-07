@@ -34,8 +34,10 @@ procedure Flyweight_Example is
 
    Resources : aliased Flyweight;
 
+   HelloWorld_Ptr : String_Ptr := new String'("Hello, World!");
+
    HelloWorld : Refcounted_Element_Ref
-     := Insert(F => Resources, E => new String'("Hello, World!"));
+     := Insert(F => Resources, E => HelloWorld_Ptr);
 
 begin
 
@@ -46,8 +48,10 @@ begin
 
    Put_Line("Adding the same string again...");
    declare
+      HelloWorld2_Ptr : String_Ptr := new String'("Hello, World!");
+
       HelloWorld2 : Refcounted_Element_Ref
-        := Insert(F => Resources, E => new String'("Hello, World!"));
+        := Insert(F => Resources, E => HelloWorld2_Ptr);
    begin
       Put_Line("Retrieving string via reference HelloWorld2: " & HelloWorld2);
       Put("Check references point to same copy: ");

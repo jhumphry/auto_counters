@@ -36,7 +36,7 @@ package Flyweights is
    type Flyweight is limited private;
 
    function Insert (F : aliased in out Flyweight;
-                    E : in Element_Access) return Refcounted_Element_Ref;
+                    E : in out Element_Access) return Refcounted_Element_Ref;
 
 private
 
