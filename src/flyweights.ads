@@ -21,6 +21,8 @@ pragma Profile (No_Implementation_Extensions);
 with Ada.Containers;
 with Ada.Finalization;
 
+private with Flyweights_Refcount_Lists;
+
 generic
    type Element(<>) is limited private;
    type Element_Access is access Element;
@@ -42,28 +44,16 @@ private
 
    use type Ada.Containers.Hash_Type;
 
-   type Node;
+   package Lists is new Flyweights_Refcount_Lists(Element        => Element,
+                                                  Element_Access => Element_Access,
+                                                  "="            => "=");
+   use Lists;
 
-   type Node_Access is access Node;
-
-   type Node is
-      record
-         Next : Node_Access;
-         Data : Element_Access;
-         Use_Count : Natural;
-      end record;
-
-   procedure Insert (List : in out Node_Access;
-                     E : in out Element_Access);
-
-   procedure Remove (List : in out Node_Access;
-                     Data_Ptr : in Element_Access);
-
-   type Node_Array is array (Ada.Containers.Hash_Type range <>) of Node_Access;
+   type List_Array is array (Ada.Containers.Hash_Type range <>) of List;
 
    type Flyweight is
       record
-         Nodes : Node_Array (0..(Capacity-1)) := (others => null);
+         Lists : List_Array (0..(Capacity-1)) := (others => null);
       end record;
 
    procedure Remove (F : in out Flyweight;
