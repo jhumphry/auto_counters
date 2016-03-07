@@ -53,12 +53,22 @@ private
          Use_Count : Natural;
       end record;
 
+   procedure Insert (List : in out Node_Access;
+                     E : in out Element_Access);
+
+   procedure Remove (List : in out Node_Access;
+                     Data_Ptr : in Element_Access);
+
    type Node_Array is array (Ada.Containers.Hash_Type range <>) of Node_Access;
 
    type Flyweight is
       record
          Nodes : Node_Array (0..(Capacity-1)) := (others => null);
       end record;
+
+   procedure Remove (F : in out Flyweight;
+                     Bucket : Ada.Containers.Hash_Type;
+                     Data_Ptr : in Element_Access);
 
    type Refcounted_Element_Ref (E : access Element) is
      new Ada.Finalization.Limited_Controlled with
