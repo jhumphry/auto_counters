@@ -20,6 +20,7 @@ pragma Profile (No_Implementation_Extensions);
 with Ada.Containers;
 
 with Flyweights_Lists_Spec;
+with Flyweights_Hashtables_Spec;
 
 generic
    type Element(<>) is limited private;
@@ -49,5 +50,11 @@ package Flyweights_Basic_Hashtables is
    procedure Remove (F : in out Flyweight;
                      Bucket : in Ada.Containers.Hash_Type;
                      Data_Ptr : in Element_Access);
+
+   package Hashtables_Spec is
+     new Flyweights_Hashtables_Spec(Element_Access => Element_Access,
+                                    Flyweight      => Flyweight,
+                                    Insert         => Insert,
+                                    Remove         => Remove);
 
 end Flyweights_Basic_Hashtables;
