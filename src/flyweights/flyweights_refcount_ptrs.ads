@@ -31,19 +31,46 @@ generic
                                     others => <>);
 package Flyweights_Refcount_Ptrs is
 
+   type Refcounted_Element_Ptr is
+     new Ada.Finalization.Controlled with private;
+
+   function Get (P : Refcounted_Element_Ptr) return Element_Access;
+
+   function Insert_Ptr (F : aliased in out Flyweight_Hashtables.Flyweight;
+                    E : in out Element_Access) return Refcounted_Element_Ptr;
+
    type Refcounted_Element_Ref (E : access Element) is
      new Ada.Finalization.Controlled with private
    with Implicit_Dereference => E;
 
-   function Insert (F : aliased in out Flyweight_Hashtables.Flyweight;
+   function Insert_Ref (F : aliased in out Flyweight_Hashtables.Flyweight;
                     E : in out Element_Access) return Refcounted_Element_Ref;
 
+   function Make_Ptr (R : Refcounted_Element_Ref'Class)
+                      return Refcounted_Element_Ptr;
+
+   function Make_Ref (P : Refcounted_Element_Ptr'Class)
+                      return Refcounted_Element_Ref;
+
 private
+
+   type Flyweight_Ptr is access all Flyweight_Hashtables.Flyweight;
+
+   type Refcounted_Element_Ptr is
+     new Ada.Finalization.Controlled with
+      record
+         E : Element_Access := null;
+         Containing_Flyweight : Flyweight_Ptr := null;
+         Containing_Bucket : Ada.Containers.Hash_Type;
+      end record;
+
+   overriding procedure Adjust (Object : in out Refcounted_Element_Ptr);
+   overriding procedure Finalize (Object : in out Refcounted_Element_Ptr);
 
    type Refcounted_Element_Ref (E : access Element) is
      new Ada.Finalization.Controlled with
       record
-         Containing_Flyweight : access Flyweight_Hashtables.Flyweight := null;
+         Containing_Flyweight : Flyweight_Ptr := null;
          Containing_Bucket : Ada.Containers.Hash_Type;
       end record;
 

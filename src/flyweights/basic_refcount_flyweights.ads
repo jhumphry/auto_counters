@@ -52,10 +52,34 @@ package Basic_Refcount_Flyweights is
                                   Flyweight_Hashtables => Hashtables.Hashtables_Spec);
 
    subtype Flyweight is Hashtables.Flyweight;
+
+   subtype Refcounted_Element_Ptr is Ptrs.Refcounted_Element_Ptr;
+
    subtype Refcounted_Element_Ref is Ptrs.Refcounted_Element_Ref;
 
-   function Insert (F : aliased in out Hashtables.Flyweight;
-                    E : in out Element_Access) return Ptrs.Refcounted_Element_Ref
-     renames Ptrs.Insert;
+   function Get (P : Ptrs.Refcounted_Element_Ptr) return Element_Access
+                 renames Ptrs.Get;
+
+   function Make_Ref (P : Ptrs.Refcounted_Element_Ptr'Class)
+                      return Ptrs.Refcounted_Element_Ref
+                      renames Ptrs.Make_Ref;
+
+   function Insert_Ptr (F : aliased in out Hashtables.Flyweight;
+                        E : in out Element_Access)
+                        return Ptrs.Refcounted_Element_Ptr
+                        renames Ptrs.Insert_Ptr;
+
+   function Make_Ptr (R : Ptrs.Refcounted_Element_Ref'Class)
+                      return Ptrs.Refcounted_Element_Ptr
+                      renames Ptrs.Make_Ptr;
+
+   function Insert_Ref (F : aliased in out Hashtables.Flyweight;
+                        E : in out Element_Access)
+                        return Ptrs.Refcounted_Element_Ref
+                        renames Ptrs.Insert_Ref;
+
+   -- Note - ideally Insert_Ptr and Insert_Ref could both be overloadings of
+   -- Insert. However this seems to cause problems for GNAT GPL 2015 so for now
+   -- the type is suffixed to the name.
 
 end Basic_Refcount_Flyweights;

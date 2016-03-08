@@ -31,19 +31,92 @@ package body Flyweights_Refcount_Ptrs is
    subtype Hash_Type is Ada.Containers.Hash_Type;
    use type Ada.Containers.Hash_Type;
 
-   function Insert (F : aliased in out Flyweight_Hashtables.Flyweight;
-                    E : in out Element_Access) return Refcounted_Element_Ref is
+   ----------------------------
+   -- Refcounted_Element_Ptr --
+   ----------------------------
+
+   function Get (P : Refcounted_Element_Ptr) return Element_Access is
+     (P.E);
+
+   function Make_Ref (P : Refcounted_Element_Ptr'Class)
+                      return Refcounted_Element_Ref is
+   begin
+      if P.E /= null then
+         Flyweight_Hashtables.Increment(F => P.Containing_Flyweight.all,
+                                        Bucket => P.Containing_Bucket,
+                                        Data_Ptr => P.E);
+         return Refcounted_Element_Ref'(Ada.Finalization.Controlled
+                                        with E => P.E,
+                                        Containing_Flyweight => P.Containing_Flyweight,
+                                        Containing_Bucket    => P.Containing_Bucket);
+      else
+         raise Program_Error with "Attempting to make a Refcounted_Element_Ref "&
+           "from a null Refcounted_Element_Ptr";
+      end if;
+   end Make_Ref;
+
+   function Insert_Ptr (F : aliased in out Flyweight_Hashtables.Flyweight;
+                        E : in out Element_Access) return Refcounted_Element_Ptr is
       Bucket : Hash_Type ;
    begin
 
       Flyweight_Hashtables.Insert (F => F,
                                    Bucket => Bucket,
                                    Data_Ptr => E);
-      return Refcounted_Element_Ref'(Ada.Finalization.Controlled with
-                                       E => E,
+      return Refcounted_Element_Ptr'(Ada.Finalization.Controlled
+                                     with E => E,
                                      Containing_Flyweight => F'Access,
                                      Containing_Bucket    => Bucket);
-   end Insert;
+   end Insert_Ptr;
+
+   overriding procedure Adjust (Object : in out Refcounted_Element_Ptr) is
+   begin
+      if Object.E /= null and Object.Containing_Flyweight /= null then
+         Flyweight_Hashtables.Increment(F => Object.Containing_Flyweight.all,
+                                        Bucket => Object.Containing_Bucket,
+                                        Data_Ptr => Object.E);
+      end if;
+   end Adjust;
+
+   overriding procedure Finalize (Object : in out Refcounted_Element_Ptr) is
+   begin
+      if Object.E /= null and Object.Containing_Flyweight /= null then
+         Flyweight_Hashtables.Remove(F => Object.Containing_Flyweight.all,
+                                     Bucket => Object.Containing_Bucket,
+                                     Data_Ptr => Object.E);
+         Object.Containing_Flyweight := null;
+      end if;
+   end Finalize;
+
+   ----------------------------
+   -- Refcounted_Element_Ref --
+   ----------------------------
+
+   function Make_Ptr (R : Refcounted_Element_Ref'Class)
+                      return Refcounted_Element_Ptr is
+   begin
+      Flyweight_Hashtables.Increment(F => R.Containing_Flyweight.all,
+                                     Bucket => R.Containing_Bucket,
+                                     Data_Ptr => Access_Element_To_Element_Access(R.E));
+      return Refcounted_Element_Ptr'(Ada.Finalization.Controlled
+                                     with E               => Access_Element_To_Element_Access(R.E),
+                                     Containing_Flyweight => R.Containing_Flyweight,
+                                     Containing_Bucket    => R.Containing_Bucket);
+   end Make_Ptr;
+
+   function Insert_Ref (F : aliased in out Flyweight_Hashtables.Flyweight;
+                        E : in out Element_Access) return Refcounted_Element_Ref is
+      Bucket : Hash_Type ;
+   begin
+
+      Flyweight_Hashtables.Insert (F => F,
+                                   Bucket => Bucket,
+                                   Data_Ptr => E);
+      return Refcounted_Element_Ref'(Ada.Finalization.Controlled
+                                     with E => E,
+                                     Containing_Flyweight => F'Access,
+                                     Containing_Bucket    => Bucket);
+   end Insert_Ref;
 
    overriding procedure Initialize (Object : in out Refcounted_Element_Ref) is
    begin
