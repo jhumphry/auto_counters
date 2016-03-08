@@ -69,6 +69,42 @@ package body Flyweights_Refcount_Lists is
       end if;
    end Insert;
 
+   procedure Increment (L : in out List;
+                        E : in Element_Access) is
+      Node_Ptr : Node_Access := L;
+      Found : Boolean := False;
+   begin
+
+      if Node_Ptr = null then
+         -- List is empty:
+
+         raise Program_Error with "Attempting to increment reference counter " &
+           "but the element falls into an empty bucket";
+      else
+         -- List is not empty
+
+         -- Check for existing element
+         loop
+            if E = Node_Ptr.Data then
+               Node_Ptr.Use_Count := Node_Ptr.Use_Count + 1;
+               Found := True;
+            end if;
+            if Node_Ptr.Next = null then
+               exit;
+            else
+               Node_Ptr := Node_Ptr.Next;
+            end if;
+         end loop;
+
+         -- List not empty but element not already present. Add to the end of
+         -- the list.
+         if not Found then
+            raise Program_Error with "Attempting to increment reference " &
+              "counter but the element is not in the relevant bucket's list";
+         end if;
+      end if;
+   end Increment;
+
    procedure Remove (L : in out List;
                      Data_Ptr : in Element_Access) is
 

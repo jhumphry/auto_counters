@@ -39,7 +39,7 @@ package body Flyweights_Refcount_Refs is
       Flyweight_Hashtables.Insert (F => F,
                                    Bucket => Bucket,
                                    Data_Ptr => E);
-      return Refcounted_Element_Ref'(Ada.Finalization.Limited_Controlled with
+      return Refcounted_Element_Ref'(Ada.Finalization.Controlled with
                                        E => E,
                                      Containing_Flyweight => F'Access,
                                      Containing_Bucket    => Bucket);
@@ -51,11 +51,23 @@ package body Flyweights_Refcount_Refs is
         with "Refcounted_Element_Ref should not be created outside the package";
    end Initialize;
 
+   overriding procedure Adjust (Object : in out Refcounted_Element_Ref) is
+   begin
+      if Object.Containing_Flyweight /= null then
+         Flyweight_Hashtables.Increment(F => Object.Containing_Flyweight.all,
+                                        Bucket => Object.Containing_Bucket,
+                                        Data_Ptr => Access_Element_To_Element_Access(Object.E));
+      end if;
+   end Adjust;
+
    overriding procedure Finalize (Object : in out Refcounted_Element_Ref) is
    begin
-      Flyweight_Hashtables.Remove(F => Object.Containing_Flyweight.all,
-                                  Bucket => Object.Containing_Bucket,
-                                  Data_Ptr => Access_Element_To_Element_Access(Object.E));
+      if Object.Containing_Flyweight /= null then
+         Flyweight_Hashtables.Remove(F => Object.Containing_Flyweight.all,
+                                     Bucket => Object.Containing_Bucket,
+                                     Data_Ptr => Access_Element_To_Element_Access(Object.E));
+         Object.Containing_Flyweight := null;
+      end if;
    end Finalize;
 
 end Flyweights_Refcount_Refs;

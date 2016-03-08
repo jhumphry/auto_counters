@@ -40,6 +40,14 @@ package body Flyweights_Basic_Hashtables is
              E => Data_Ptr);
    end Insert;
 
+   procedure Increment (F : aliased in out Flyweight;
+                        Bucket : in Ada.Containers.Hash_Type;
+                        Data_Ptr : in Element_Access) is
+   begin
+      Increment(L => F.Lists(Bucket),
+                E => Data_Ptr);
+   end Increment;
+
    procedure Remove (F : in out Flyweight;
                      Bucket : in Ada.Containers.Hash_Type;
                      Data_Ptr : in Element_Access) is

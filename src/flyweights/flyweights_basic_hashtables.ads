@@ -47,6 +47,10 @@ package Flyweights_Basic_Hashtables is
                      Bucket : out Ada.Containers.Hash_Type;
                      Data_Ptr : in out Element_Access);
 
+   procedure Increment (F : aliased in out Flyweight;
+                        Bucket : in Ada.Containers.Hash_Type;
+                        Data_Ptr : in Element_Access);
+
    procedure Remove (F : in out Flyweight;
                      Bucket : in Ada.Containers.Hash_Type;
                      Data_Ptr : in Element_Access);
@@ -55,6 +59,7 @@ package Flyweights_Basic_Hashtables is
      new Flyweights_Hashtables_Spec(Element_Access => Element_Access,
                                     Flyweight      => Flyweight,
                                     Insert         => Insert,
+                                    Increment      => Increment,
                                     Remove         => Remove);
 
 end Flyweights_Basic_Hashtables;

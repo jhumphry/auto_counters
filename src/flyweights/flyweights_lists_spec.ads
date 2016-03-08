@@ -24,6 +24,8 @@ generic
    Empty_List : List;
    with procedure Insert (L : in out List;
                           E : in out Element_Access);
+   with procedure Increment (L : in out List;
+                             E : in Element_Access);
    with procedure Remove (L : in out List;
                           Data_Ptr : in Element_Access);
 package Flyweights_Lists_Spec is

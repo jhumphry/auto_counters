@@ -32,7 +32,7 @@ generic
 package Flyweights_Refcount_Refs is
 
    type Refcounted_Element_Ref (E : access Element) is
-     new Ada.Finalization.Limited_Controlled with private
+     new Ada.Finalization.Controlled with private
    with Implicit_Dereference => E;
 
    function Insert (F : aliased in out Flyweight_Hashtables.Flyweight;
@@ -41,13 +41,14 @@ package Flyweights_Refcount_Refs is
 private
 
    type Refcounted_Element_Ref (E : access Element) is
-     new Ada.Finalization.Limited_Controlled with
+     new Ada.Finalization.Controlled with
       record
-         Containing_Flyweight : access Flyweight_Hashtables.Flyweight;
+         Containing_Flyweight : access Flyweight_Hashtables.Flyweight := null;
          Containing_Bucket : Ada.Containers.Hash_Type;
       end record;
 
    overriding procedure Initialize (Object : in out Refcounted_Element_Ref);
+   overriding procedure Adjust (Object : in out Refcounted_Element_Ref);
    overriding procedure Finalize (Object : in out Refcounted_Element_Ref);
 
 end Flyweights_Refcount_Refs;

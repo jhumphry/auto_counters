@@ -35,6 +35,9 @@ package Flyweights_Refcount_Lists is
    procedure Insert (L : in out List;
                      E : in out Element_Access);
 
+   procedure Increment (L : in out List;
+                        E : in Element_Access);
+
    procedure Remove (L : in out List;
                      Data_Ptr : in Element_Access);
 
@@ -43,6 +46,7 @@ package Flyweights_Refcount_Lists is
                                List           => List,
                                Empty_List     => Empty_List,
                                Insert         => Insert,
+                               Increment      => Increment,
                                Remove         => Remove);
 
 private
