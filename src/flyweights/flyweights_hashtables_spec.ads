@@ -26,7 +26,6 @@ generic
    with procedure Insert (F : aliased in out Flyweight;
                           Bucket : out Ada.Containers.Hash_Type;
                           Data_Ptr : in out Element_Access);
-
    with procedure Remove (F : in out Flyweight;
                           Bucket : in Ada.Containers.Hash_Type;
                           Data_Ptr : in Element_Access);

@@ -20,23 +20,24 @@ use Ada.Text_IO;
 
 with Ada.Strings.Hash;
 
-with Flyweights;
+with Basic_Refcount_Flyweights;
 
 procedure Flyweight_Example is
 
    type String_Ptr is access String;
 
-   package String_Flyweights is new Flyweights(Element        => String,
-                                               Element_Access => String_Ptr,
-                                               Hash           => Ada.Strings.Hash,
-                                               Capacity       => 16);
+   package String_Flyweights is
+     new Basic_Refcount_Flyweights(Element        => String,
+                                   Element_Access => String_Ptr,
+                                   Hash           => Ada.Strings.Hash,
+                                   Capacity       => 16);
    use String_Flyweights;
 
    Resources : aliased Flyweight;
 
    HelloWorld_Ptr : String_Ptr := new String'("Hello, World!");
 
-   HelloWorld : Refcounted_Element_Ref
+   HelloWorld : constant Refcounted_Element_Ref
      := Insert(F => Resources, E => HelloWorld_Ptr);
 
 begin
@@ -50,7 +51,7 @@ begin
    declare
       HelloWorld2_Ptr : String_Ptr := new String'("Hello, World!");
 
-      HelloWorld2 : Refcounted_Element_Ref
+      HelloWorld2 : constant Refcounted_Element_Ref
         := Insert(F => Resources, E => HelloWorld2_Ptr);
    begin
       Put_Line("Retrieving string via reference HelloWorld2: " & HelloWorld2);
