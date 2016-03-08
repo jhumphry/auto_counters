@@ -46,7 +46,12 @@ package body Flyweights_Refcount_Lists is
 
          -- Check for existing element
          loop
-            if E.all = Node_Ptr.Data.all then
+            if E = Node_Ptr.Data then
+               -- E is a pointer to inside the FlyWeight
+               Node_Ptr.Use_Count := Node_Ptr.Use_Count + 1;
+               Found := True;
+            elsif E.all = Node_Ptr.Data.all then
+               -- E's value is a copy of a value already in the FlyWeight
                Deallocate_Element(E);
                E := Node_Ptr.Data;
                Node_Ptr.Use_Count := Node_Ptr.Use_Count + 1;
