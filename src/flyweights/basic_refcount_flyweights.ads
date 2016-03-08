@@ -24,7 +24,7 @@ with Ada.Containers;
 
 with Flyweights_Refcount_Lists;
 with Flyweights_Basic_Hashtables;
-with Flyweights_Refcount_Refs;
+with Flyweights_Refcount_Ptrs;
 
 generic
    type Element(<>) is limited private;
@@ -45,16 +45,17 @@ package Basic_Refcount_Flyweights is
                                      Hash           => Hash,
                                      Lists_Spec     => Lists.Lists_Spec,
                                      Capacity       => Capacity);
-   package Refs is
-     new Flyweights_Refcount_Refs(Element              => Element,
+
+   package Ptrs is
+     new Flyweights_Refcount_Ptrs(Element              => Element,
                                   Element_Access       => Element_Access,
                                   Flyweight_Hashtables => Hashtables.Hashtables_Spec);
 
    subtype Flyweight is Hashtables.Flyweight;
-   subtype Refcounted_Element_Ref is Refs.Refcounted_Element_Ref;
+   subtype Refcounted_Element_Ref is Ptrs.Refcounted_Element_Ref;
 
    function Insert (F : aliased in out Hashtables.Flyweight;
-                    E : in out Element_Access) return Refs.Refcounted_Element_Ref
-     renames Refs.Insert;
+                    E : in out Element_Access) return Ptrs.Refcounted_Element_Ref
+     renames Ptrs.Insert;
 
 end Basic_Refcount_Flyweights;

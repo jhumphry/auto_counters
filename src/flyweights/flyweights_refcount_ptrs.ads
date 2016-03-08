@@ -1,4 +1,4 @@
--- flyweights_refcount_refs.ads
+-- flyweights_refcount_ptrs.ads
 -- A package of reference-counting generalised references which point to
 -- resources inside a Flyweight
 
@@ -29,7 +29,7 @@ generic
    with package Flyweight_Hashtables is
      new Flyweights_Hashtables_Spec(Element_Access => Element_Access,
                                     others => <>);
-package Flyweights_Refcount_Refs is
+package Flyweights_Refcount_Ptrs is
 
    type Refcounted_Element_Ref (E : access Element) is
      new Ada.Finalization.Controlled with private
@@ -51,4 +51,4 @@ private
    overriding procedure Adjust (Object : in out Refcounted_Element_Ref);
    overriding procedure Finalize (Object : in out Refcounted_Element_Ref);
 
-end Flyweights_Refcount_Refs;
+end Flyweights_Refcount_Ptrs;
