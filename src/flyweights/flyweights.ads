@@ -45,7 +45,7 @@ package Flyweights is
      new Flyweights_Basic_Hashtables(Element        => Element,
                                      Element_Access => Element_Access,
                                      Hash           => Hash,
-                                     Lists          => Lists,
+                                     Lists_Spec     => Lists.Lists_Spec,
                                      Capacity       => Capacity);
 
    subtype Flyweight is Flyweight_Hashtables.Flyweight;

@@ -18,6 +18,8 @@
 
 pragma Profile (No_Implementation_Extensions);
 
+with Flyweights_Lists_Spec;
+
 generic
    type Element(<>) is limited private;
    type Element_Access is access Element;
@@ -28,11 +30,20 @@ package Flyweights_Refcount_Lists is
 
    type List is access Node;
 
+   Empty_List : constant List := null;
+
    procedure Insert (L : in out List;
                      E : in out Element_Access);
 
    procedure Remove (L : in out List;
                      Data_Ptr : in Element_Access);
+
+   package Lists_Spec is
+     new Flyweights_Lists_Spec(Element_Access => Element_Access,
+                               List           => List,
+                               Empty_List     => Empty_List,
+                               Insert         => Insert,
+                               Remove         => Remove);
 
 private
 

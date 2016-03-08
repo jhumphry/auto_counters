@@ -19,19 +19,28 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Containers;
 
-with Flyweights_Refcount_Lists;
+with Flyweights_Lists_Spec;
 
 generic
    type Element(<>) is limited private;
    type Element_Access is access Element;
    with function Hash (E : Element) return Ada.Containers.Hash_Type;
-   with package Lists is new Flyweights_Refcount_Lists(Element        => Element,
-                                                       Element_Access => Element_Access,
-                                                       "="            => <>);
+   with package Lists_Spec is
+     new Flyweights_Lists_Spec(Element_Access => Element_Access,
+                               others         => <>);
    Capacity : Ada.Containers.Hash_Type := 256;
+
 package Flyweights_Basic_Hashtables is
 
-   type Flyweight is limited private;
+   use type Ada.Containers.Hash_Type;
+
+   type List_Array is array (Ada.Containers.Hash_Type range <>) of Lists_Spec.List;
+
+   type Flyweight is limited
+      record
+         Lists : List_Array (0..(Capacity-1))
+           := (others => Lists_Spec.Empty_List);
+      end record;
 
    procedure Insert (F : aliased in out Flyweight;
                      Bucket : out Ada.Containers.Hash_Type;
@@ -40,18 +49,5 @@ package Flyweights_Basic_Hashtables is
    procedure Remove (F : in out Flyweight;
                      Bucket : in Ada.Containers.Hash_Type;
                      Data_Ptr : in Element_Access);
-
-private
-
-   use type Ada.Containers.Hash_Type;
-
-   use Lists;
-
-   type List_Array is array (Ada.Containers.Hash_Type range <>) of List;
-
-   type Flyweight is
-      record
-         Lists : List_Array (0..(Capacity-1)) := (others => null);
-      end record;
 
 end Flyweights_Basic_Hashtables;

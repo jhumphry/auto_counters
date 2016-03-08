@@ -29,11 +29,19 @@ project Auto_Counters is
             for Default_Switches ("ada") use Debug_Compiler_Switches;
             for Switches ("counters_spec.ads") use Debug_Compiler_Switches &
             ("-gnatwU");
+            for Switches ("flyweights_lists_spec.ads") use Debug_Compiler_Switches &
+            ("-gnatwU");
+            for Switches ("flyweights_hashtables_spec.ads") use Debug_Compiler_Switches &
+            ("-gnatwU");
 
          when "coverage" =>
             for Default_Switches ("ada") use Debug_Compiler_Switches &
             ("-ftest-coverage", "-fprofile-arcs");
             for Switches ("counters_spec.ads") use Debug_Compiler_Switches &
+            ("-gnatwU", "-ftest-coverage", "-fprofile-arcs");
+            for Switches ("flyweights_lists_spec") use Debug_Compiler_Switches &
+            ("-gnatwU", "-ftest-coverage", "-fprofile-arcs");
+            for Switches ("flyweights_hashtables_spec") use Debug_Compiler_Switches &
             ("-gnatwU", "-ftest-coverage", "-fprofile-arcs");
 
          when "optimize" =>

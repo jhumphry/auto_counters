@@ -22,6 +22,8 @@ with Ada.Unchecked_Conversion;
 
 package body Flyweights_Basic_Hashtables is
 
+   use Lists_Spec;
+
    type Access_Element is access all Element;
 
    function Access_Element_To_Element_Access is new Ada.Unchecked_Conversion(Source => Access_Element,
@@ -43,7 +45,7 @@ package body Flyweights_Basic_Hashtables is
                      Data_Ptr : in Element_Access) is
       use Ada.Assertions;
    begin
-      Assert(F.Lists(Bucket) /= null,
+      Assert(F.Lists(Bucket) /= Empty_List,
              "Attempting to remove an element where the relevant bucket in " &
                "the hashtable is null");
       Remove(L => F.Lists(Bucket),
