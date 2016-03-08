@@ -19,7 +19,7 @@ project Auto_Counters is
    end Ide;
 
    Debug_Compiler_Switches := ("-fstack-check", "-g", "-gnat2012",
-                               "-gnata", "-gnatf", "-gnato",
+                               "-gnata", "-gnatf", "-gnato", "-gnatE",
                                "-gnatVa", "-gnatwa.f", "-gnatwZ",
                                "-gnatyaAbCdfhiknprux");
 
