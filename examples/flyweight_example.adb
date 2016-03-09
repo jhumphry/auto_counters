@@ -21,8 +21,9 @@ use Ada.Text_IO;
 with Ada.Strings.Hash;
 
 with Basic_Refcount_Flyweights;
-
--- with Basic_Untracked_Flyweights;
+--  with Basic_Untracked_Flyweights;
+--  with Protected_Refcount_Flyweights;
+--  with Protected_Untracked_Flyweights;
 
 procedure Flyweight_Example is
 
@@ -34,18 +35,29 @@ procedure Flyweight_Example is
                                    Hash           => Ada.Strings.Hash,
                                    Capacity       => 16);
 
-   -- By commenting out the definition above and uncommenting the definition
-   -- below, this example can use the untracked (non-reference-counted) version
-   -- of the Flyweights with no other changes required. The gnatmem tool can
-   -- be used to show that the Refcount version releases all allocated memory,
-   -- whereas the Untracked version prevents duplicate allocation but does not
-   -- release resources when they are no longer referenced by anything.
+   -- By commenting out the definition above and uncommenting one of the
+   -- definitions below, this example can use one of the other versions of the
+   -- Flyweights with no other changes required. The gnatmem tool can be used
+   -- to demonstrate the difference between the reference-counted and untracked
+   -- versions.
 
 --     package String_Flyweights is
 --       new Basic_Untracked_Flyweights(Element        => String,
 --                                      Element_Access => String_Ptr,
 --                                      Hash           => Ada.Strings.Hash,
 --                                      Capacity       => 16);
+
+--     package String_Flyweights is
+--       new Protected_Refcount_Flyweights(Element        => String,
+--                                         Element_Access => String_Ptr,
+--                                         Hash           => Ada.Strings.Hash,
+--                                         Capacity       => 16);
+
+--     package String_Flyweights is
+--       new Protected_Untracked_Flyweights(Element        => String,
+--                                          Element_Access => String_Ptr,
+--                                          Hash           => Ada.Strings.Hash,
+--                                          Capacity       => 16);
 
    use String_Flyweights;
 
