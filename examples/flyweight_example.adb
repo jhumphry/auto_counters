@@ -22,6 +22,8 @@ with Ada.Strings.Hash;
 
 with Basic_Refcount_Flyweights;
 
+-- with Basic_Untracked_Flyweights;
+
 procedure Flyweight_Example is
 
    type String_Ptr is access String;
@@ -31,16 +33,30 @@ procedure Flyweight_Example is
                                    Element_Access => String_Ptr,
                                    Hash           => Ada.Strings.Hash,
                                    Capacity       => 16);
+
+   -- By commenting out the definition above and uncommenting the definition
+   -- below, this example can use the untracked (non-reference-counted) version
+   -- of the Flyweights with no other changes required. The gnatmem tool can
+   -- be used to show that the Refcount version releases all allocated memory,
+   -- whereas the Untracked version prevents duplicate allocation but does not
+   -- release resources when they are no longer referenced by anything.
+
+--     package String_Flyweights is
+--       new Basic_Untracked_Flyweights(Element        => String,
+--                                      Element_Access => String_Ptr,
+--                                      Hash           => Ada.Strings.Hash,
+--                                      Capacity       => 16);
+
    use String_Flyweights;
 
    Resources : aliased Flyweight;
 
    HelloWorld_Raw_Ptr : String_Ptr := new String'("Hello, World!");
 
-   HelloWorld_Ref : constant Refcounted_Element_Ref
+   HelloWorld_Ref : constant Element_Ref
      := Insert_Ref (F => Resources, E => HelloWorld_Raw_Ptr);
 
-   HelloWorld_Ptr : constant Refcounted_Element_Ptr
+   HelloWorld_Ptr : constant Element_Ptr
      := Insert_Ptr (F => Resources, E => HelloWorld_Raw_Ptr);
 
 begin
@@ -56,7 +72,7 @@ begin
    declare
       HelloWorld2_Raw_Ptr : String_Ptr := new String'("Hello, World!");
 
-      HelloWorld2_Ref : constant Refcounted_Element_Ref
+      HelloWorld2_Ref : constant Element_Ref
         := Insert_Ref (F => Resources, E => HelloWorld2_Raw_Ptr);
    begin
       Put_Line("Retrieving string via reference HelloWorld2: " & HelloWorld2_Ref);
@@ -64,7 +80,7 @@ begin
       Put((if HelloWorld2_Ref.E = HelloWorld_Ref.E then "OK" else "ERROR"));
       New_Line;
       declare
-         HelloWorld3_Ptr : constant Refcounted_Element_Ptr
+         HelloWorld3_Ptr : constant Element_Ptr
            := Make_Ptr (HelloWorld2_Ref);
       begin
          Put_Line("Make a pointer HelloWorld3 from ref HelloWorld2: " &
