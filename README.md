@@ -134,6 +134,42 @@ to something more meaningful in the user package. Alternatively the type could
 be used as the base for a 'thick' Ada binding, with wrappers around the C
 library routines added to types derived from one of the types.
 
+## Flyweights
+
+The interchangeable packages ```Basic_Refcount_Flyweights```,
+```Basic_Untracked_Flyweights```, ```Protected_Refcount_Flyweights``` and
+```Protected_Untracked_Flyweights``` implement the flyweight pattern. The aim
+is to prevent the duplication of values and the associated memory usage in the
+case where large resources may be required by or referred to by many parts of
+a program. A ```Flyweight``` keeps track of these resources and ensures that
+each is only stored once.
+
+The ```Flyweight``` types work by maintaining a hash-table of the values
+already stored. When an access value pointing to a new value is passed to the
+```Insert``` functions this hash-table is checked. If the value is not already
+present it is added to the hash-table. If the value already exists in the
+hash-table the new value passed to the function will be deleted and the
+existing value returned. The return value from the functions can be a wrapped
+pointer type or a generalised reference type. Functions are provided to
+convert between the two types and to access the underlying value.
+
+The distinction between the 'basic' and 'protected' packages is in whether the
+```Flyweight``` objects can cope with resources being added and deleted from
+different tasks concurrently. Note that simply using (de-referencing) one of
+the pointers or reference types does not require interaction with the
+```Flyweight``` so this is not affected. In either case the task-safety of the
+underlying resource itself remains the responsibility of the package user.
+
+The distinction between the 'Refcount' and 'Untracked' packages relates to how
+the resources are managed. 'Refcount' packages operate in a similar manner to
+the ```Smart_Ptr``` packages - the pointers and reference types are
+reference-counted so that when the last pointer to a resource is destroyed the
+resource will be deleted and the associated storage will be deallocated. The
+types in the 'Untracked' packages do not do this, so any resources stored
+inside the ```Flyweight``` are not released until the program ends. Note that
+the 'Untracked' packages will still deallocate duplicate values passed into
+one of the ```Insert``` functions.
+
 ## Examples and unit tests
 
 Various simple example programs and a suite of AUnit-based unit tests with
