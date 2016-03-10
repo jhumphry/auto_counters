@@ -32,22 +32,27 @@ package Flyweights_Untracked_Ptrs is
 
    type Untracked_Element_Ptr is tagged private;
 
-   function Get (P : Untracked_Element_Ptr) return Element_Access;
+   function Get (P : Untracked_Element_Ptr) return Element_Access
+     with Inline;
 
    function Insert_Ptr (F : aliased in out Flyweight_Hashtables.Flyweight;
-                        E : in out Element_Access) return Untracked_Element_Ptr;
+                        E : in out Element_Access) return Untracked_Element_Ptr
+     with Inline;
 
    type Untracked_Element_Ref (E : access Element) is tagged private
          with Implicit_Dereference => E;
 
    function Insert_Ref (F : aliased in out Flyweight_Hashtables.Flyweight;
-                    E : in out Element_Access) return Untracked_Element_Ref;
+                        E : in out Element_Access) return Untracked_Element_Ref
+     with Inline;
 
    function Make_Ptr (R : Untracked_Element_Ref'Class)
-                      return Untracked_Element_Ptr;
+                      return Untracked_Element_Ptr
+     with Inline;
 
    function Make_Ref (P : Untracked_Element_Ptr'Class)
-                      return Untracked_Element_Ref;
+                      return Untracked_Element_Ref
+     with Inline;
 
 private
 

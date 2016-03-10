@@ -34,23 +34,28 @@ package Flyweights_Refcount_Ptrs is
    type Refcounted_Element_Ptr is
      new Ada.Finalization.Controlled with private;
 
-   function Get (P : Refcounted_Element_Ptr) return Element_Access;
+   function Get (P : Refcounted_Element_Ptr) return Element_Access
+     with Inline;
 
    function Insert_Ptr (F : aliased in out Flyweight_Hashtables.Flyweight;
-                    E : in out Element_Access) return Refcounted_Element_Ptr;
+                        E : in out Element_Access) return Refcounted_Element_Ptr
+     with Inline;
 
    type Refcounted_Element_Ref (E : access Element) is
      new Ada.Finalization.Controlled with private
    with Implicit_Dereference => E;
 
    function Insert_Ref (F : aliased in out Flyweight_Hashtables.Flyweight;
-                    E : in out Element_Access) return Refcounted_Element_Ref;
+                        E : in out Element_Access) return Refcounted_Element_Ref
+     with Inline;
 
    function Make_Ptr (R : Refcounted_Element_Ref'Class)
-                      return Refcounted_Element_Ptr;
+                      return Refcounted_Element_Ptr
+     with Inline;
 
    function Make_Ref (P : Refcounted_Element_Ptr'Class)
-                      return Refcounted_Element_Ref;
+                      return Refcounted_Element_Ref
+     with Inline;
 
 private
 

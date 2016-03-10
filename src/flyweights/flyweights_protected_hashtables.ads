@@ -60,15 +60,18 @@ package Flyweights_Protected_Hashtables is
 
    procedure Insert (F : aliased in out Flyweight;
                      Bucket : out Ada.Containers.Hash_Type;
-                     Data_Ptr : in out Element_Access);
+                     Data_Ptr : in out Element_Access)
+     with Inline;
 
    procedure Increment (F : aliased in out Flyweight;
                         Bucket : in Ada.Containers.Hash_Type;
-                        Data_Ptr : in Element_Access);
+                        Data_Ptr : in Element_Access)
+     with Inline;
 
    procedure Remove (F : in out Flyweight;
                      Bucket : in Ada.Containers.Hash_Type;
-                     Data_Ptr : in Element_Access);
+                     Data_Ptr : in Element_Access)
+     with Inline;
 
    package Hashtables_Spec is
      new Flyweights_Hashtables_Spec(Element_Access => Element_Access,
