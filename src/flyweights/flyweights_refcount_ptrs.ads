@@ -31,8 +31,14 @@ generic
                                     others => <>);
 package Flyweights_Refcount_Ptrs is
 
+   type E_Ref(E : access Element) is null record
+     with Implicit_Dereference => E;
+
    type Refcounted_Element_Ptr is
      new Ada.Finalization.Controlled with private;
+
+   function P (P : Refcounted_Element_Ptr) return E_Ref
+     with Inline;
 
    function Get (P : Refcounted_Element_Ptr) return Element_Access
      with Inline;

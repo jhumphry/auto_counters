@@ -59,6 +59,10 @@ package Protected_Untracked_Flyweights is
    -- to use even if multiple tasks could attempt to add or remove resources
    -- simultaneously.
 
+   subtype E_Ref is Ptrs.E_Ref;
+   -- This is a generic generalised reference type which is used to make
+   -- Element_Ptr easier to use and which should not be stored or reused.
+
    subtype Element_Ptr is Ptrs.Untracked_Element_Ptr;
    -- The Element_Ptr type points to a resource inside a Flyweight. It is not
    -- reference-counted. The 'Get' function returns an access value to the
@@ -68,6 +72,12 @@ package Protected_Untracked_Flyweights is
    -- The Element_Ref type points to a resource inside a Flyweight. It is not
    -- reference-counted. The Element_Ref type can be implicitly derefenced to
    -- return the resource.
+
+   function P (P : Ptrs.Untracked_Element_Ptr) return E_Ref
+               renames Ptrs.P;
+   -- P returns an E_Ref which is a generalised reference to the stored value.
+   -- This is an alternative to calling the Get function and dereferencing the
+   -- access value returned with '.all'.
 
    function Get (P : Ptrs.Untracked_Element_Ptr) return Element_Access
                  renames Ptrs.Get;

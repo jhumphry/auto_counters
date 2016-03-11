@@ -30,7 +30,13 @@ generic
                                     others => <>);
 package Flyweights_Untracked_Ptrs is
 
+   type E_Ref(E : access Element) is null record
+     with Implicit_Dereference => E;
+
    type Untracked_Element_Ptr is tagged private;
+
+   function P (P : Untracked_Element_Ptr) return E_Ref
+     with Inline;
 
    function Get (P : Untracked_Element_Ptr) return Element_Access
      with Inline;

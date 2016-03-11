@@ -96,7 +96,7 @@ begin
            := Make_Ptr (HelloWorld2_Ref);
       begin
          Put_Line("Make a pointer HelloWorld3 from ref HelloWorld2: " &
-                    HelloWorld3_Ptr.Get.all);
+                    HelloWorld3_Ptr.P);
       end;
    end;
    Put_Line("Now HelloWorld2 is out of scope.");
