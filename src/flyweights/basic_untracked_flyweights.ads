@@ -52,31 +52,55 @@ package Basic_Untracked_Flyweights is
                                    Flyweight_Hashtables => Hashtables.Hashtables_Spec);
 
    subtype Flyweight is Hashtables.Flyweight;
+   -- This Flyweight type is an implementation of the flyweight pattern, which
+   -- helps prevent the resource usage caused by the storage of duplicate
+   -- values. No reference counting is used so resources aren't released until
+   -- the program terminates. This implementation is not protected so it is not
+   -- safe to use if multiple tasks could attempt to add or remove resources
+   -- simultaneously.
 
    subtype Element_Ptr is Ptrs.Untracked_Element_Ptr;
+   -- The Element_Ptr type points to a resource inside a Flyweight. It is not
+   -- reference-counted. The 'Get' function returns an access value to the
+   -- resource.
 
    subtype Element_Ref is Ptrs.Untracked_Element_Ref;
+   -- The Element_Ref type points to a resource inside a Flyweight. It is not
+   -- reference-counted. The Element_Ref type can be implicitly derefenced to
+   -- return the resource.
 
    function Get (P : Ptrs.Untracked_Element_Ptr) return Element_Access
                  renames Ptrs.Get;
+   -- Get returns an access value that points to a resource inside a
+   -- Flyweight.
 
    function Make_Ref (P : Ptrs.Untracked_Element_Ptr'Class)
                       return Ptrs.Untracked_Element_Ref
                       renames Ptrs.Make_Ref;
+   -- Make_Ref converts an Untracked_Element_Ptr into an Untracked_Element_Ref.
 
    function Insert_Ptr (F : aliased in out Hashtables.Flyweight;
                         E : in out Element_Access)
                         return Ptrs.Untracked_Element_Ptr
                         renames Ptrs.Insert_Ptr;
+   -- Insert_Ptr looks to see if the Element pointed to by E already exists
+   -- inside the Flyweight F. If so, the Element pointed to by E is deallocated
+   -- and E is set to the existing copy. Otherwise, F stores E for future use.
+   -- An Untracked_Element_Ptr is returned.
 
    function Make_Ptr (R : Ptrs.Untracked_Element_Ref'Class)
                       return Ptrs.Untracked_Element_Ptr
                       renames Ptrs.Make_Ptr;
+   -- Make_Ref converts an Untracked_Element_Ref into an Untracked_Element_Ptr.
 
    function Insert_Ref (F : aliased in out Hashtables.Flyweight;
                         E : in out Element_Access)
                         return Ptrs.Untracked_Element_Ref
                         renames Ptrs.Insert_Ref;
+   -- Insert_Ref looks to see if the Element pointed to by E already exists
+   -- inside the Flyweight F. If so, the Element pointed to by E is deallocated
+   -- and E is set to the existing copy. Otherwise, F stores E for future use.
+   -- An Untracked_Element_Ref is returned.
 
    -- Note - ideally Insert_Ptr and Insert_Ref could both be overloadings of
    -- Insert. However this seems to cause problems for GNAT GPL 2015 so for now
