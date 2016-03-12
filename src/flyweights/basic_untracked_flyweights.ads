@@ -84,6 +84,11 @@ package Basic_Untracked_Flyweights is
    -- Get returns an access value that points to a resource inside a
    -- Flyweight.
 
+   function Get (P : Ptrs.Untracked_Element_Ref) return Element_Access
+                 renames Ptrs.Get;
+   -- Get returns an access value that points to a resource inside a
+   -- Flyweight
+
    function Make_Ref (P : Ptrs.Untracked_Element_Ptr'Class)
                       return Ptrs.Untracked_Element_Ref
                       renames Ptrs.Make_Ref;

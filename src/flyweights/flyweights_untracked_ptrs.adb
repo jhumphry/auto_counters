@@ -71,6 +71,9 @@ package body Flyweights_Untracked_Ptrs is
    -- Untracked_Element_Ref --
    ---------------------------
 
+   function Get (P : Untracked_Element_Ref) return Element_Access is
+     (Access_Element_To_Element_Access(P.E));
+
    function Make_Ptr (R : Untracked_Element_Ref'Class)
                       return Untracked_Element_Ptr is
    begin

@@ -107,6 +107,9 @@ package body Flyweights_Refcount_Ptrs is
                                      Containing_Bucket    => R.Containing_Bucket);
    end Make_Ptr;
 
+   function Get (P : Refcounted_Element_Ref) return Element_Access is
+     (Access_Element_To_Element_Access(P.E));
+
    function Insert_Ref (F : aliased in out Flyweight_Hashtables.Flyweight;
                         E : in out Element_Access) return Refcounted_Element_Ref is
       Bucket : Hash_Type ;

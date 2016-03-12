@@ -51,6 +51,9 @@ package Flyweights_Refcount_Ptrs is
      new Ada.Finalization.Controlled with private
    with Implicit_Dereference => E;
 
+   function Get (P : Refcounted_Element_Ref) return Element_Access
+     with Inline;
+
    function Insert_Ref (F : aliased in out Flyweight_Hashtables.Flyweight;
                         E : in out Element_Access) return Refcounted_Element_Ref
      with Inline;
