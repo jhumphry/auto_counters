@@ -70,12 +70,16 @@ package Basic_Refcount_Flyweights is
    -- resource will be deallocated as well. The 'Get' function returns an
    -- access value to the resource.
 
+   use type Ptrs.Refcounted_Element_Ptr;
+
    subtype Element_Ref is Ptrs.Refcounted_Element_Ref;
    -- The Element_Ref type points to a resource inside a Flyweight. It is
    -- reference-counted (shared with Element_Ptr) so that when the last
    -- Element_Ptr or Element_Ref pointing to a resource is destroyed, the
    -- resource will be deallocated as well. The Element_Ref type can be
    -- implicitly derefenced to return the resource.
+
+   use type Ptrs.Refcounted_Element_Ref;
 
    function P (P : Ptrs.Refcounted_Element_Ptr) return E_Ref
                renames Ptrs.P;

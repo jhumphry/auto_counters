@@ -68,10 +68,14 @@ package Basic_Untracked_Flyweights is
    -- reference-counted. The 'Get' function returns an access value to the
    -- resource.
 
+   use type Ptrs.Untracked_Element_Ptr;
+
    subtype Element_Ref is Ptrs.Untracked_Element_Ref;
    -- The Element_Ref type points to a resource inside a Flyweight. It is not
    -- reference-counted. The Element_Ref type can be implicitly derefenced to
    -- return the resource.
+
+   use type Ptrs.Untracked_Element_Ref;
 
    function P (P : Ptrs.Untracked_Element_Ptr) return E_Ref
                renames Ptrs.P;
