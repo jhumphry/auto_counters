@@ -27,7 +27,9 @@ package body Auto_Counters_Suite.Refcount_Flyweights_Tests is
 
    type TestObj_Access is access TestObj;
 
+   pragma Warnings (Off, "not dispatching");
    function Hash (E : TestObj) return Ada.Containers.Hash_Type is (E.Hash);
+   pragma Warnings (On, "not dispatching");
 
    overriding procedure Finalize (Object : in out TestObj) is
       -- pragma Unreferenced(Object);
