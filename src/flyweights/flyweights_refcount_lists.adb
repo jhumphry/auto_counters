@@ -98,46 +98,52 @@ package body Flyweights_Refcount_Lists is
    procedure Remove (L : in out List;
                      Data_Ptr : in Element_Access) is
 
-      Node_Ptr, Last_Ptr : Node_Access;
-      Found : Boolean := False;
+      Node_Ptr : Node_Access := L;
+      Last_Ptr : Node_Access;
+
    begin
-      Node_Ptr := L;
+      pragma Assert (Check => Node_Ptr /= null,
+                     Message => "Attempting to remove an element from a null " &
+                       "list.");
 
       if Data_Ptr = Node_Ptr.Data then
-
+         -- The element is the first in the list
          Node_Ptr.Use_Count := Node_Ptr.Use_Count - 1;
          if Node_Ptr.Use_Count = 0 then
             Deallocate_Element(Node_Ptr.Data);
-            L := Node_Ptr.Next;
+            L := Node_Ptr.Next; -- L might be set to null here - this is valid
             Deallocate_Node(Node_Ptr);
          end if;
-         Found := True;
+
+      elsif Node_Ptr.Next = null then
+         -- Element is not first in the list and there are no more elements
+         raise Program_Error with "Could not find element resource to " &
+           "decrement use count.";
 
       else
-
+         -- Search remaining elements
          Last_Ptr := Node_Ptr;
          Node_Ptr := Node_Ptr.Next;
-         while Node_Ptr /= null loop
-            if Data_Ptr = Node_Ptr.Data
-            then
+         loop
+            if Data_Ptr = Node_Ptr.Data then
                Node_Ptr.Use_Count := Node_Ptr.Use_Count - 1;
                if Node_Ptr.Use_Count = 0 then
                   Deallocate_Element(Node_Ptr.Data);
                   Last_Ptr.Next := Node_Ptr.Next;
                   Deallocate_Node(Node_Ptr);
                end if;
-               Found := True;
                exit;
+            elsif Node_Ptr.Next = null then
+               raise Program_Error with "Could not find element resource to " &
+                 "decrement use count.";
+            else
+               Last_Ptr := Node_Ptr;
+               Node_Ptr := Node_Ptr.Next;
             end if;
-            Last_Ptr := Node_Ptr;
-            Node_Ptr := Node_Ptr.Next;
          end loop;
 
       end if;
 
-      pragma Assert (Check => Found,
-                     Message => "Could not find element resource to adjust " &
-                       "use count!");
    end Remove;
 
 end Flyweights_Refcount_Lists;
