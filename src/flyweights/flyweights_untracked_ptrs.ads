@@ -45,7 +45,7 @@ package Flyweights_Untracked_Ptrs is
                         E : in out Element_Access) return Untracked_Element_Ptr
      with Inline;
 
-   type Untracked_Element_Ref (E : access Element) is tagged private
+   type Untracked_Element_Ref (E : not null access Element) is tagged private
          with Implicit_Dereference => E;
 
    function Get (P : Untracked_Element_Ref) return Element_Access

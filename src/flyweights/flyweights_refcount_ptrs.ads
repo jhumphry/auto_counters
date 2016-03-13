@@ -47,7 +47,7 @@ package Flyweights_Refcount_Ptrs is
                         E : in out Element_Access) return Refcounted_Element_Ptr
      with Inline;
 
-   type Refcounted_Element_Ref (E : access Element) is
+   type Refcounted_Element_Ref (E : not null access Element) is
      new Ada.Finalization.Controlled with private
    with Implicit_Dereference => E;
 
