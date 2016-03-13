@@ -43,16 +43,10 @@ package body Flyweights_Untracked_Ptrs is
 
    function Make_Ref (P : Untracked_Element_Ptr'Class)
                       return Untracked_Element_Ref is
-   begin
-      if P.E /= null then
-         return Untracked_Element_Ref'(E => P.E,
-                                       Containing_Flyweight => P.Containing_Flyweight,
-                                       Containing_Bucket    => P.Containing_Bucket);
-      else
-         raise Program_Error with "Attempting to make a Untracked_Element_Ref "&
-           "from a null Untracked_Element_Ptr";
-      end if;
-   end Make_Ref;
+     (Untracked_Element_Ref'(E => P.E,
+                             Containing_Flyweight => P.Containing_Flyweight,
+                             Containing_Bucket    => P.Containing_Bucket)
+     );
 
    function Insert_Ptr (F : aliased in out Flyweight_Hashtables.Flyweight;
                         E : in out Element_Access) return Untracked_Element_Ptr is

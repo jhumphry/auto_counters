@@ -64,7 +64,7 @@ package Flyweights_Refcount_Ptrs is
 
    function Make_Ref (P : Refcounted_Element_Ptr'Class)
                       return Refcounted_Element_Ref
-     with Inline;
+     with Inline, Pre => (Get(P) /= null);
 
 private
 

@@ -44,18 +44,13 @@ package body Flyweights_Refcount_Ptrs is
    function Make_Ref (P : Refcounted_Element_Ptr'Class)
                       return Refcounted_Element_Ref is
    begin
-      if P.E /= null then
-         Flyweight_Hashtables.Increment(F => P.Containing_Flyweight.all,
-                                        Bucket => P.Containing_Bucket,
-                                        Data_Ptr => P.E);
-         return Refcounted_Element_Ref'(Ada.Finalization.Controlled
-                                        with E => P.E,
-                                        Containing_Flyweight => P.Containing_Flyweight,
-                                        Containing_Bucket    => P.Containing_Bucket);
-      else
-         raise Program_Error with "Attempting to make a Refcounted_Element_Ref "&
-           "from a null Refcounted_Element_Ptr";
-      end if;
+      Flyweight_Hashtables.Increment(F => P.Containing_Flyweight.all,
+                                     Bucket => P.Containing_Bucket,
+                                     Data_Ptr => P.E);
+      return Refcounted_Element_Ref'(Ada.Finalization.Controlled
+                                     with E => P.E,
+                                     Containing_Flyweight => P.Containing_Flyweight,
+                                     Containing_Bucket    => P.Containing_Bucket);
    end Make_Ref;
 
    function Insert_Ptr (F : aliased in out Flyweight_Hashtables.Flyweight;

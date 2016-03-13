@@ -91,10 +91,6 @@ package body Smart_Ptrs is
 
    function Make_Smart_Ref (X : T_Ptr) return Smart_Ref is
    begin
-      if X = null then
-         raise Smart_Ptr_Error
-           with "Attempting to make a Smart_Ref from a null access value";
-      end if;
       return Smart_Ref'(Ada.Finalization.Controlled with
                           Element => X,
                         Counter => Make_New_Counter
@@ -104,14 +100,6 @@ package body Smart_Ptrs is
 
    function Make_Smart_Ref (S : Smart_Ptr'Class) return Smart_Ref is
    begin
-      if S.Is_Null then
-         -- This null check has not been changed to a pragma Assert as a null
-         -- Smart_Ptr is not invalid. Its existence does not imply that some
-         -- other part of the code is erroneous, so it would not be appropriate
-         -- to remove the check.
-         raise Smart_Ptr_Error
-           with "Attempting to make a Smart_Ref from a null Smart_Ptr";
-      end if;
       Check_Increment_Use_Count(S.Counter.all);
       return Smart_Ref'(Ada.Finalization.Controlled with
                           Element => S.Element,
@@ -130,16 +118,11 @@ package body Smart_Ptrs is
 
    function Make_Weak_Ptr (S : in Smart_Ptr'Class) return Weak_Ptr is
    begin
-      if S.Is_Null then
-         raise Smart_Ptr_Error
-           with "Cannot create Weak_Ptr from a null pointer.";
-      else
-         Increment_Weak_Ptr_Count(S.Counter.all);
-         return Weak_Ptr'
-           (Ada.Finalization.Controlled
-            with Element => S.Element,
-            Counter => S.Counter);
-      end if;
+      Increment_Weak_Ptr_Count(S.Counter.all);
+      return Weak_Ptr'
+        (Ada.Finalization.Controlled
+         with Element => S.Element,
+         Counter => S.Counter);
    end Make_Weak_Ptr;
 
    function Make_Weak_Ptr (S : in Smart_Ref'Class) return Weak_Ptr is

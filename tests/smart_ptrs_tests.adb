@@ -3,6 +3,8 @@
 
 -- Copyright (c) 2016, James Humphry - see LICENSE file for details
 
+with Ada.Assertions;
+
 with AUnit.Assertions;
 
 with Smart_Ptrs;
@@ -181,7 +183,7 @@ package body Smart_Ptrs_Tests is
       begin
          Make_WP_From_Null_SP;
       exception
-         when Smart_Ptr_Error =>
+         when Ada.Assertions.Assertion_Error =>
             Caught_Making_WP_From_Null_SP := True;
       end;
 
@@ -425,7 +427,7 @@ package body Smart_Ptrs_Tests is
       begin
          Make_SR_from_null;
       exception
-         when Smart_Ptr_Error =>
+         when Ada.Assertions.Assertion_Error =>
             Caught_Make_SR_from_Null := True;
       end;
 
@@ -489,7 +491,7 @@ package body Smart_Ptrs_Tests is
       begin
          Make_SR_from_null_SP;
       exception
-         when Smart_Ptr_Error =>
+         when Ada.Assertions.Assertion_Error =>
             Caught_Make_SR_from_Null_SP := True;
       end;
 

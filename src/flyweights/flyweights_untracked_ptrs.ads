@@ -61,7 +61,7 @@ package Flyweights_Untracked_Ptrs is
 
    function Make_Ref (P : Untracked_Element_Ptr'Class)
                       return Untracked_Element_Ref
-     with Inline;
+     with Inline, Pre => (Get(P) /= null);
 
 private
 
