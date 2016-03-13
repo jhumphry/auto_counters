@@ -41,12 +41,9 @@ package body Smart_C_Resources is
 
    overriding procedure Adjust (Object : in out Smart_T) is
    begin
-      if Object.Counter = null then
-         raise Program_Error
-           with "Corruption during Smart_T assignment.";
-      else
-         Check_Increment_Use_Count(Object.Counter.all);
-      end if;
+      pragma Assert (Check => Object.Counter /= null,
+                     Message => "Corruption during Smart_T assignment.");
+      Check_Increment_Use_Count(Object.Counter.all);
    end Adjust;
 
    overriding procedure Finalize (Object : in out Smart_T) is

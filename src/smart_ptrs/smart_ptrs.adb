@@ -63,10 +63,8 @@ package body Smart_Ptrs is
 
    function Make_Smart_Ptr (S : Smart_Ref) return Smart_Ptr is
    begin
-      if S.Counter = null then
-         raise Smart_Ptr_Error
-           with "Attempting to make a Smart_Ptr from an invalid Smart_Ref";
-      end if;
+      pragma Assert (Check => S.Counter /= null,
+                     Message => "Attempting to make a Smart_Ptr from an invalid Smart_Ref");
       Check_Increment_Use_Count(S.Counter.all);
       -- As we ensure Smart_Ref is always made from a T_Ptr, the unchecked
       -- reverse conversion is always safe.
@@ -107,6 +105,10 @@ package body Smart_Ptrs is
    function Make_Smart_Ref (S : Smart_Ptr'Class) return Smart_Ref is
    begin
       if S.Is_Null then
+         -- This null check has not been changed to a pragma Assert as a null
+         -- Smart_Ptr is not invalid. Its existence does not imply that some
+         -- other part of the code is erroneous, so it would not be appropriate
+         -- to remove the check.
          raise Smart_Ptr_Error
            with "Attempting to make a Smart_Ref from a null Smart_Ptr";
       end if;
@@ -217,12 +219,9 @@ package body Smart_Ptrs is
    procedure Adjust (Object : in out Smart_Ptr) is
    begin
       if not Object.Is_Null then
-         if Object.Counter = null then
-            raise Smart_Ptr_Error
-              with "Corruption during Smart_Ptr assignment.";
-         else
-            Check_Increment_Use_Count(Object.Counter.all);
-         end if;
+         pragma Assert (Check => Object.Counter /= null,
+                        Message => "Corruption during Smart_Ptr assignment.");
+         Check_Increment_Use_Count(Object.Counter.all);
       end if;
    end Adjust;
 
@@ -263,12 +262,9 @@ package body Smart_Ptrs is
 
    procedure Adjust (Object : in out Smart_Ref) is
    begin
-      if Object.Counter = null then
-         raise Smart_Ptr_Error
-           with "Corruption during Smart_Ptr assignment.";
-      else
-         Check_Increment_Use_Count(Object.Counter.all);
-      end if;
+      pragma Assert (Check => Object.Counter /= null,
+                     Message => "Corruption during Smart_Ref assignment.");
+      Check_Increment_Use_Count(Object.Counter.all);
    end Adjust;
 
    procedure Finalize (Object : in out Smart_Ref) is
@@ -303,12 +299,9 @@ package body Smart_Ptrs is
 
    procedure Adjust (Object : in out Weak_Ptr) is
    begin
-      if Object.Counter = null then
-         raise Smart_Ptr_Error
-           with "Corruption during Weak_Ptr assignment.";
-      else
-         Increment_Weak_Ptr_Count(Object.Counter.all);
-      end if;
+      pragma Assert (Check => Object.Counter /= null,
+                     Message => "Corruption during Weak_Ptr assignment.");
+      Increment_Weak_Ptr_Count(Object.Counter.all);
    end Adjust;
 
    procedure Finalize (Object : in out Weak_Ptr) is

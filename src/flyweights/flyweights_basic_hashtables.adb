@@ -17,7 +17,6 @@
 
 pragma Profile (No_Implementation_Extensions);
 
-with Ada.Assertions;
 with Ada.Unchecked_Conversion;
 
 package body Flyweights_Basic_Hashtables is
@@ -51,11 +50,10 @@ package body Flyweights_Basic_Hashtables is
    procedure Remove (F : in out Flyweight;
                      Bucket : in Ada.Containers.Hash_Type;
                      Data_Ptr : in Element_Access) is
-      use Ada.Assertions;
    begin
-      Assert(F.Lists(Bucket) /= Empty_List,
-             "Attempting to remove an element where the relevant bucket in " &
-               "the hashtable is null");
+      pragma Assert(Check => F.Lists(Bucket) /= Empty_List,
+                    Message => "Attempting to remove an element where the " &
+                      "relevant bucket in the hashtable is null");
       Remove(L => F.Lists(Bucket),
              Data_Ptr => Data_Ptr);
    end Remove;

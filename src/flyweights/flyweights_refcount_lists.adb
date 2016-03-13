@@ -150,9 +150,9 @@ package body Flyweights_Refcount_Lists is
 
       end if;
 
-      if not Found then
-         raise Program_Error with "Could not find element resource to adjust use count!";
-      end if;
+      pragma Assert (Check => Found,
+                     Message => "Could not find element resource to adjust " &
+                       "use count!");
    end Remove;
 
 end Flyweights_Refcount_Lists;
