@@ -31,7 +31,6 @@ package body Flyweights_Refcount_Lists is
    procedure Insert (L : in out List;
                      E : in out Element_Access) is
       Node_Ptr : Node_Access := L;
-      Found : Boolean := False;
    begin
 
       if Node_Ptr = null then
@@ -44,70 +43,56 @@ package body Flyweights_Refcount_Lists is
       else
          -- List is not empty
 
-         -- Check for existing element
+         -- Loop over existing elements
          loop
             if E = Node_Ptr.Data then
-               -- E is a pointer to inside the FlyWeight
+               -- E is a pointer to inside the Flyweight
                Node_Ptr.Use_Count := Node_Ptr.Use_Count + 1;
-               Found := True;
+               exit;
             elsif E.all = Node_Ptr.Data.all then
-               -- E's value is a copy of a value already in the FlyWeight
+               -- E's value is a copy of a value already in the Flyweight
                Deallocate_Element(E);
                E := Node_Ptr.Data;
                Node_Ptr.Use_Count := Node_Ptr.Use_Count + 1;
-               Found := True;
-            end if;
-            if Node_Ptr.Next = null then
+               exit;
+            elsif Node_Ptr.Next = null then
+               -- We have reached the end of the relevant bucket's list and E is
+               -- not already in the Flyweight, so add it.
+               Node_Ptr.Next := new Node'(Next => null,
+                                          Data => E,
+                                          Use_Count => 1);
                exit;
             else
                Node_Ptr := Node_Ptr.Next;
             end if;
          end loop;
-
-         -- List not empty but element not already present. Add to the end of
-         -- the list.
-         if not Found then
-            Node_Ptr.Next := new Node'(Next => null,
-                                       Data => E,
-                                       Use_Count => 1);
-         end if;
       end if;
    end Insert;
 
    procedure Increment (L : in out List;
                         E : in Element_Access) is
       Node_Ptr : Node_Access := L;
-      Found : Boolean := False;
    begin
 
-      if Node_Ptr = null then
-         -- List is empty:
+      pragma Assert (Check => Node_Ptr /= null,
+                     Message => "Attempting to increment reference counter " &
+                       "but the element falls into an empty bucket");
 
-         raise Program_Error with "Attempting to increment reference counter " &
-           "but the element falls into an empty bucket";
-      else
-         -- List is not empty
+      -- List is not empty
 
-         -- Check for existing element
-         loop
-            if E = Node_Ptr.Data then
-               Node_Ptr.Use_Count := Node_Ptr.Use_Count + 1;
-               Found := True;
-            end if;
-            if Node_Ptr.Next = null then
-               exit;
-            else
-               Node_Ptr := Node_Ptr.Next;
-            end if;
-         end loop;
-
-         -- List not empty but element not already present. Add to the end of
-         -- the list.
-         if not Found then
+         -- Loop over existing elements
+      loop
+         if E = Node_Ptr.Data then
+            Node_Ptr.Use_Count := Node_Ptr.Use_Count + 1;
+            exit;
+         elsif Node_Ptr.Next = null then
             raise Program_Error with "Attempting to increment reference " &
               "counter but the element is not in the relevant bucket's list";
+         else
+            Node_Ptr := Node_Ptr.Next;
          end if;
-      end if;
+      end loop;
+
    end Increment;
 
    procedure Remove (L : in out List;
