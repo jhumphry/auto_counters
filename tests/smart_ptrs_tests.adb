@@ -9,6 +9,8 @@ with AUnit.Assertions;
 
 with Smart_Ptrs;
 
+with Auto_Counters_Tests_Config;
+
 package body Smart_Ptrs_Tests is
 
    use AUnit.Assertions;
@@ -180,16 +182,18 @@ package body Smart_Ptrs_Tests is
       Assert(not WP1.Expired,
              "Weak_Ptr is (incorrectly) already expired just after creation");
 
-      begin
-         Make_WP_From_Null_SP;
-      exception
-         when Ada.Assertions.Assertion_Error =>
-            Caught_Making_WP_From_Null_SP := True;
-      end;
+      if Auto_Counters_Tests_Config.Assertions_Enabled then
+         begin
+            Make_WP_From_Null_SP;
+         exception
+            when Ada.Assertions.Assertion_Error =>
+               Caught_Making_WP_From_Null_SP := True;
+         end;
 
-      Assert(Caught_Making_WP_From_Null_SP,
-             "Make_Weak_ptr failed to raise exception when called on a null" &
-               "Smart_Ptr");
+         Assert(Caught_Making_WP_From_Null_SP,
+                "Make_Weak_ptr failed to raise exception when called on a null" &
+                  "Smart_Ptr");
+      end if;
 
       SP2 := WP1.Lock;
       Assert(SP1 = SP2,
@@ -424,16 +428,17 @@ package body Smart_Ptrs_Tests is
       Assert(Caught_Make_SR_from_Local,
              "Failed to identify Smart_Ref being set to a local");
 
-      begin
-         Make_SR_from_null;
-      exception
-         when Ada.Assertions.Assertion_Error =>
-            Caught_Make_SR_from_Null := True;
-      end;
+      if Auto_Counters_Tests_Config.Assertions_Enabled then
+         begin
+            Make_SR_from_null;
+         exception
+            when Ada.Assertions.Assertion_Error =>
+               Caught_Make_SR_from_Null := True;
+         end;
 
-      Assert(Caught_Make_SR_from_Null,
-             "Failed to identify Smart_Ref being made from a null");
-
+         Assert(Caught_Make_SR_from_Null,
+                "Failed to identify Smart_Ref being made from a null");
+      end if;
    end Check_Smart_Ref;
 
    -----------------
@@ -488,16 +493,17 @@ package body Smart_Ptrs_Tests is
              "Smart_Ptr does not have correct Use_Count after creation and" &
             "destruction of a Smart_Ref linked to it");
 
-      begin
-         Make_SR_from_null_SP;
-      exception
-         when Ada.Assertions.Assertion_Error =>
-            Caught_Make_SR_from_Null_SP := True;
-      end;
+      if Auto_Counters_Tests_Config.Assertions_Enabled then
+         begin
+            Make_SR_from_null_SP;
+         exception
+            when Ada.Assertions.Assertion_Error =>
+               Caught_Make_SR_from_Null_SP := True;
+         end;
 
-      Assert(Caught_Make_SR_from_Null_SP,
-             "Failed to identify Smart_Ref being made from a null Smart_Ptr");
-
+         Assert(Caught_Make_SR_from_Null_SP,
+                "Failed to identify Smart_Ref being made from a null Smart_Ptr");
+      end if;
    end Check_SP_SR;
 
 end Smart_Ptrs_Tests;
