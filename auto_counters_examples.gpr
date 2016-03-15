@@ -25,7 +25,8 @@ project Auto_Counters_Examples is
                  "smart_ref_example.adb",
                  "unique_ptr_example.adb",
                  "c_resources_example.adb",
-                 "flyweight_example.adb");
+                 "flyweight_example.adb",
+                 "kvflyweight_example.adb");
    for Languages use ("Ada", "C");
 
    package Ide is
