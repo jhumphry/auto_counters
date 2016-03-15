@@ -17,22 +17,13 @@
 
 pragma Profile (No_Implementation_Extensions);
 
-with Ada.Unchecked_Conversion;
-
 package body Flyweights_Protected_Hashtables is
 
    use Lists_Spec;
 
-   type Access_Element is access all Element;
-
-   function Access_Element_To_Element_Access is new Ada.Unchecked_Conversion(Source => Access_Element,
-                                                                             Target => Element_Access);
-
-   subtype Hash_Type is Ada.Containers.Hash_Type;
-
    protected body Flyweight is
 
-      procedure Insert (Bucket : out Hash_Type;
+      procedure Insert (Bucket : out Ada.Containers.Hash_Type;
                         Data_Ptr : in out Element_Access) is
       begin
          Bucket := (Hash(Data_Ptr.all) mod Capacity);
@@ -60,7 +51,7 @@ package body Flyweights_Protected_Hashtables is
    end Flyweight;
 
    procedure Insert (F : aliased in out Flyweight;
-                     Bucket : out Hash_Type;
+                     Bucket : out Ada.Containers.Hash_Type;
                      Data_Ptr : in out Element_Access) is
    begin
       F.Insert(Bucket   => Bucket,
