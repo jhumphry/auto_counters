@@ -21,6 +21,7 @@ use Ada.Text_IO;
 with Ada.Strings.Hash;
 
 with Basic_Refcount_KVFlyweights;
+--  with Protected_Refcount_KVFlyweights;
 
 procedure KVFlyweight_Example is
 
@@ -38,6 +39,14 @@ procedure KVFlyweight_Example is
                                      Factory      => Make_String_Value,
                                      Hash         => Ada.Strings.Hash,
                                      Capacity     => 16);
+
+--     package String_KVFlyweights is
+--       new Protected_Refcount_KVFlyweights(Key          => String,
+--                                           Value        => String,
+--                                           Value_Access => String_Ptr,
+--                                           Factory      => Make_String_Value,
+--                                           Hash         => Ada.Strings.Hash,
+--                                           Capacity     => 16);
 
    use String_KVFlyweights;
 
