@@ -67,7 +67,9 @@ package KVFlyweights.Refcount_Ptrs is
 
    function Make_Ref (P : Refcounted_Value_Ptr'Class)
                       return Refcounted_Value_Ref
-     with Inline, Pre => (Get(P) /= null);
+     with Inline, Pre => (Get(P) /= null or else
+                              (raise KVFlyweights_Error with "Cannot make a " &
+                                 "Refcounted_Value_Ref from a null Refcounted_Value_Ptr"));
 
 private
 
