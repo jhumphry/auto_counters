@@ -23,6 +23,7 @@ with KVFlyweights_Lists_Spec;
 
 generic
    type Key(<>) is private;
+   type Key_Access is access Key;
    type Value(<>) is limited private;
    type Value_Access is access Value;
    with function Factory (K : in Key) return Value_Access;
@@ -35,17 +36,20 @@ package KVFlyweights.Refcount_Lists is
 
    Empty_List : constant List := null;
 
-   function Insert (L : in out List;
-                    K : in Key) return Value_Access;
+   procedure Insert (L : in out List;
+                     K : in Key;
+                     Key_Ptr : out Key_Access;
+                     Value_Ptr : out Value_Access);
 
    procedure Increment (L : in out List;
-                        Data_Ptr : in Value_Access);
+                        Key_Ptr : in Key_Access);
 
    procedure Remove (L : in out List;
-                     Data_Ptr : in Value_Access);
+                     Key_Ptr : in Key_Access);
 
    package Lists_Spec is
      new KVFlyweights_Lists_Spec(Key          => Key,
+                                 Key_Access   => Key_Access,
                                  Value_Access => Value_Access,
                                  List         => List,
                                  Empty_List   => Empty_List,
@@ -57,13 +61,11 @@ private
 
    subtype Node_Access is List;
 
-   type Key_Access is access Key;
-
    type Node is
       record
          Next : Node_Access;
-         Data_Key : Key_Access;
-         Data_Value : Value_Access;
+         Key_Ptr : Key_Access;
+         Value_Ptr : Value_Access;
          Use_Count : Natural;
       end record;
 

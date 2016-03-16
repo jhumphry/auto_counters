@@ -37,8 +37,11 @@ generic
    with function "=" (Left, Right : in Key) return Boolean is <>;
 package Basic_Refcount_KVFlyweights is
 
+   type Key_Access is access Key;
+
    package Lists is
      new KVFlyweights.Refcount_Lists(Key          => Key,
+                                     Key_Access   => Key_Access,
                                      Value        => Value,
                                      Value_Access => Value_Access,
                                      Factory      => Factory,
@@ -46,6 +49,7 @@ package Basic_Refcount_KVFlyweights is
 
    package Hashtables is
      new KVFlyweights.Basic_Hashtables(Key          => Key,
+                                       Key_Access   => Key_Access,
                                        Value        => Value,
                                        Value_Access => Value_Access,
                                        Hash         => Hash,
@@ -54,6 +58,7 @@ package Basic_Refcount_KVFlyweights is
 
    package Ptrs is
      new KVFlyweights.Refcount_Ptrs(Key                    => Key,
+                                    Key_Access             => Key_Access,
                                     Value                  => Value,
                                     Value_Access           => Value_Access,
                                     KVFlyweight_Hashtables => Hashtables.Hashtables_Spec);

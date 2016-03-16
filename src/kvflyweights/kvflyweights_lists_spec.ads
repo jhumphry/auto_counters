@@ -20,15 +20,18 @@ pragma Profile (No_Implementation_Extensions);
 
 generic
    type Key(<>) is private;
+   type Key_Access is access Key;
    type Value_Access is private;
    type List is private;
    Empty_List : List;
-   with function Insert (L : in out List;
-                         K : in Key) return Value_Access;
+   with procedure Insert (L : in out List;
+                          K : in Key;
+                          Key_Ptr : out Key_Access;
+                          Value_Ptr : out Value_Access);
    with procedure Increment (L : in out List;
-                             Data_Ptr : in Value_Access);
+                             Key_Ptr : in Key_Access);
    with procedure Remove (L : in out List;
-                          Data_Ptr : in Value_Access);
+                          Key_Ptr : in Key_Access);
 package KVFlyweights_Lists_Spec is
 
 end KVFlyweights_Lists_Spec;

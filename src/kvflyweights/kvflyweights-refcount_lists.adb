@@ -32,51 +32,53 @@ package body KVFlyweights.Refcount_Lists is
    procedure Deallocate_Node is new Ada.Unchecked_Deallocation(Object => Node,
                                                                Name => Node_Access);
 
-   function Insert (L : in out List;
-                    K : in Key) return Value_Access is
+   procedure Insert (L : in out List;
+                     K : in Key;
+                     Key_Ptr : out Key_Access;
+                     Value_Ptr : out Value_Access) is
       Node_Ptr : Node_Access := L;
-      Result : Value_Access;
    begin
 
       if Node_Ptr = null then
          -- List is empty:
 
          -- Create a new node as the first list element
-         Result := Factory(K);
+         Key_Ptr := new Key'(K);
+         Value_Ptr := Factory(K);
          L := new Node'(Next       => null,
-                        Data_Key   => new Key'(K),
-                        Data_Value => Result,
+                        Key_Ptr   => Key_Ptr,
+                        Value_Ptr => Value_Ptr,
                         Use_Count  => 1);
       else
          -- List is not empty
 
          -- Loop over existing elements
          loop
-            if K = Node_Ptr.Data_Key.all then
+            if K = Node_Ptr.Key_Ptr.all then
                -- K's value is already in the KVFlyweight
-               Result := Node_Ptr.Data_Value;
+               Key_Ptr := Node_Ptr.Key_Ptr;
+               Value_Ptr := Node_Ptr.Value_Ptr;
                Node_Ptr.Use_Count := Node_Ptr.Use_Count + 1;
                exit;
             elsif Node_Ptr.Next = null then
-               -- We have reached the end of the relevant bucket's list and E is
+               -- We have reached the end of the relevant bucket's list and K is
                -- not already in the Flyweight, so add it.
-               Result := Factory(K);
-               Node_Ptr.Next := new Node'(Next       => null,
-                                          Data_Key   => new Key'(K),
-                                          Data_Value => Result,
-                                          Use_Count  => 1);
+               Key_Ptr := new Key'(K);
+               Value_Ptr := Factory(K);
+               L := new Node'(Next       => null,
+                              Key_Ptr   => Key_Ptr,
+                              Value_Ptr => Value_Ptr,
+                              Use_Count  => 1);
                exit;
             else
                Node_Ptr := Node_Ptr.Next;
             end if;
          end loop;
       end if;
-
-      return Result;
    end Insert;
 
    procedure Increment (L : in out List;
-                        Data_Ptr : in Value_Access) is
+                        Key_Ptr : in Key_Access) is
       Node_Ptr : Node_Access := L;
    begin
 
@@ -84,10 +86,10 @@ package body KVFlyweights.Refcount_Lists is
                      Message => "Attempting to increment reference counter " &
                        "but the element falls into an empty bucket");
 
-      -- Loop over existing elements
-      -- This should probably be comparing keys...
+      -- Loop over existing elements, comparing keys by pointer rather than
+      -- by value as there should never be duplicate key values in a Flyweight
       loop
-         if Data_Ptr = Node_Ptr.Data_Value then
+         if Key_Ptr = Node_Ptr.Key_Ptr then
             Node_Ptr.Use_Count := Node_Ptr.Use_Count + 1;
             exit;
          elsif Node_Ptr.Next = null then
@@ -101,7 +103,7 @@ package body KVFlyweights.Refcount_Lists is
    end Increment;
 
    procedure Remove (L : in out List;
-                     Data_Ptr : in Value_Access) is
+                     Key_Ptr : in Key_Access) is
 
       Node_Ptr : Node_Access := L;
       Last_Ptr : Node_Access;
@@ -111,12 +113,12 @@ package body KVFlyweights.Refcount_Lists is
                      Message => "Attempting to remove an element from a null " &
                        "list.");
 
-      if Data_Ptr = Node_Ptr.Data_Value then
+      if Key_Ptr = Node_Ptr.Key_Ptr then
          -- The element is the first in the list
          Node_Ptr.Use_Count := Node_Ptr.Use_Count - 1;
          if Node_Ptr.Use_Count = 0 then
-            Deallocate_Key(Node_Ptr.Data_Key);
-            Deallocate_Value(Node_Ptr.Data_Value);
+            Deallocate_Key(Node_Ptr.Key_Ptr);
+            Deallocate_Value(Node_Ptr.Value_Ptr);
             L := Node_Ptr.Next; -- L might be set to null here - this is valid
             Deallocate_Node(Node_Ptr);
          end if;
@@ -131,11 +133,11 @@ package body KVFlyweights.Refcount_Lists is
          Last_Ptr := Node_Ptr;
          Node_Ptr := Node_Ptr.Next;
          loop
-            if Data_Ptr = Node_Ptr.Data_Value then
+            if Key_Ptr = Node_Ptr.Key_Ptr then
                Node_Ptr.Use_Count := Node_Ptr.Use_Count - 1;
                if Node_Ptr.Use_Count = 0 then
-                  Deallocate_Key(Node_Ptr.Data_Key);
-                  Deallocate_Value(Node_Ptr.Data_Value);
+                  Deallocate_Key(Node_Ptr.Key_Ptr);
+                  Deallocate_Value(Node_Ptr.Value_Ptr);
                   Last_Ptr.Next := Node_Ptr.Next;
                   Deallocate_Node(Node_Ptr);
                end if;

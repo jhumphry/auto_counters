@@ -22,17 +22,20 @@ with Ada.Containers;
 
 generic
    type Key(<>) is private;
+   type Key_Access is access Key;
    type Value_Access is private;
    type KVFlyweight is limited private;
-   with function Insert (F : aliased in out KVFlyweight;
-                         Bucket : out Ada.Containers.Hash_Type;
-                         K : in Key) return Value_Access;
+   with procedure Insert (F : aliased in out KVFlyweight;
+                          Bucket : out Ada.Containers.Hash_Type;
+                          K : in Key;
+                          Key_Ptr : out Key_Access;
+                          Value_Ptr : out Value_Access);
    with procedure Increment (F : aliased in out KVFlyweight;
                              Bucket : in Ada.Containers.Hash_Type;
-                             Data_Ptr : in Value_Access);
+                             Key_Ptr : in Key_Access);
    with procedure Remove (F : in out KVFlyweight;
                           Bucket : in Ada.Containers.Hash_Type;
-                          Data_Ptr : in Value_Access);
+                          Key_Ptr : in Key_Access);
 package KVFlyweights_Hashtables_Spec is
 
 end KVFlyweights_Hashtables_Spec;

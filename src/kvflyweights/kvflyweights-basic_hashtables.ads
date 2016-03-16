@@ -24,11 +24,13 @@ with KVFlyweights_Hashtables_Spec;
 
 generic
    type Key(<>) is private;
+   type Key_Access is access Key;
    type Value(<>) is limited private;
    type Value_Access is access Value;
    with function Hash (K : Key) return Ada.Containers.Hash_Type;
    with package KVLists_Spec is
      new KVFlyweights_Lists_Spec(Key          => Key,
+                                 Key_Access   => Key_Access,
                                  Value_Access => Value_Access,
                                  others       => <>);
    Capacity : Ada.Containers.Hash_Type := 256;
@@ -45,23 +47,26 @@ package KVFlyweights.Basic_Hashtables is
            := (others => KVLists_Spec.Empty_List);
       end record;
 
-   function Insert (F : aliased in out KVFlyweight;
-                    Bucket : out Ada.Containers.Hash_Type;
-                    K : in Key) return Value_Access
+   procedure Insert (F : aliased in out KVFlyweight;
+                     Bucket : out Ada.Containers.Hash_Type;
+                     K : in Key;
+                     Key_Ptr : out Key_Access;
+                     Value_Ptr : out Value_Access)
      with Inline;
 
    procedure Increment (F : aliased in out KVFlyweight;
                         Bucket : in Ada.Containers.Hash_Type;
-                        Data_Ptr : in Value_Access)
+                        Key_Ptr : in Key_Access)
      with Inline;
 
    procedure Remove (F : in out KVFlyweight;
                      Bucket : in Ada.Containers.Hash_Type;
-                     Data_Ptr : in Value_Access)
+                     Key_Ptr : in Key_Access)
      with Inline;
 
    package Hashtables_Spec is
      new KVFlyweights_Hashtables_Spec(Key          => Key,
+                                      Key_Access   => Key_Access,
                                       Value_Access => Value_Access,
                                       KVFlyweight  => KVFlyweight,
                                       Insert       => Insert,

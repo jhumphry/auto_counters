@@ -47,9 +47,10 @@ package body KVFlyweights.Refcount_Ptrs is
    begin
       KVFlyweight_Hashtables.Increment(F => P.Containing_KVFlyweight.all,
                                        Bucket => P.Containing_Bucket,
-                                       Data_Ptr => P.V);
+                                       Key_Ptr => P.K);
       return Refcounted_Value_Ref'(Ada.Finalization.Controlled
                                    with V => P.V,
+                                   K => P.K,
                                    Containing_KVFlyweight => P.Containing_KVFlyweight,
                                    Containing_Bucket    => P.Containing_Bucket);
    end Make_Ref;
@@ -57,14 +58,19 @@ package body KVFlyweights.Refcount_Ptrs is
    function Insert_Ptr (F : aliased in out KVFlyweight_Hashtables.KVFlyweight;
                         K : in Key) return Refcounted_Value_Ptr is
       Bucket : Hash_Type;
-      V : Value_Access;
+      Key_Ptr : Key_Access;
+      Value_Ptr : Value_Access;
    begin
 
-      V := KVFlyweight_Hashtables.Insert (F => F,
-                                          Bucket => Bucket,
-                                          K => K);
+      KVFlyweight_Hashtables.Insert (F => F,
+                                     Bucket => Bucket,
+                                     K => K,
+                                     Key_Ptr => Key_Ptr,
+                                     Value_Ptr => Value_Ptr);
+
       return Refcounted_Value_Ptr'(Ada.Finalization.Controlled
-                                   with V => V,
+                                   with V => Value_Ptr,
+                                   K => Key_Ptr,
                                    Containing_KVFlyweight => F'Access,
                                    Containing_Bucket    => Bucket);
    end Insert_Ptr;
@@ -74,7 +80,7 @@ package body KVFlyweights.Refcount_Ptrs is
       if Object.V /= null and Object.Containing_KVFlyweight /= null then
          KVFlyweight_Hashtables.Increment(F => Object.Containing_KVFlyweight.all,
                                           Bucket => Object.Containing_Bucket,
-                                          Data_Ptr => Object.V);
+                                          Key_Ptr => Object.K);
       end if;
    end Adjust;
 
@@ -83,7 +89,7 @@ package body KVFlyweights.Refcount_Ptrs is
       if Object.V /= null and Object.Containing_KVFlyweight /= null then
          KVFlyweight_Hashtables.Remove(F => Object.Containing_KVFlyweight.all,
                                      Bucket => Object.Containing_Bucket,
-                                     Data_Ptr => Object.V);
+                                     Key_Ptr => Object.K);
          Object.Containing_KVFlyweight := null;
       end if;
    end Finalize;
@@ -97,9 +103,10 @@ package body KVFlyweights.Refcount_Ptrs is
    begin
       KVFlyweight_Hashtables.Increment(F => R.Containing_KVFlyweight.all,
                                        Bucket => R.Containing_Bucket,
-                                       Data_Ptr => Access_Value_To_Value_Access(R.V));
+                                       Key_Ptr => R.K);
       return Refcounted_Value_Ptr'(Ada.Finalization.Controlled
                                    with V                 => Access_Value_To_Value_Access(R.V),
+                                   K                      => R.K,
                                    Containing_KVFlyweight => R.Containing_KVFlyweight,
                                    Containing_Bucket      => R.Containing_Bucket);
    end Make_Ptr;
@@ -110,14 +117,18 @@ package body KVFlyweights.Refcount_Ptrs is
    function Insert_Ref (F : aliased in out KVFlyweight_Hashtables.KVFlyweight;
                         K : in Key) return Refcounted_Value_Ref is
       Bucket : Hash_Type;
-      V : Value_Access;
+      Key_Ptr : Key_Access;
+      Value_Ptr : Value_Access;
    begin
 
-      V := KVFlyweight_Hashtables.Insert (F => F,
-                                          Bucket => Bucket,
-                                          K => K);
+      KVFlyweight_Hashtables.Insert (F => F,
+                                     Bucket => Bucket,
+                                     K => K,
+                                     Key_Ptr => Key_Ptr,
+                                     Value_Ptr => Value_Ptr);
       return Refcounted_Value_Ref'(Ada.Finalization.Controlled
-                                   with V => V,
+                                   with V => Value_Ptr,
+                                   K => Key_Ptr,
                                    Containing_KVFlyweight => F'Access,
                                    Containing_Bucket    => Bucket);
    end Insert_Ref;
@@ -132,8 +143,8 @@ package body KVFlyweights.Refcount_Ptrs is
    begin
       if Object.Containing_KVFlyweight /= null then
          KVFlyweight_Hashtables.Increment(F => Object.Containing_KVFlyweight.all,
-                                        Bucket => Object.Containing_Bucket,
-                                        Data_Ptr => Access_Value_To_Value_Access(Object.V));
+                                          Bucket => Object.Containing_Bucket,
+                                          Key_Ptr => Object.K);
       end if;
    end Adjust;
 
@@ -141,8 +152,8 @@ package body KVFlyweights.Refcount_Ptrs is
    begin
       if Object.Containing_KVFlyweight /= null then
          KVFlyweight_Hashtables.Remove(F => Object.Containing_KVFlyweight.all,
-                                     Bucket => Object.Containing_Bucket,
-                                     Data_Ptr => Access_Value_To_Value_Access(Object.V));
+                                       Bucket => Object.Containing_Bucket,
+                                       Key_Ptr => Object.K);
          Object.Containing_KVFlyweight := null;
       end if;
    end Finalize;

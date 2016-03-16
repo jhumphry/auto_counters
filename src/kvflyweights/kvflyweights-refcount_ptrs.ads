@@ -26,10 +26,12 @@ with KVFlyweights_Hashtables_Spec;
 
 generic
    type Key(<>) is private;
+   type Key_Access is access Key;
    type Value(<>) is limited private;
    type Value_Access is access Value;
    with package KVFlyweight_Hashtables is
      new KVFlyweights_Hashtables_Spec(Key          => Key,
+                                      Key_Access   => Key_Access,
                                       Value_Access => Value_Access,
                                       others       => <>);
 package KVFlyweights.Refcount_Ptrs is
@@ -79,6 +81,7 @@ private
      new Ada.Finalization.Controlled with
       record
          V : Value_Access := null;
+         K : Key_Access := null;
          Containing_KVFlyweight : KVFlyweight_Ptr := null;
          Containing_Bucket : Ada.Containers.Hash_Type;
       end record;
@@ -89,6 +92,7 @@ private
    type Refcounted_Value_Ref (V : access Value) is
      new Ada.Finalization.Controlled with
       record
+         K : Key_Access := null;
          Containing_KVFlyweight : KVFlyweight_Ptr := null;
          Containing_Bucket : Ada.Containers.Hash_Type;
       end record;

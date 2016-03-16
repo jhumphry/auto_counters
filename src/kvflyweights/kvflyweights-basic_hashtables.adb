@@ -21,32 +21,36 @@ package body KVFlyweights.Basic_Hashtables is
 
    use KVLists_Spec;
 
-   function Insert (F : aliased in out KVFlyweight;
-                    Bucket : out Ada.Containers.Hash_Type;
-                    K : in Key) return Value_Access is
+   procedure Insert (F : aliased in out KVFlyweight;
+                     Bucket : out Ada.Containers.Hash_Type;
+                     K : in Key;
+                     Key_Ptr : out Key_Access;
+                     Value_Ptr : out Value_Access) is
    begin
       Bucket := (Hash(K) mod Capacity);
-      return Insert(L => F.Lists(Bucket),
-                    K => K);
+      Insert(L         => F.Lists(Bucket),
+             K         => K,
+             Key_Ptr   => Key_Ptr,
+             Value_Ptr => Value_Ptr);
    end Insert;
 
    procedure Increment (F : aliased in out KVFlyweight;
                         Bucket : in Ada.Containers.Hash_Type;
-                        Data_Ptr : in Value_Access) is
+                        Key_Ptr : in Key_Access) is
    begin
       Increment(L => F.Lists(Bucket),
-                Data_Ptr => Data_Ptr);
+                Key_Ptr => Key_Ptr);
    end Increment;
 
    procedure Remove (F : in out KVFlyweight;
                      Bucket : in Ada.Containers.Hash_Type;
-                     Data_Ptr : in Value_Access) is
+                     Key_Ptr : in Key_Access) is
    begin
       pragma Assert(Check => F.Lists(Bucket) /= Empty_List,
                     Message => "Attempting to remove an element where the " &
                       "relevant bucket in the hashtable is null");
       Remove(L => F.Lists(Bucket),
-             Data_Ptr => Data_Ptr);
+             Key_Ptr => Key_Ptr);
    end Remove;
 
 end KVFlyweights.Basic_Hashtables;
