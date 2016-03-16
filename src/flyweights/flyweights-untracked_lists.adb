@@ -1,4 +1,4 @@
--- flyweights_untracked_lists.adb
+-- flyweights-untracked_lists.adb
 -- A package of singly-linked lists for the Flyweights packages without resource
 -- tracking or release
 
@@ -20,7 +20,7 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Unchecked_Deallocation;
 
-package body Flyweights_Untracked_Lists is
+package body Flyweights.Untracked_Lists is
 
    procedure Deallocate_Element is
      new Ada.Unchecked_Deallocation(Object => Element,
@@ -82,4 +82,4 @@ package body Flyweights_Untracked_Lists is
         with "Attempting to free element in an untracked list!";
    end Remove;
 
-end Flyweights_Untracked_Lists;
+end Flyweights.Untracked_Lists;

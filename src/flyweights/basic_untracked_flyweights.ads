@@ -22,9 +22,9 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Containers;
 
-with Flyweights_Untracked_Lists;
-with Flyweights_Basic_Hashtables;
-with Flyweights_Untracked_Ptrs;
+with Flyweights.Untracked_Lists;
+with Flyweights.Basic_Hashtables;
+with Flyweights.Untracked_Ptrs;
 
 generic
    type Element(<>) is limited private;
@@ -35,19 +35,19 @@ generic
 package Basic_Untracked_Flyweights is
 
    package Lists is
-     new Flyweights_Untracked_Lists(Element        => Element,
+     new Flyweights.Untracked_Lists(Element        => Element,
                                     Element_Access => Element_Access,
                                     "="            => "=");
 
    package Hashtables is
-     new Flyweights_Basic_Hashtables(Element        => Element,
+     new Flyweights.Basic_Hashtables(Element        => Element,
                                      Element_Access => Element_Access,
                                      Hash           => Hash,
                                      Lists_Spec     => Lists.Lists_Spec,
                                      Capacity       => Capacity);
 
    package Ptrs is
-     new Flyweights_Untracked_Ptrs(Element              => Element,
+     new Flyweights.Untracked_Ptrs(Element              => Element,
                                    Element_Access       => Element_Access,
                                    Flyweight_Hashtables => Hashtables.Hashtables_Spec);
 

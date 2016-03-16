@@ -1,4 +1,4 @@
--- flyweights_basic_hashtables.adb
+-- flyweights-basic_hashtables.adb
 -- A package of non-task-safe hash tables for the Flyweights packages
 
 -- Copyright (c) 2016, James Humphry
@@ -17,7 +17,7 @@
 
 pragma Profile (No_Implementation_Extensions);
 
-package body Flyweights_Basic_Hashtables is
+package body Flyweights.Basic_Hashtables is
 
    use Lists_Spec;
 
@@ -49,4 +49,4 @@ package body Flyweights_Basic_Hashtables is
              Data_Ptr => Data_Ptr);
    end Remove;
 
-end Flyweights_Basic_Hashtables;
+end Flyweights.Basic_Hashtables;

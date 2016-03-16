@@ -1,6 +1,6 @@
--- flyweights_untracked_ptrs.ads
--- A package of generalised references which point to resources inside a
--- Flyweight without tracking or releasing those resources
+-- flyweights-refcount_ptrs.ads
+-- A package of reference-counting generalised references which point to
+-- resources inside a Flyweight
 
 -- Copyright (c) 2016, James Humphry
 --
@@ -19,6 +19,7 @@
 pragma Profile (No_Implementation_Extensions);
 
 with Ada.Containers;
+with Ada.Finalization;
 
 with Flyweights_Hashtables_Spec;
 
@@ -28,56 +29,67 @@ generic
    with package Flyweight_Hashtables is
      new Flyweights_Hashtables_Spec(Element_Access => Element_Access,
                                     others => <>);
-package Flyweights_Untracked_Ptrs is
+package Flyweights.Refcount_Ptrs is
 
    type E_Ref(E : access Element) is null record
      with Implicit_Dereference => E;
 
-   type Untracked_Element_Ptr is tagged private;
+   type Refcounted_Element_Ptr is
+     new Ada.Finalization.Controlled with private;
 
-   function P (P : Untracked_Element_Ptr) return E_Ref
+   function P (P : Refcounted_Element_Ptr) return E_Ref
      with Inline;
 
-   function Get (P : Untracked_Element_Ptr) return Element_Access
+   function Get (P : Refcounted_Element_Ptr) return Element_Access
      with Inline;
 
    function Insert_Ptr (F : aliased in out Flyweight_Hashtables.Flyweight;
-                        E : in out Element_Access) return Untracked_Element_Ptr
+                        E : in out Element_Access) return Refcounted_Element_Ptr
      with Inline;
 
-   type Untracked_Element_Ref (E : not null access Element) is tagged private
-         with Implicit_Dereference => E;
+   type Refcounted_Element_Ref (E : not null access Element) is
+     new Ada.Finalization.Controlled with private
+   with Implicit_Dereference => E;
 
-   function Get (P : Untracked_Element_Ref) return Element_Access
+   function Get (P : Refcounted_Element_Ref) return Element_Access
      with Inline;
 
    function Insert_Ref (F : aliased in out Flyweight_Hashtables.Flyweight;
-                        E : in out Element_Access) return Untracked_Element_Ref
+                        E : in out Element_Access) return Refcounted_Element_Ref
      with Inline;
 
-   function Make_Ptr (R : Untracked_Element_Ref'Class)
-                      return Untracked_Element_Ptr
+   function Make_Ptr (R : Refcounted_Element_Ref'Class)
+                      return Refcounted_Element_Ptr
      with Inline;
 
-   function Make_Ref (P : Untracked_Element_Ptr'Class)
-                      return Untracked_Element_Ref
+   function Make_Ref (P : Refcounted_Element_Ptr'Class)
+                      return Refcounted_Element_Ref
      with Inline, Pre => (Get(P) /= null);
 
 private
 
    type Flyweight_Ptr is access all Flyweight_Hashtables.Flyweight;
 
-   type Untracked_Element_Ptr is tagged
+   type Refcounted_Element_Ptr is
+     new Ada.Finalization.Controlled with
       record
          E : Element_Access := null;
          Containing_Flyweight : Flyweight_Ptr := null;
          Containing_Bucket : Ada.Containers.Hash_Type;
       end record;
 
-   type Untracked_Element_Ref (E : access Element) is tagged
+   overriding procedure Adjust (Object : in out Refcounted_Element_Ptr);
+   overriding procedure Finalize (Object : in out Refcounted_Element_Ptr);
+
+   type Refcounted_Element_Ref (E : access Element) is
+     new Ada.Finalization.Controlled with
       record
          Containing_Flyweight : Flyweight_Ptr := null;
          Containing_Bucket : Ada.Containers.Hash_Type;
       end record;
 
-end Flyweights_Untracked_Ptrs;
+   overriding procedure Initialize (Object : in out Refcounted_Element_Ref);
+   overriding procedure Adjust (Object : in out Refcounted_Element_Ref);
+   overriding procedure Finalize (Object : in out Refcounted_Element_Ref);
+
+end Flyweights.Refcount_Ptrs;

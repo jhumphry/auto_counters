@@ -22,9 +22,9 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Containers;
 
-with Flyweights_Refcount_Lists;
-with Flyweights_Protected_Hashtables;
-with Flyweights_Refcount_Ptrs;
+with Flyweights.Refcount_Lists;
+with Flyweights.Protected_Hashtables;
+with Flyweights.Refcount_Ptrs;
 
 generic
    type Element(<>) is limited private;
@@ -35,19 +35,19 @@ generic
 package Protected_Refcount_Flyweights is
 
    package Lists is
-     new Flyweights_Refcount_Lists(Element        => Element,
+     new Flyweights.Refcount_Lists(Element        => Element,
                                    Element_Access => Element_Access,
                                    "="            => "=");
 
    package Hashtables is
-     new Flyweights_Protected_Hashtables(Element        => Element,
+     new Flyweights.Protected_Hashtables(Element        => Element,
                                          Element_Access => Element_Access,
                                          Hash           => Hash,
                                          Lists_Spec     => Lists.Lists_Spec,
                                          Capacity       => Capacity);
 
    package Ptrs is
-     new Flyweights_Refcount_Ptrs(Element              => Element,
+     new Flyweights.Refcount_Ptrs(Element              => Element,
                                   Element_Access       => Element_Access,
                                   Flyweight_Hashtables => Hashtables.Hashtables_Spec);
 

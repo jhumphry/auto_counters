@@ -1,6 +1,6 @@
--- flyweights_untracked_lists.ads
--- A package of singly-linked lists for the Flyweights packages without resource
--- tracking or release
+-- flyweights-refcount_lists.ads
+-- A package of singly-linked reference-counting lists for the Flyweights
+-- packages
 
 -- Copyright (c) 2016, James Humphry
 --
@@ -24,7 +24,7 @@ generic
    type Element(<>) is limited private;
    type Element_Access is access Element;
    with function "=" (Left, Right : in Element) return Boolean is <>;
-package Flyweights_Untracked_Lists is
+package Flyweights.Refcount_Lists is
 
    type Node is private;
 
@@ -57,6 +57,7 @@ private
       record
          Next : Node_Access;
          Data : Element_Access;
+         Use_Count : Natural;
       end record;
 
-end Flyweights_Untracked_Lists;
+end Flyweights.Refcount_Lists;

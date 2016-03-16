@@ -1,4 +1,4 @@
--- flyweights_untracked_ptrs.adb
+-- flyweights-untracked_ptrs.adb
 -- A package of generalised references which point to resources inside a
 -- Flyweight without tracking or releasing those resources
 
@@ -20,7 +20,7 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Unchecked_Conversion;
 
-package body Flyweights_Untracked_Ptrs is
+package body Flyweights.Untracked_Ptrs is
 
    type Access_Element is access all Element;
 
@@ -89,4 +89,4 @@ package body Flyweights_Untracked_Ptrs is
                                     Containing_Bucket    => Bucket);
    end Insert_Ref;
 
-end Flyweights_Untracked_Ptrs;
+end Flyweights.Untracked_Ptrs;

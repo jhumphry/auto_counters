@@ -1,4 +1,4 @@
--- flyweights_protected_hashtables.adb
+-- flyweights-protected_hashtables.adb
 -- A package of task-safe hash tables for the Flyweights packages
 
 -- Copyright (c) 2016, James Humphry
@@ -17,7 +17,7 @@
 
 pragma Profile (No_Implementation_Extensions);
 
-package body Flyweights_Protected_Hashtables is
+package body Flyweights.Protected_Hashtables is
 
    use Lists_Spec;
 
@@ -74,4 +74,4 @@ package body Flyweights_Protected_Hashtables is
                Data_Ptr => Data_Ptr);
    end Remove;
 
-end Flyweights_Protected_Hashtables;
+end Flyweights.Protected_Hashtables;

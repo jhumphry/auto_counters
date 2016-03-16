@@ -1,5 +1,5 @@
--- flyweights_basic_hashtables.ads
--- A package of non-task-safe hash tables for the Flyweights packages
+-- flyweights-protected_hashtables.ads
+-- A package of task-safe hash tables for the Flyweights packages
 
 -- Copyright (c) 2016, James Humphry
 --
@@ -31,17 +31,32 @@ generic
                                others         => <>);
    Capacity : Ada.Containers.Hash_Type := 256;
 
-package Flyweights_Basic_Hashtables is
+package Flyweights.Protected_Hashtables is
 
    use type Ada.Containers.Hash_Type;
 
    type List_Array is array (Ada.Containers.Hash_Type range <>) of Lists_Spec.List;
 
-   type Flyweight is limited
-      record
-         Lists : List_Array (0..(Capacity-1))
-           := (others => Lists_Spec.Empty_List);
-      end record;
+   -- A possible enhancement would be to make Flyweight an unprotected array of
+   -- protected objects, each protecting a single list. This would allow finer-
+   -- grained locking and higher performance, at the cost of more memory and
+   -- more complexity. Given that referring to the resources does not need to
+   -- go through the protected barrier, and that resource creation and deletion
+   -- should be rare, this has not been done so far.
+
+   protected type Flyweight is
+      procedure Insert (Bucket : out Ada.Containers.Hash_Type;
+                        Data_Ptr : in out Element_Access);
+
+      procedure Increment (Bucket : in Ada.Containers.Hash_Type;
+                           Data_Ptr : in Element_Access);
+
+      procedure Remove (Bucket : in Ada.Containers.Hash_Type;
+                        Data_Ptr : in Element_Access);
+
+   private
+      Lists : List_Array (0..(Capacity-1)) := (others => Lists_Spec.Empty_List);
+   end Flyweight;
 
    procedure Insert (F : aliased in out Flyweight;
                      Bucket : out Ada.Containers.Hash_Type;
@@ -65,4 +80,4 @@ package Flyweights_Basic_Hashtables is
                                     Increment      => Increment,
                                     Remove         => Remove);
 
-end Flyweights_Basic_Hashtables;
+end Flyweights.Protected_Hashtables;
