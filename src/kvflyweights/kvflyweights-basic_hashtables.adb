@@ -1,4 +1,4 @@
--- kvflyweights_basic_hashtables.adb
+-- kvflyweights-basic_hashtables.adb
 -- A package of non-task-safe hash tables for the KVFlyweights packages
 
 -- Copyright (c) 2016, James Humphry
@@ -17,7 +17,7 @@
 
 pragma Profile (No_Implementation_Extensions);
 
-package body KVFlyweights_Basic_Hashtables is
+package body KVFlyweights.Basic_Hashtables is
 
    use KVLists_Spec;
 
@@ -49,4 +49,4 @@ package body KVFlyweights_Basic_Hashtables is
              Data_Ptr => Data_Ptr);
    end Remove;
 
-end KVFlyweights_Basic_Hashtables;
+end KVFlyweights.Basic_Hashtables;

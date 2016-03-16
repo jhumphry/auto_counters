@@ -1,4 +1,4 @@
--- kvflyweights_refcount_lists.ads
+-- kvflyweights-refcount_lists.ads
 -- A package of singly-linked reference-counting lists for the Flyweights
 -- packages. Resources are associated with a key that can be used to create
 -- them if they have not already been created.
@@ -27,7 +27,7 @@ generic
    type Value_Access is access Value;
    with function Factory (K : in Key) return Value_Access;
    with function "=" (Left, Right : in Key) return Boolean is <>;
-package KVFlyweights_Refcount_Lists is
+package KVFlyweights.Refcount_Lists is
 
    type Node is private;
 
@@ -67,4 +67,4 @@ private
          Use_Count : Natural;
       end record;
 
-end KVFlyweights_Refcount_Lists;
+end KVFlyweights.Refcount_Lists;

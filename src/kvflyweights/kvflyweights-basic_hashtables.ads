@@ -1,4 +1,4 @@
--- kvflyweights_basic_hashtables.ads
+-- kvflyweights-basic_hashtables.ads
 -- A package of non-task-safe hash tables for the KVFlyweights packages
 
 -- Copyright (c) 2016, James Humphry
@@ -33,7 +33,7 @@ generic
                                  others       => <>);
    Capacity : Ada.Containers.Hash_Type := 256;
 
-package KVFlyweights_Basic_Hashtables is
+package KVFlyweights.Basic_Hashtables is
 
    use type Ada.Containers.Hash_Type;
 
@@ -68,4 +68,4 @@ package KVFlyweights_Basic_Hashtables is
                                       Increment    => Increment,
                                       Remove       => Remove);
 
-end KVFlyweights_Basic_Hashtables;
+end KVFlyweights.Basic_Hashtables;

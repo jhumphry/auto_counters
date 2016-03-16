@@ -23,9 +23,9 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Containers;
 
-with KVFlyweights_Refcount_Lists;
-with KVFlyweights_Basic_Hashtables;
-with KVFlyweights_Refcount_Ptrs;
+with KVFlyweights.Refcount_Lists;
+with KVFlyweights.Basic_Hashtables;
+with KVFlyweights.Refcount_Ptrs;
 
 generic
    type Key(<>) is private;
@@ -38,14 +38,14 @@ generic
 package Basic_Refcount_KVFlyweights is
 
    package Lists is
-     new KVFlyweights_Refcount_Lists(Key          => Key,
+     new KVFlyweights.Refcount_Lists(Key          => Key,
                                      Value        => Value,
                                      Value_Access => Value_Access,
                                      Factory      => Factory,
                                      "="          => "=");
 
    package Hashtables is
-     new KVFlyweights_Basic_Hashtables(Key          => Key,
+     new KVFlyweights.Basic_Hashtables(Key          => Key,
                                        Value        => Value,
                                        Value_Access => Value_Access,
                                        Hash         => Hash,
@@ -53,7 +53,7 @@ package Basic_Refcount_KVFlyweights is
                                        Capacity     => Capacity);
 
    package Ptrs is
-     new KVFlyweights_Refcount_Ptrs(Key                    => Key,
+     new KVFlyweights.Refcount_Ptrs(Key                    => Key,
                                     Value                  => Value,
                                     Value_Access           => Value_Access,
                                     KVFlyweight_Hashtables => Hashtables.Hashtables_Spec);

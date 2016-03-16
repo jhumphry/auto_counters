@@ -1,4 +1,4 @@
--- kvflyweights_refcount_ptrs.adb
+-- kvflyweights-refcount_ptrs.adb
 -- A package of reference-counting generalised references which point to
 -- resources inside a Flyweight. Resources are associated with a key that can
 -- be used to create them if they have not already been created.
@@ -21,7 +21,7 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Unchecked_Conversion;
 
-package body KVFlyweights_Refcount_Ptrs is
+package body KVFlyweights.Refcount_Ptrs is
 
    type Access_Value is access all Value;
 
@@ -147,4 +147,4 @@ package body KVFlyweights_Refcount_Ptrs is
       end if;
    end Finalize;
 
-end KVFlyweights_Refcount_Ptrs;
+end KVFlyweights.Refcount_Ptrs;

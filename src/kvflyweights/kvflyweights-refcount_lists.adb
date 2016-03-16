@@ -1,4 +1,4 @@
--- kvflyweights_refcount_lists.adb
+-- kvflyweights-refcount_lists.adb
 -- A package of singly-linked reference-counting lists for the Flyweights
 -- packages. Resources are associated with a key that can be used to create
 -- them if they have not already been created.
@@ -21,7 +21,7 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Unchecked_Deallocation;
 
-package body KVFlyweights_Refcount_Lists is
+package body KVFlyweights.Refcount_Lists is
 
    procedure Deallocate_Key is new Ada.Unchecked_Deallocation(Object => Key,
                                                               Name => Key_Access);
@@ -153,4 +153,4 @@ package body KVFlyweights_Refcount_Lists is
 
    end Remove;
 
-end KVFlyweights_Refcount_Lists;
+end KVFlyweights.Refcount_Lists;
