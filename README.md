@@ -170,6 +170,24 @@ inside the ```Flyweight``` are not released until the program ends. Note that
 the 'Untracked' packages will still deallocate duplicate values passed into
 one of the ```Insert``` functions.
 
+## KVFlyweights
+
+The packages for KVFlyweights (Key-Value Flyweights) work in a very similar
+manner to the Flyweights. The main distinction is that the KVFlyweights
+associate every resource with a key. A factory function must be provided to
+return the value associated with a key. Rather than inserting values directly
+into KVFlyweights, keys are inserted. If a key is not already present the
+associated value will be obtained via the factory function and stored. The
+generation of values from keys must be deterministic, so each key-value pair
+only has to be stored once. This allows comparison to be done on keys, which
+may be much faster than comparing the values for equality.
+
+A typical use-case for KVFlyweights might be for the keys to be ```String```s
+giving the filenames of resources, and for the factory function to load and
+return the resource from the file with the provided filename. The KVFlyweight
+will only load the file the first time one of the Insert functions is called,
+and subsequent Insert calls will return a pointer to the existing object.
+
 ## Examples and unit tests
 
 Various simple example programs and a suite of AUnit-based unit tests with
