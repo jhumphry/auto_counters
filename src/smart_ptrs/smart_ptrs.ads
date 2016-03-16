@@ -103,7 +103,8 @@ package Smart_Ptrs is
    -- to Make_Smart_Ptr.
 
    function Make_Smart_Ref (X : T_Ptr) return Smart_Ref
-     with Inline, Pre => (X /= null);
+     with Inline, Pre => (X /= null or else
+                            (raise Smart_Ptr_Error with "Cannot make a Smart_Ref from a null access value"));
    -- Make_Smart_Ref creates a Smart_Ref from an access value to an object
    -- stored in a pool. Note that mixing the use of regular access values and
    -- Smart_Ptr types is not wise, as the storage may be reclaimed when all
@@ -112,7 +113,8 @@ package Smart_Ptrs is
    -- be raised.
 
    function Make_Smart_Ref (S : Smart_Ptr'Class) return Smart_Ref
-     with Inline, Pre => (not Is_Null(S));
+     with Inline, Pre => (not Is_Null(S) or else
+                            (raise Smart_Ptr_Error with "Cannot make a Smart_Ref from a null Smart_Ptr"));
    -- Make_Smart_Ptr creates a Smart_Ptr from an existing Smart_Ref. It will
    -- share the reference counters with the Smart_Ref so the two types can be
    -- used together. Note that while Smart_Ptr can be null, Smart_Ref cannot,
@@ -136,7 +138,8 @@ package Smart_Ptrs is
    -- of the associated Smart_Ptr have been destroyed.
 
    function Make_Weak_Ptr (S : in Smart_Ptr'Class) return Weak_Ptr
-     with Inline, Pre => (not Is_Null(S));
+     with Inline, Pre => (not Is_Null(S) or else
+                            (raise Smart_Ptr_Error with "Cannot make a Weak_Ptr from a null Smart_Ptr"));
    -- Make_Weak_Ptr makes a Weak_Ptr from a non-null Smart_Ptr.
 
    function Make_Weak_Ptr (S : in Smart_Ref'Class) return Weak_Ptr with Inline;
