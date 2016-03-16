@@ -61,7 +61,9 @@ package Flyweights.Untracked_Ptrs is
 
    function Make_Ref (P : Untracked_Element_Ptr'Class)
                       return Untracked_Element_Ref
-     with Inline, Pre => (Get(P) /= null);
+     with Inline, Pre => (Get(P) /= null or else
+                              (raise Flyweights_Error with "Cannot make a " &
+                                 "Refcounted_Element_Ref from a null Refcounted_Element_Ptr"));
 
 private
 
