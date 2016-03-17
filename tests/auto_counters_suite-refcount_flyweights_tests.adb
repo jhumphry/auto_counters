@@ -32,7 +32,6 @@ package body Auto_Counters_Suite.Refcount_Flyweights_Tests is
    pragma Warnings (On, "not dispatching");
 
    overriding procedure Finalize (Object : in out TestObj) is
-      -- pragma Unreferenced(Object);
    begin
       Resources_Released := Resources_Released + 1;
       Object.Hash := 0;

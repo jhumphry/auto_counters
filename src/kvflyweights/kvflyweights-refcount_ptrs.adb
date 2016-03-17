@@ -88,8 +88,8 @@ package body KVFlyweights.Refcount_Ptrs is
    begin
       if Object.V /= null and Object.Containing_KVFlyweight /= null then
          KVFlyweight_Hashtables.Remove(F => Object.Containing_KVFlyweight.all,
-                                     Bucket => Object.Containing_Bucket,
-                                     Key_Ptr => Object.K);
+                                       Bucket => Object.Containing_Bucket,
+                                       Key_Ptr => Object.K);
          Object.Containing_KVFlyweight := null;
       end if;
    end Finalize;

@@ -45,10 +45,10 @@ package body KVFlyweights.Refcount_Lists is
          -- Create a new node as the first list element
          Key_Ptr := new Key'(K);
          Value_Ptr := Factory(K);
-         L := new Node'(Next       => null,
+         L := new Node'(Next      => null,
                         Key_Ptr   => Key_Ptr,
                         Value_Ptr => Value_Ptr,
-                        Use_Count  => 1);
+                        Use_Count => 1);
       else
          -- List is not empty
 
@@ -62,7 +62,7 @@ package body KVFlyweights.Refcount_Lists is
                exit;
             elsif Node_Ptr.Next = null then
                -- We have reached the end of the relevant bucket's list and K is
-               -- not already in the Flyweight, so add it.
+               -- not already in the KVFlyweight, so add it.
                Key_Ptr := new Key'(K);
                Value_Ptr := Factory(K);
                Node_Ptr.Next := new Node'(Next       => null,
