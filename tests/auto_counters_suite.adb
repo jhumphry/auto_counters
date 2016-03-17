@@ -7,6 +7,7 @@ with Smart_Ptrs_Tests;
 with Auto_Counters_Suite.Unique_Ptrs_Tests;
 with Auto_Counters_Suite.C_Resources_Tests;
 with Auto_Counters_Suite.Refcount_Flyweights_Tests;
+with Auto_Counters_Suite.Refcount_KVFlyweights_Tests;
 
 with Basic_Counters;
 with Protected_Counters;
@@ -32,6 +33,8 @@ package body Auto_Counters_Suite is
 
    Test_Refcount_Flyweights : aliased Refcount_Flyweights_Tests.Refcount_Flyweights_Test;
 
+   Test_Refcount_KVFlyweights : aliased Refcount_KVFlyweights_Tests.Refcount_KVFlyweights_Test;
+
    Result : aliased Test_Suite;
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite is
@@ -41,6 +44,7 @@ package body Auto_Counters_Suite is
       Add_Test (Result'Access, Test_Unique_Ptrs'Access);
       Add_Test (Result'Access, Test_C_Resources'Access);
       Add_Test (Result'Access, Test_Refcount_Flyweights'Access);
+      Add_Test (Result'Access, Test_Refcount_KVFlyweights'Access);
       return Result'Access;
    end Suite;
 
