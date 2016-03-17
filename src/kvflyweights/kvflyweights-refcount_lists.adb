@@ -65,10 +65,10 @@ package body KVFlyweights.Refcount_Lists is
                -- not already in the Flyweight, so add it.
                Key_Ptr := new Key'(K);
                Value_Ptr := Factory(K);
-               L := new Node'(Next       => null,
-                              Key_Ptr   => Key_Ptr,
-                              Value_Ptr => Value_Ptr,
-                              Use_Count  => 1);
+               Node_Ptr.Next := new Node'(Next       => null,
+                                          Key_Ptr    => Key_Ptr,
+                                          Value_Ptr  => Value_Ptr,
+                                          Use_Count  => 1);
                exit;
             else
                Node_Ptr := Node_Ptr.Next;
