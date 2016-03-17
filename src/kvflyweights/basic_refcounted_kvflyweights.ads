@@ -1,6 +1,6 @@
--- protected_refcount_kvflyweights.ads
+-- basic_refcounted_kvflyweights.ads
 -- A package for ensuring resources are not duplicated in a manner similar
--- to the C++ Boost flyweight classes. This package provides a task-safe
+-- to the C++ Boost flyweight classes. This package provides a non-task-safe
 -- implementation that uses reference counting to release resources when the
 -- last reference is released. Resources are associated with a key that can
 -- be used to create them if they have not already been created.
@@ -23,9 +23,9 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Containers;
 
-with KVFlyweights.Refcount_Lists;
-with KVFlyweights.Protected_Hashtables;
-with KVFlyweights.Refcount_Ptrs;
+with KVFlyweights.Refcounted_Lists;
+with KVFlyweights.Basic_Hashtables;
+with KVFlyweights.Refcounted_Ptrs;
 
 generic
    type Key(<>) is private;
@@ -35,12 +35,12 @@ generic
    with function Hash (K : in Key) return Ada.Containers.Hash_Type;
    Capacity : Ada.Containers.Hash_Type := 256;
    with function "=" (Left, Right : in Key) return Boolean is <>;
-package Protected_Refcount_KVFlyweights is
+package Basic_Refcounted_KVFlyweights is
 
    type Key_Access is access Key;
 
    package Lists is
-     new KVFlyweights.Refcount_Lists(Key          => Key,
+     new KVFlyweights.Refcounted_Lists(Key          => Key,
                                      Key_Access   => Key_Access,
                                      Value        => Value,
                                      Value_Access => Value_Access,
@@ -48,16 +48,16 @@ package Protected_Refcount_KVFlyweights is
                                      "="          => "=");
 
    package Hashtables is
-     new KVFlyweights.Protected_Hashtables(Key          => Key,
-                                           Key_Access   => Key_Access,
-                                           Value        => Value,
-                                           Value_Access => Value_Access,
-                                           Hash         => Hash,
-                                           KVLists_Spec => Lists.Lists_Spec,
-                                           Capacity     => Capacity);
+     new KVFlyweights.Basic_Hashtables(Key          => Key,
+                                       Key_Access   => Key_Access,
+                                       Value        => Value,
+                                       Value_Access => Value_Access,
+                                       Hash         => Hash,
+                                       KVLists_Spec => Lists.Lists_Spec,
+                                       Capacity     => Capacity);
 
    package Ptrs is
-     new KVFlyweights.Refcount_Ptrs(Key                    => Key,
+     new KVFlyweights.Refcounted_Ptrs(Key                    => Key,
                                     Key_Access             => Key_Access,
                                     Value                  => Value,
                                     Value_Access           => Value_Access,
@@ -67,9 +67,9 @@ package Protected_Refcount_KVFlyweights is
    -- This KVFlyweight type is an implementation of the key-value flyweight
    -- pattern, which helps prevent the resource usage caused by the storage of
    -- duplicate values. Reference counting is used to release resources when
-   -- they are no longer required. This implementation is protected so it
-   -- is safe to use even if multiple tasks could attempt to add or remove
-   -- resources simultaneously.
+   -- they are no longer required. This implementation is not protected so it is
+   -- not safe to use if multiple tasks could attempt to add or remove resources
+   -- simultaneously.
 
    subtype V_Ref is Ptrs.V_Ref;
    -- This is a generic generalised reference type which is used to make
@@ -137,4 +137,4 @@ package Protected_Refcount_KVFlyweights is
    -- Insert. However this seems to cause problems for GNAT GPL 2015 so for now
    -- the type is suffixed to the name.
 
-end Protected_Refcount_KVFlyweights;
+end Basic_Refcounted_KVFlyweights;

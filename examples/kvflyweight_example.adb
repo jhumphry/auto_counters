@@ -20,9 +20,9 @@ use Ada.Text_IO;
 
 with Ada.Strings.Hash;
 
-with Basic_Refcount_KVFlyweights;
+with Basic_Refcounted_KVFlyweights;
 --  with Basic_Untracked_KVFlyweights;
---  with Protected_Refcount_KVFlyweights;
+--  with Protected_Refcounted_KVFlyweights;
 --  with Protected_Untracked_KVFlyweights;
 
 procedure KVFlyweight_Example is
@@ -35,12 +35,12 @@ procedure KVFlyweight_Example is
    end Make_String_Value;
 
    package String_KVFlyweights is
-     new Basic_Refcount_KVFlyweights(Key          => String,
-                                     Value        => String,
-                                     Value_Access => String_Ptr,
-                                     Factory      => Make_String_Value,
-                                     Hash         => Ada.Strings.Hash,
-                                     Capacity     => 16);
+     new Basic_Refcounted_KVFlyweights(Key          => String,
+                                       Value        => String,
+                                       Value_Access => String_Ptr,
+                                       Factory      => Make_String_Value,
+                                       Hash         => Ada.Strings.Hash,
+                                       Capacity     => 16);
 
    -- By commenting out the definition above and uncommenting one of the
    -- definitions below, this example can use one of the other versions of the
@@ -57,12 +57,12 @@ procedure KVFlyweight_Example is
 --                                        Capacity     => 16);
 
 --     package String_KVFlyweights is
---       new Protected_Refcount_KVFlyweights(Key          => String,
---                                           Value        => String,
---                                           Value_Access => String_Ptr,
---                                           Factory      => Make_String_Value,
---                                           Hash         => Ada.Strings.Hash,
---                                           Capacity     => 16);
+--       new Protected_Refcounted_KVFlyweights(Key          => String,
+--                                             Value        => String,
+--                                             Value_Access => String_Ptr,
+--                                             Factory      => Make_String_Value,
+--                                             Hash         => Ada.Strings.Hash,
+--                                             Capacity     => 16);
 
 --     package String_KVFlyweights is
 --       new Protected_Untracked_KVFlyweights(Key          => String,

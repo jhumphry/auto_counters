@@ -1,4 +1,4 @@
--- Auto_Counters_Suite.Refcount_KVFlyweights_Tests
+-- Auto_Counters_Suite.Refcounted_KVFlyweights_Tests
 -- Unit tests for Auto_Counters Refcounted KVFlyweights packages
 
 -- Copyright (c) 2016, James Humphry - see LICENSE file for details
@@ -7,10 +7,10 @@ with Ada.Containers, Ada.Finalization;
 
 with AUnit.Assertions;
 
-with Basic_Refcount_KVFlyweights;
-with Protected_Refcount_KVFlyweights;
+with Basic_Refcounted_KVFlyweights;
+with Protected_Refcounted_KVFlyweights;
 
-package body Auto_Counters_Suite.Refcount_KVFlyweights_Tests is
+package body Auto_Counters_Suite.Refcounted_KVFlyweights_Tests is
 
    subtype Hash_Type is Ada.Containers.Hash_Type;
    use type Ada.Containers.Hash_Type;
@@ -42,23 +42,23 @@ package body Auto_Counters_Suite.Refcount_KVFlyweights_Tests is
    end Finalize;
 
    package TestObj_Basic_KVFlyweights is
-     new Basic_Refcount_KVFlyweights(Key          => TestKey_Type,
-                                     Value        => TestValue_Type,
-                                     Value_Access => TestValue_Access,
-                                     Factory      => Factory,
-                                     Hash         => Hash,
-                                     Capacity     => 4);
+     new Basic_Refcounted_KVFlyweights(Key          => TestKey_Type,
+                                       Value        => TestValue_Type,
+                                       Value_Access => TestValue_Access,
+                                       Factory      => Factory,
+                                       Hash         => Hash,
+                                       Capacity     => 4);
 
    use type TestObj_Basic_KVFlyweights.Value_Ptr;
    use type TestObj_Basic_KVFlyweights.Value_Ref;
 
    package TestObj_Protected_KVFlyweights is
-     new Protected_Refcount_KVFlyweights(Key          => TestKey_Type,
-                                         Value        => TestValue_Type,
-                                         Value_Access => TestValue_Access,
-                                         Factory      => Factory,
-                                         Hash         => Hash,
-                                         Capacity     => 4);
+     new Protected_Refcounted_KVFlyweights(Key          => TestKey_Type,
+                                           Value        => TestValue_Type,
+                                           Value_Access => TestValue_Access,
+                                           Factory      => Factory,
+                                           Hash         => Hash,
+                                           Capacity     => 4);
 
    use type TestObj_Protected_KVFlyweights.Value_Ptr;
    use type TestObj_Protected_KVFlyweights.Value_Ref;
@@ -67,7 +67,7 @@ package body Auto_Counters_Suite.Refcount_KVFlyweights_Tests is
    -- Register_Tests --
    --------------------
 
-   procedure Register_Tests (T: in out Refcount_KVFlyweights_Test) is
+   procedure Register_Tests (T: in out Refcounted_KVFlyweights_Test) is
       use AUnit.Test_Cases.Registration;
    begin
       Register_Routine (T, Check_Basic_Usage'Access,
@@ -84,7 +84,7 @@ package body Auto_Counters_Suite.Refcount_KVFlyweights_Tests is
    -- Name --
    ----------
 
-   function Name (T : Refcount_KVFlyweights_Test) return Test_String is
+   function Name (T : Refcounted_KVFlyweights_Test) return Test_String is
       pragma Unreferenced (T);
    begin
       return Format ("Tests of Refcounted FKVlyweights packages functionality");
@@ -94,7 +94,7 @@ package body Auto_Counters_Suite.Refcount_KVFlyweights_Tests is
    -- Set_Up --
    ------------
 
-   procedure Set_Up (T : in out Refcount_KVFlyweights_Test) is
+   procedure Set_Up (T : in out Refcounted_KVFlyweights_Test) is
    begin
       null;
    end Set_Up;
@@ -444,4 +444,4 @@ package body Auto_Counters_Suite.Refcount_KVFlyweights_Tests is
              "Resources not being released when last Value_Ref is destroyed.");
    end Check_Protected_Refs_Usage;
 
-end Auto_Counters_Suite.Refcount_KVFlyweights_Tests;
+end Auto_Counters_Suite.Refcounted_KVFlyweights_Tests;

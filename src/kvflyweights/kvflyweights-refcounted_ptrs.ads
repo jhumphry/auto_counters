@@ -1,4 +1,4 @@
--- kvflyweights-refcount_ptrs.ads
+-- kvflyweights-refcounted_ptrs.ads
 -- A package of reference-counting generalised references which point to
 -- resources inside a KVFlyweight. Resources are associated with a key that can
 -- be used to create them if they have not already been created.
@@ -34,7 +34,7 @@ generic
                                       Key_Access   => Key_Access,
                                       Value_Access => Value_Access,
                                       others       => <>);
-package KVFlyweights.Refcount_Ptrs is
+package KVFlyweights.Refcounted_Ptrs is
 
    type V_Ref(V : access Value) is null record
      with Implicit_Dereference => V;
@@ -101,4 +101,4 @@ private
    overriding procedure Adjust (Object : in out Refcounted_Value_Ref);
    overriding procedure Finalize (Object : in out Refcounted_Value_Ref);
 
-end KVFlyweights.Refcount_Ptrs;
+end KVFlyweights.Refcounted_Ptrs;
