@@ -29,7 +29,6 @@ package body Flyweights.Untracked_Lists is
    procedure Insert (L : in out List;
                      E : in out Element_Access) is
       Node_Ptr : Node_Access := L;
-      Found : Boolean := False;
    begin
 
       if Node_Ptr = null then
@@ -45,26 +44,23 @@ package body Flyweights.Untracked_Lists is
          loop
             if E = Node_Ptr.Data then
                -- E is already a pointer to inside the FlyWeight
-               Found := True;
+               exit;
             elsif E.all = Node_Ptr.Data.all then
                -- E's value is a copy of a value already in the FlyWeight
                Deallocate_Element(E);
                E := Node_Ptr.Data;
-               Found := True;
+               exit;
             end if;
             if Node_Ptr.Next = null then
-               exit;
+               -- List not empty but element not already present. Add to the end of
+               -- the list.
+               Node_Ptr.Next := new Node'(Next => null,
+                                          Data => E);
             else
                Node_Ptr := Node_Ptr.Next;
             end if;
          end loop;
 
-         -- List not empty but element not already present. Add to the end of
-         -- the list.
-         if not Found then
-            Node_Ptr.Next := new Node'(Next => null,
-                                       Data => E);
-         end if;
       end if;
    end Insert;
 
