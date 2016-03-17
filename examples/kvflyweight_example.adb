@@ -21,7 +21,9 @@ use Ada.Text_IO;
 with Ada.Strings.Hash;
 
 with Basic_Refcount_KVFlyweights;
+--  with Basic_Untracked_KVFlyweights;
 --  with Protected_Refcount_KVFlyweights;
+--  with Protected_Untracked_KVFlyweights;
 
 procedure KVFlyweight_Example is
 
@@ -40,6 +42,20 @@ procedure KVFlyweight_Example is
                                      Hash         => Ada.Strings.Hash,
                                      Capacity     => 16);
 
+   -- By commenting out the definition above and uncommenting one of the
+   -- definitions below, this example can use one of the other versions of the
+   -- Flyweights with no other changes required. The gnatmem tool can be used
+   -- to demonstrate the difference between the reference-counted and untracked
+   -- versions.
+
+--     package String_KVFlyweights is
+--       new Basic_Untracked_KVFlyweights(Key          => String,
+--                                        Value        => String,
+--                                        Value_Access => String_Ptr,
+--                                        Factory      => Make_String_Value,
+--                                        Hash         => Ada.Strings.Hash,
+--                                        Capacity     => 16);
+
 --     package String_KVFlyweights is
 --       new Protected_Refcount_KVFlyweights(Key          => String,
 --                                           Value        => String,
@@ -47,6 +63,14 @@ procedure KVFlyweight_Example is
 --                                           Factory      => Make_String_Value,
 --                                           Hash         => Ada.Strings.Hash,
 --                                           Capacity     => 16);
+
+--     package String_KVFlyweights is
+--       new Protected_Untracked_KVFlyweights(Key          => String,
+--                                            Value        => String,
+--                                            Value_Access => String_Ptr,
+--                                            Factory      => Make_String_Value,
+--                                            Hash         => Ada.Strings.Hash,
+--                                            Capacity     => 16);
 
    use String_KVFlyweights;
 
