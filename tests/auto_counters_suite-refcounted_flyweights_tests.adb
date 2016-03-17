@@ -1,4 +1,4 @@
--- Auto_Counters_Suite.Refcount_Flyweights_Tests
+-- Auto_Counters_Suite.Refcounted_Flyweights_Tests
 -- Unit tests for Auto_Counters Refcounted Flyweights packages
 
 -- Copyright (c) 2016, James Humphry - see LICENSE file for details
@@ -7,10 +7,10 @@ with Ada.Containers, Ada.Finalization;
 
 with AUnit.Assertions;
 
-with Basic_Refcount_Flyweights;
-with Protected_Refcount_Flyweights;
+with Basic_Refcounted_Flyweights;
+with Protected_Refcounted_Flyweights;
 
-package body Auto_Counters_Suite.Refcount_Flyweights_Tests is
+package body Auto_Counters_Suite.Refcounted_Flyweights_Tests is
 
    subtype Hash_Type is Ada.Containers.Hash_Type;
    use type Ada.Containers.Hash_Type;
@@ -39,22 +39,22 @@ package body Auto_Counters_Suite.Refcount_Flyweights_Tests is
    end Finalize;
 
    package TestObj_Basic_Flyweights is
-     new Basic_Refcount_Flyweights(Element        => TestObj,
-                                   Element_Access => TestObj_Access,
-                                   Hash           => Hash,
-                                   Capacity       => 4);
+     new Basic_Refcounted_Flyweights(Element        => TestObj,
+                                     Element_Access => TestObj_Access,
+                                     Hash           => Hash,
+                                     Capacity       => 4);
 
    package TestObj_Protected_Flyweights is
-     new Protected_Refcount_Flyweights(Element        => TestObj,
-                                   Element_Access => TestObj_Access,
-                                   Hash           => Hash,
-                                   Capacity       => 4);
+     new Protected_Refcounted_Flyweights(Element        => TestObj,
+                                         Element_Access => TestObj_Access,
+                                         Hash           => Hash,
+                                         Capacity       => 4);
 
    --------------------
    -- Register_Tests --
    --------------------
 
-   procedure Register_Tests (T: in out Refcount_Flyweights_Test) is
+   procedure Register_Tests (T: in out Refcounted_Flyweights_Test) is
       use AUnit.Test_Cases.Registration;
    begin
       Register_Routine (T, Check_Basic_Usage'Access,
@@ -71,7 +71,7 @@ package body Auto_Counters_Suite.Refcount_Flyweights_Tests is
    -- Name --
    ----------
 
-   function Name (T : Refcount_Flyweights_Test) return Test_String is
+   function Name (T : Refcounted_Flyweights_Test) return Test_String is
       pragma Unreferenced (T);
    begin
       return Format ("Tests of Refcounted Flyweights packages functionality");
@@ -81,7 +81,7 @@ package body Auto_Counters_Suite.Refcount_Flyweights_Tests is
    -- Set_Up --
    ------------
 
-   procedure Set_Up (T : in out Refcount_Flyweights_Test) is
+   procedure Set_Up (T : in out Refcounted_Flyweights_Test) is
    begin
       null;
    end Set_Up;
@@ -508,4 +508,4 @@ package body Auto_Counters_Suite.Refcount_Flyweights_Tests is
 
    end Check_Protected_Refs_Usage;
 
-end Auto_Counters_Suite.Refcount_Flyweights_Tests;
+end Auto_Counters_Suite.Refcounted_Flyweights_Tests;

@@ -1,4 +1,4 @@
--- flyweights-refcount_lists.adb
+-- flyweights-refcounted_lists.adb
 -- A package of singly-linked reference-counting lists for the Flyweights
 -- packages
 
@@ -20,7 +20,7 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Unchecked_Deallocation;
 
-package body Flyweights.Refcount_Lists is
+package body Flyweights.Refcounted_Lists is
 
    procedure Deallocate_Element is new Ada.Unchecked_Deallocation(Object => Element,
                                                                   Name => Element_Access);
@@ -146,4 +146,4 @@ package body Flyweights.Refcount_Lists is
 
    end Remove;
 
-end Flyweights.Refcount_Lists;
+end Flyweights.Refcounted_Lists;

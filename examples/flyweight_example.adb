@@ -20,9 +20,9 @@ use Ada.Text_IO;
 
 with Ada.Strings.Hash;
 
-with Basic_Refcount_Flyweights;
+with Basic_Refcounted_Flyweights;
 --  with Basic_Untracked_Flyweights;
---  with Protected_Refcount_Flyweights;
+--  with Protected_Refcounted_Flyweights;
 --  with Protected_Untracked_Flyweights;
 
 procedure Flyweight_Example is
@@ -30,10 +30,10 @@ procedure Flyweight_Example is
    type String_Ptr is access String;
 
    package String_Flyweights is
-     new Basic_Refcount_Flyweights(Element        => String,
-                                   Element_Access => String_Ptr,
-                                   Hash           => Ada.Strings.Hash,
-                                   Capacity       => 16);
+     new Basic_Refcounted_Flyweights(Element        => String,
+                                     Element_Access => String_Ptr,
+                                     Hash           => Ada.Strings.Hash,
+                                     Capacity       => 16);
 
    -- By commenting out the definition above and uncommenting one of the
    -- definitions below, this example can use one of the other versions of the
@@ -48,10 +48,10 @@ procedure Flyweight_Example is
 --                                      Capacity       => 16);
 
 --     package String_Flyweights is
---       new Protected_Refcount_Flyweights(Element        => String,
---                                         Element_Access => String_Ptr,
---                                         Hash           => Ada.Strings.Hash,
---                                         Capacity       => 16);
+--       new Protected_Refcounted_Flyweights(Element        => String,
+--                                           Element_Access => String_Ptr,
+--                                           Hash           => Ada.Strings.Hash,
+--                                           Capacity       => 16);
 
 --     package String_Flyweights is
 --       new Protected_Untracked_Flyweights(Element        => String,

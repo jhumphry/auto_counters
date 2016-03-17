@@ -1,4 +1,4 @@
--- flyweights-refcount_ptrs.adb
+-- flyweights-refcounted_ptrs.adb
 -- A package of reference-counting generalised references which point to
 -- resources inside a Flyweight
 
@@ -20,7 +20,7 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Unchecked_Conversion;
 
-package body Flyweights.Refcount_Ptrs is
+package body Flyweights.Refcounted_Ptrs is
 
    type Access_Element is access all Element;
 
@@ -144,4 +144,4 @@ package body Flyweights.Refcount_Ptrs is
       end if;
    end Finalize;
 
-end Flyweights.Refcount_Ptrs;
+end Flyweights.Refcounted_Ptrs;

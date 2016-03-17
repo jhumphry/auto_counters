@@ -1,4 +1,4 @@
--- flyweights-refcount_ptrs.ads
+-- flyweights-refcounted_ptrs.ads
 -- A package of reference-counting generalised references which point to
 -- resources inside a Flyweight
 
@@ -29,7 +29,7 @@ generic
    with package Flyweight_Hashtables is
      new Flyweights_Hashtables_Spec(Element_Access => Element_Access,
                                     others => <>);
-package Flyweights.Refcount_Ptrs is
+package Flyweights.Refcounted_Ptrs is
 
    type E_Ref(E : access Element) is null record
      with Implicit_Dereference => E;
@@ -94,4 +94,4 @@ private
    overriding procedure Adjust (Object : in out Refcounted_Element_Ref);
    overriding procedure Finalize (Object : in out Refcounted_Element_Ref);
 
-end Flyweights.Refcount_Ptrs;
+end Flyweights.Refcounted_Ptrs;

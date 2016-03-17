@@ -1,4 +1,4 @@
--- flyweights-refcount_lists.ads
+-- flyweights-refcounted_lists.ads
 -- A package of singly-linked reference-counting lists for the Flyweights
 -- packages
 
@@ -24,7 +24,7 @@ generic
    type Element(<>) is limited private;
    type Element_Access is access Element;
    with function "=" (Left, Right : in Element) return Boolean is <>;
-package Flyweights.Refcount_Lists is
+package Flyweights.Refcounted_Lists is
 
    type Node is private;
 
@@ -60,4 +60,4 @@ private
          Use_Count : Natural;
       end record;
 
-end Flyweights.Refcount_Lists;
+end Flyweights.Refcounted_Lists;

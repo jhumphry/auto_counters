@@ -1,6 +1,6 @@
--- basic_refcount_flyweights.ads
+-- protected_refcounted_flyweights.ads
 -- A package for ensuring resources are not duplicated in a manner similar
--- to the C++ Boost flyweight classes. This package provides a non-task-safe
+-- to the C++ Boost flyweight classes. This package provides a task-safe
 -- implementation that uses reference counting to release resources when the
 -- last reference is released
 
@@ -22,9 +22,9 @@ pragma Profile (No_Implementation_Extensions);
 
 with Ada.Containers;
 
-with Flyweights.Refcount_Lists;
-with Flyweights.Basic_Hashtables;
-with Flyweights.Refcount_Ptrs;
+with Flyweights.Refcounted_Lists;
+with Flyweights.Protected_Hashtables;
+with Flyweights.Refcounted_Ptrs;
 
 generic
    type Element(<>) is limited private;
@@ -32,22 +32,22 @@ generic
    with function Hash (E : Element) return Ada.Containers.Hash_Type;
    Capacity : Ada.Containers.Hash_Type := 256;
    with function "=" (Left, Right : in Element) return Boolean is <>;
-package Basic_Refcount_Flyweights is
+package Protected_Refcounted_Flyweights is
 
    package Lists is
-     new Flyweights.Refcount_Lists(Element        => Element,
+     new Flyweights.Refcounted_Lists(Element        => Element,
                                    Element_Access => Element_Access,
                                    "="            => "=");
 
    package Hashtables is
-     new Flyweights.Basic_Hashtables(Element        => Element,
-                                     Element_Access => Element_Access,
-                                     Hash           => Hash,
-                                     Lists_Spec     => Lists.Lists_Spec,
-                                     Capacity       => Capacity);
+     new Flyweights.Protected_Hashtables(Element        => Element,
+                                         Element_Access => Element_Access,
+                                         Hash           => Hash,
+                                         Lists_Spec     => Lists.Lists_Spec,
+                                         Capacity       => Capacity);
 
    package Ptrs is
-     new Flyweights.Refcount_Ptrs(Element              => Element,
+     new Flyweights.Refcounted_Ptrs(Element              => Element,
                                   Element_Access       => Element_Access,
                                   Flyweight_Hashtables => Hashtables.Hashtables_Spec);
 
@@ -55,8 +55,8 @@ package Basic_Refcount_Flyweights is
    -- This Flyweight type is an implementation of the flyweight pattern, which
    -- helps prevent the resource usage caused by the storage of duplicate
    -- values. Reference counting is used to release resources when they are
-   -- no longer required. This implementation is not protected so it is not
-   -- safe to use if multiple tasks could attempt to add or remove resources
+   -- no longer required. This implementation is protected so it is safe to
+   -- use even if multiple tasks could attempt to add or remove resources
    -- simultaneously.
 
    subtype E_Ref is Ptrs.E_Ref;
@@ -129,4 +129,4 @@ package Basic_Refcount_Flyweights is
    -- Insert. However this seems to cause problems for GNAT GPL 2015 so for now
    -- the type is suffixed to the name.
 
-end Basic_Refcount_Flyweights;
+end Protected_Refcounted_Flyweights;

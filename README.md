@@ -136,8 +136,8 @@ library routines added to types derived from one of the types.
 
 ## Flyweights
 
-The interchangeable packages ```Basic_Refcount_Flyweights```,
-```Basic_Untracked_Flyweights```, ```Protected_Refcount_Flyweights``` and
+The interchangeable packages ```Basic_Refcounted_Flyweights```,
+```Basic_Untracked_Flyweights```, ```Protected_Refcounted_Flyweights``` and
 ```Protected_Untracked_Flyweights``` implement the flyweight pattern. The aim
 is to prevent the duplication of values and the associated memory usage in the
 case where large resources may be required by or referred to by many parts of
@@ -160,15 +160,15 @@ the pointers or reference types does not require interaction with the
 ```Flyweight``` so this is not affected. In either case the task-safety of the
 underlying resource itself remains the responsibility of the package user.
 
-The distinction between the 'Refcount' and 'Untracked' packages relates to how
-the resources are managed. 'Refcount' packages operate in a similar manner to
-the ```Smart_Ptr``` packages - the pointers and reference types are
-reference-counted so that when the last pointer to a resource is destroyed the
-resource will be deleted and the associated storage will be deallocated. The
-types in the 'Untracked' packages do not do this, so any resources stored
-inside the ```Flyweight``` are not released until the program ends. Note that
-the 'Untracked' packages will still deallocate duplicate values passed into
-one of the ```Insert``` functions.
+The distinction between the 'Refcounted' and 'Untracked' packages relates to
+how the associated resources are managed. 'Refcounted' packages operate in a
+similar manner to the ```Smart_Ptr``` packages - the pointers and reference
+types are reference-counted so that when the last pointer to a resource is
+destroyed the resource will be deleted and the associated storage will be
+deallocated. The types in the 'Untracked' packages do not do this, so any
+resources stored inside the ```Flyweight``` are not released until the program
+ends. Note that the 'Untracked' packages will still deallocate duplicate
+values passed into one of the ```Insert``` functions.
 
 ## KVFlyweights
 
