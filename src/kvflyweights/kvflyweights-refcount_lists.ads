@@ -1,5 +1,5 @@
 -- kvflyweights-refcount_lists.ads
--- A package of singly-linked reference-counting lists for the Flyweights
+-- A package of singly-linked reference-counting lists for the KVFlyweights
 -- packages. Resources are associated with a key that can be used to create
 -- them if they have not already been created.
 

@@ -1,4 +1,4 @@
--- basic_refcount_kvflyweights.ads
+-- protected_refcount_kvflyweights.ads
 -- A package for ensuring resources are not duplicated in a manner similar
 -- to the C++ Boost flyweight classes. This package provides a task-safe
 -- implementation that uses reference counting to release resources when the

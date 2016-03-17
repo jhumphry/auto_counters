@@ -1,6 +1,6 @@
 -- kvflyweights-refcount_ptrs.ads
 -- A package of reference-counting generalised references which point to
--- resources inside a Flyweight. Resources are associated with a key that can
+-- resources inside a KVFlyweight. Resources are associated with a key that can
 -- be used to create them if they have not already been created.
 
 -- Copyright (c) 2016, James Humphry

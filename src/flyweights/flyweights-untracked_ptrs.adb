@@ -36,7 +36,7 @@ package body Flyweights.Untracked_Ptrs is
    ---------------------------
 
    function P (P : Untracked_Element_Ptr) return E_Ref is
-      (E_Ref'(E => P.E));
+     (E_Ref'(E => P.E));
 
    function Get (P : Untracked_Element_Ptr) return Element_Access is
      (P.E);
