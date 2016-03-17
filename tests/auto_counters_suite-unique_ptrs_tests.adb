@@ -31,9 +31,9 @@ package body Auto_Counters_Suite.Unique_Ptrs_Tests is
       use AUnit.Test_Cases.Registration;
    begin
       Register_Routine (T, Check_Unique_Ptrs'Access,
-                        "Check basic Unique_Ptr functionality");
+                        "Check Unique_Ptr");
        Register_Routine (T, Check_Unique_Const_Ptrs'Access,
-                        "Check basic Unique_Const_Ptr functionality");
+                        "Check Unique_Const_Ptr");
    end Register_Tests;
 
    ----------
@@ -43,7 +43,7 @@ package body Auto_Counters_Suite.Unique_Ptrs_Tests is
    function Name (T : Unique_Ptrs_Test) return Test_String is
       pragma Unreferenced (T);
    begin
-      return Format ("Tests of Unique_Ptrs package functionality");
+      return Format ("Tests of Unique_Ptrs");
    end Name;
 
    ------------

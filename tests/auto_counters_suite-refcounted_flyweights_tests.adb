@@ -58,13 +58,13 @@ package body Auto_Counters_Suite.Refcounted_Flyweights_Tests is
       use AUnit.Test_Cases.Registration;
    begin
       Register_Routine (T, Check_Basic_Usage'Access,
-                        "Check Basic_Refcounted_Flyweights functionality");
+                        "Check Basic_Refcounted_Flyweights");
       Register_Routine (T, Check_Basic_Refs_Usage'Access,
-                        "Check Basic_Refcounted_Flyweights Element_Refs functionality");
+                        "Check Basic_Refcounted_Flyweights Element_Refs");
       Register_Routine (T, Check_Protected_Usage'Access,
-                        "Check Protected_Refcounted_Flyweights functionality");
+                        "Check Protected_Refcounted_Flyweights");
       Register_Routine (T, Check_Protected_Refs_Usage'Access,
-                        "Check Protected_Refcounted_Flyweights Element_Refs functionality");
+                        "Check Protected_Refcounted_Flyweights Element_Refs");
    end Register_Tests;
 
    ----------
@@ -74,7 +74,7 @@ package body Auto_Counters_Suite.Refcounted_Flyweights_Tests is
    function Name (T : Refcounted_Flyweights_Test) return Test_String is
       pragma Unreferenced (T);
    begin
-      return Format ("Tests of Refcounted Flyweights packages functionality");
+      return Format ("Tests of Refcounted Flyweights packages");
    end Name;
 
    ------------

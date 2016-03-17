@@ -57,9 +57,9 @@ package body Auto_Counters_Suite.C_Resources_Tests  is
       use AUnit.Test_Cases.Registration;
    begin
       Register_Routine (T, Check_Unique_C_Resource'Access,
-                        "Check basic Unique_T C resource handling");
+                        "Check Unique_T C resource handling");
        Register_Routine (T, Check_Smart_C_Resource'Access,
-                        "Check basic Smart_T C resource handling");
+                        "Check Smart_T C resource handling");
    end Register_Tests;
 
    ----------

@@ -50,7 +50,7 @@ package body Smart_Ptrs_Tests is
    function Name (T : Smart_Ptrs_Test) return Test_String is
       pragma Unreferenced (T);
    begin
-      return Format ("Tests of Smart_Ptrs package functionality with " &
+      return Format ("Tests of Smart_Ptrs with " &
                     Counter_Type_Name);
    end Name;
 

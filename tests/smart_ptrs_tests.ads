@@ -51,11 +51,11 @@ private
       end record;
 
    Test_Details_List: array (Positive range <>) of Test_Details :=
-     ( (Check_Smart_Ptr'Access, +"Check basic Smart_Ptr functionality"),
-       (Check_Weak_Ptrs'Access, +"Check basic Weak_Ptr & Smart_Ptr functionality"),
-       (Check_WP_SR'Access, +"Check basic Weak_Ptr & Smart_Ref functionality"),
-       (Check_Smart_Ref'Access, +"Check basic Smart_Ref functionality"),
-       (Check_SP_SR'Access, +"Check basic Smart_Ptr & Smart_Ref functionality")
+     ( (Check_Smart_Ptr'Access, +"Check Smart_Ptr"),
+       (Check_Weak_Ptrs'Access, +"Check Weak_Ptr & Smart_Ptr interaction"),
+       (Check_WP_SR'Access, +"Check Weak_Ptr & Smart_Ref interaction"),
+       (Check_Smart_Ref'Access, +"Check Smart_Ref"),
+       (Check_SP_SR'Access, +"CheckSmart_Ptr & Smart_Ref interaction")
       );
 
 end Smart_Ptrs_Tests;
