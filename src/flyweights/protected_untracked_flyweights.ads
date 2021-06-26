@@ -4,7 +4,7 @@
 -- implementation that does not track usage so does not release resources when
 -- the last reference is released
 
--- Copyright (c) 2016, James Humphry
+-- Copyright (c) 2016-2021, James Humphry
 --
 -- Permission to use, copy, modify, and/or distribute this software for any
 -- purpose with or without fee is hereby granted, provided that the above
@@ -68,14 +68,10 @@ package Protected_Untracked_Flyweights is
    -- reference-counted. The 'Get' function returns an access value to the
    -- resource.
 
-   use type Ptrs.Untracked_Element_Ptr;
-
    subtype Element_Ref is Ptrs.Untracked_Element_Ref;
    -- The Element_Ref type points to a resource inside a Flyweight. It is not
    -- reference-counted. The Element_Ref type can be implicitly derefenced to
    -- return the resource.
-
-   use type Ptrs.Untracked_Element_Ref;
 
    function P (P : Ptrs.Untracked_Element_Ptr) return E_Ref
                renames Ptrs.P;

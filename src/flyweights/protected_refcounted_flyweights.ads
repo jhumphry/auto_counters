@@ -4,7 +4,7 @@
 -- implementation that uses reference counting to release resources when the
 -- last reference is released
 
--- Copyright (c) 2016, James Humphry
+-- Copyright (c) 2016-2021, James Humphry
 --
 -- Permission to use, copy, modify, and/or distribute this software for any
 -- purpose with or without fee is hereby granted, provided that the above
@@ -70,16 +70,12 @@ package Protected_Refcounted_Flyweights is
    -- resource will be deallocated as well. The 'Get' function returns an
    -- access value to the resource.
 
-   use type Ptrs.Refcounted_Element_Ptr;
-
    subtype Element_Ref is Ptrs.Refcounted_Element_Ref;
    -- The Element_Ref type points to a resource inside a Flyweight. It is
    -- reference-counted (shared with Element_Ptr) so that when the last
    -- Element_Ptr or Element_Ref pointing to a resource is destroyed, the
    -- resource will be deallocated as well. The Element_Ref type can be
    -- implicitly derefenced to return the resource.
-
-   use type Ptrs.Refcounted_Element_Ref;
 
    function P (P : Ptrs.Refcounted_Element_Ptr) return E_Ref
                renames Ptrs.P;
