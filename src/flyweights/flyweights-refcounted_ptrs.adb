@@ -29,7 +29,6 @@ package body Flyweights.Refcounted_Ptrs is
                                   Target => Element_Access);
 
    subtype Hash_Type is Ada.Containers.Hash_Type;
-   use type Ada.Containers.Hash_Type;
 
    ----------------------------
    -- Refcounted_Element_Ptr --

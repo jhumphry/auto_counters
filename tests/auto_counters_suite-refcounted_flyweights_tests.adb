@@ -95,6 +95,8 @@ package body Auto_Counters_Suite.Refcounted_Flyweights_Tests is
 
       use TestObj_Basic_Flyweights;
 
+      use type TestObj_Basic_Flyweights.Element_Ptr;
+
       F : aliased Flyweight;
 
       E : TestObj_Access;
@@ -305,6 +307,8 @@ package body Auto_Counters_Suite.Refcounted_Flyweights_Tests is
       pragma Unreferenced(T);
 
       use TestObj_Protected_Flyweights;
+
+      use type TestObj_Protected_Flyweights.Element_Ptr;
 
       F : aliased Flyweight;
 
