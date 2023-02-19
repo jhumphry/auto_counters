@@ -80,7 +80,7 @@ begin
    Put_Line("Retrieving string via pointer HelloWorld: " &
               HelloWorld_Ptr.Get.all);
 
-   Put_Line("Adding the same string again...");
+   Put_Line("Adding the same string again..."); Flush;
    declare
       HelloWorld2_Raw_Ptr : String_Ptr := new String'("Hello, World!");
 
@@ -90,16 +90,16 @@ begin
       Put_Line("Retrieving string via reference HelloWorld2: " & HelloWorld2_Ref);
       Put("Check references point to same copy: ");
       Put((if HelloWorld2_Ref.E = HelloWorld_Ref.E then "OK" else "ERROR"));
-      New_Line;
+      New_Line; Flush;
       declare
          HelloWorld3_Ptr : constant Element_Ptr
            := Make_Ptr (HelloWorld2_Ref);
       begin
          Put_Line("Make a pointer HelloWorld3 from ref HelloWorld2: " &
-                    HelloWorld3_Ptr.P);
+                    HelloWorld3_Ptr.P); Flush;
       end;
    end;
-   Put_Line("Now HelloWorld2 is out of scope.");
+   Put_Line("Now HelloWorld2 is out of scope."); Flush;
    Put_Line("HelloWorld should still point to the string: " & HelloWorld_Ref);
 
 end Flyweight_Example;

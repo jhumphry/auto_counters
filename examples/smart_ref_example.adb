@@ -40,7 +40,7 @@ begin
 
    Put_Line("Smart_Ref SR1 => " & SR1);
    Put("SR1.Use_Count => "); Put(SR1.Use_Count); New_Line;
-   New_Line;
+   New_Line; Flush;
 
    declare
       SP1 : Smart_Ptr := Make_Smart_Ptr(SR1);
@@ -54,15 +54,15 @@ begin
       Put("- SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
       Put_Line(" - SR2(6) := ':'");
       Put_Line("- SR2 => " & SR2);
-      Put_Line("- Nulling SP1");
+      Put_Line("- Nulling SP1"); Flush;
       SP1 := Null_Smart_Ptr;
       Put_Line("- SR2 => " & SR2);
-      Put("- SR2.Use_Count => "); Put(SR2.Use_Count); New_Line;
+      Put("- SR2.Use_Count => "); Put(SR2.Use_Count); New_Line; Flush;
    end;
 
    Put_Line("Out of the block.");
    Put_Line("Smart_Ref SR1 => " & SR1);
    Put("SR1.Use_Count => "); Put(SR1.Use_Count); New_Line;
-   New_Line;
+   New_Line; Flush;
 
 end Smart_Ref_Example;

@@ -78,7 +78,7 @@ begin
            "resource from a C library safe"); New_Line;
 
    Put_Line("A resource is about to be created and should be initialised by "&
-              "C code automatically.");
+              "C code automatically."); Flush;
    declare
       Unique_Resource : Ada_Unique_Resource;
    begin
@@ -88,12 +88,13 @@ begin
       Put("Net (allocations - deallocations) done in C:");
       Put(C_Int'Image(net_allocations)); New_Line;
       Put_Line("Resource should be destroyed by C code when the block ends.");
+      Flush;
    end;
 
    Put_Line("Resource should have been freed.");
    Put("Net (allocations - deallocations) done in C are now:");
    Put(C_Int'Image(net_allocations)); New_Line;
-   New_Line;
+   New_Line; Flush;
 
    -- Smart_C_Resources
 
@@ -101,7 +102,7 @@ begin
            "resource from a C library safe"); New_Line;
 
    Put_Line("A resource is about to be created and should be initialised by " &
-              "C code automatically.");
+              "C code automatically."); Flush;
    declare
       Smart_Resource : Ada_Smart_Resource;
    begin
@@ -109,9 +110,10 @@ begin
                (if is_valid(Smart_Resource.Element) = 1 then "valid"
                   else "invalid"));
       Put("Net (allocations - deallocations) done in C:");
-      Put(C_Int'Image(net_allocations)); New_Line;
+      Put(C_Int'Image(net_allocations)); New_Line; Flush;
 
       Put_Line("A copy of the first resource is now going to be created.");
+      Flush;
       declare
          Smart_Resource_2 : constant Ada_Smart_Resource := Smart_Resource;
       begin
@@ -122,15 +124,18 @@ begin
          Put(C_Int'Image(net_allocations)); New_Line;
          Put_Line("No C resource should be destroyed when the copy is " &
                     "destroyed in Ada");
+         Flush;
       end;
       Put("Net (allocations - deallocations) done in C:");
       Put(C_Int'Image(net_allocations)); New_Line;
       Put_Line("Resource should be destroyed by C code when the last copy " &
               "of the resource is destroyed in Ada.");
+      Flush;
    end;
 
    Put_Line("Resource should have been freed.");
    Put("Net (allocations - deallocations) done in C are now:");
    Put(C_Int'Image(net_allocations)); New_Line;
+   Flush;
 
 end C_Resources_Example;

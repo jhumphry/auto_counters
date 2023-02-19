@@ -39,7 +39,7 @@ begin
 
    Put_Line("SP1 => " & SP1.P);
    Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
-   New_Line;
+   New_Line; Flush;
 
    declare
       SP2 : Smart_Ptr;
@@ -55,6 +55,7 @@ begin
       SP2.Get(6) := ';';
       Put_Line("- SP2 => " & SP2.P);
       Put_Line("- End of block");
+      Flush;
    end;
    New_Line;
 
@@ -64,10 +65,10 @@ begin
    Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
    New_Line;
 
-   Put_Line("Reassigning SP1...");
+   Put_Line("Reassigning SP1..."); Flush;
    SP1 := Make_Smart_Ptr(new String'("Goodbye, World!"));
    Put_Line("SP1 => " & SP1.P);
-   Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
+   Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line; Flush;
    declare
       WP1 : constant Weak_Ptr := Make_Weak_Ptr(SP1);
       SP3 : Smart_Ptr;
@@ -75,18 +76,20 @@ begin
       Put_Line("Made a Weak_Ptr WP1 from SP1.");
       Put("SP1.Use_Count => "); Put(SP1.Use_Count); New_Line;
       Put("SP1.Weak_Ptr_Count => "); Put(SP1.Weak_Ptr_Count); New_Line;
-      Put_Line("Recovering a Smart_Ptr SP3 from WP1");
+      Put_Line("Recovering a Smart_Ptr SP3 from WP1"); Flush;
       SP3 := WP1.Lock;
       Put_Line("SP3 => " & SP3.P);
       Put("SP3.Use_Count => "); Put(SP3.Use_Count); New_Line;
       Put("SP3.Weak_Ptr_Count => "); Put(SP3.Weak_Ptr_Count); New_Line;
       Put_Line("Now deleting SP1 and SP3. Resources should be freed here.");
+      Flush;
       SP1 := Null_Smart_Ptr;
       SP3 := Null_Smart_Ptr;
       Put_Line("Check: SP1.Is_Null => " &
                (if SP1.Is_Null then "True" else "False"));
       Put("WP1.Use_Count => "); Put(WP1.Use_Count); New_Line;
       Put_Line("WP1.Expired => " & (if WP1.Expired then "True" else "False"));
+      Flush;
    end;
    New_Line;
 

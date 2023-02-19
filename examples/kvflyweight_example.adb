@@ -87,7 +87,7 @@ begin
    Put_Line("Retrieving value string via pointer HelloWorld: " &
               HelloWorld.P);
 
-   Put_Line("Adding the same key string again...");
+   Put_Line("Adding the same key string again..."); Flush;
    declare
       HelloWorld2: constant Value_Ref
         := Insert_Ref (F => Resources, K => "Hello, World!");
@@ -101,18 +101,19 @@ begin
       Put_Line("Retrieving string value via pointer HelloWorld: " &
                  HelloWorld.P);
       Put_Line("Retrieving string value via reference HelloWorld2: " &
-                 HelloWorld2);
+                 HelloWorld2); Flush;
       declare
          HelloWorld3 : constant Value_Ptr
            := Make_Ptr (HelloWorld2);
       begin
          Put_Line("Make a pointer HelloWorld3 from ref HelloWorld2: " &
-                    HelloWorld3.P);
+                    HelloWorld3.P); Flush;
       end;
    end;
 
    Put_Line("Now HelloWorld2 and HelloWorld3 are out of scope.");
    Put_Line("HelloWorld should still point to the same string value: " &
               HelloWorld.P);
+   Flush;
 
 end KVFlyweight_Example;

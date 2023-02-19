@@ -47,6 +47,6 @@ begin
    Put_Line("Changing the comma in UP1 to a colon.");
    UP1(6) := ':';
    Put_Line("UP1 => " & UP1);
-   New_Line;
+   New_Line; Flush;
 
 end Unique_Ptr_Example;
