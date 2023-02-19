@@ -1,7 +1,7 @@
 -- unique_ptrs.ads
 -- A "unique pointer" type similar to that in C++
 
--- Copyright (c) 2016, James Humphry
+-- Copyright (c) 2016-2023, James Humphry
 --
 -- Permission to use, copy, modify, and/or distribute this software for any
 -- purpose with or without fee is hereby granted, provided that the above
@@ -84,15 +84,21 @@ package Unique_Ptrs is
 
 private
 
-   -- Note - the Invalid components of these records are required solely to
-   -- cope with the rare cases when the Finalization routine can be called twice
-   -- as it is used to prevent double-deallocation.
+   -- Note - These definitions store the pointer twice. It is necessary
+   -- to have access discriminants in order to have the syntaxic sugar of
+   -- Implicit_Dereference. However, an anonymous access discriminant of this
+   -- type will trigger runtime access scope checks when a program is compiled
+   -- with these checks enabled. These checks will typically fail anytime an
+   -- attempt is used to convert them to the T_Ptr or T_Const_Ptr types, even
+   -- when an Unchecked_Conversion is used (at least in recent versions of
+   -- GNAT). The only solution I have found so far is to store the pointer
+   -- twice.
 
    type Unique_Ptr(Element : not null access T) is
      new Ada.Finalization.Limited_Controlled
      with
       record
-         Invalid : Boolean := True;
+         Underlying_Element : T_Ptr;
       end record;
 
    overriding procedure Initialize (Object : in out Unique_Ptr);
@@ -102,7 +108,7 @@ private
      new Ada.Finalization.Limited_Controlled
      with
       record
-         Invalid : Boolean := True;
+         Underlying_Element : T_Const_Ptr;
       end record;
 
    overriding procedure Initialize (Object : in out Unique_Const_Ptr);

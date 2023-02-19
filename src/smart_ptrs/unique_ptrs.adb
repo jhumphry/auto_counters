@@ -1,7 +1,7 @@
 -- unique_ptrs.adb
 -- A "unique pointer" type similar to that in C++
 
--- Copyright (c) 2016, James Humphry
+-- Copyright (c) 2016-2023, James Humphry
 --
 -- Permission to use, copy, modify, and/or distribute this software for any
 -- purpose with or without fee is hereby granted, provided that the above
@@ -26,20 +26,8 @@ package body Unique_Ptrs is
      (Object => T,
       Name   => T_Ptr);
 
-   type Access_T is not null access all T;
-
-   function Access_T_to_T_Ptr is new Ada.Unchecked_Conversion
-     (Source => Access_T,
-      Target => T_Ptr);
-
-   type Access_Const_T is not null access constant T;
-
-   function Access_Const_T_to_T_Const_Ptr is new Ada.Unchecked_Conversion
-     (Source => Access_Const_T,
-      Target => T_Const_Ptr);
-
-   function Access_Const_T_to_T_Ptr is new Ada.Unchecked_Conversion
-     (Source => Access_Const_T,
+   function T_Const_Ptr_to_T_Ptr is new Ada.Unchecked_Conversion
+     (Source => T_Const_Ptr,
       Target => T_Ptr);
 
    ---------
@@ -47,9 +35,7 @@ package body Unique_Ptrs is
    ---------
 
    function Get (U : in Unique_Ptr) return T_Ptr is
-      (Access_T_to_T_Ptr(U.Element));
-   -- We know U.Element was set from a T_Ptr so the unchecked conversion will in
-   -- fact always be valid.
+      (U.Underlying_Element);
 
    ---------------------
    -- Make_Unique_Ptr --
@@ -58,16 +44,14 @@ package body Unique_Ptrs is
    function Make_Unique_Ptr (X : T_Ptr_Not_Null) return Unique_Ptr is
      (Unique_Ptr'(Ada.Finalization.Limited_Controlled with
                   Element => X,
-                  Invalid => False));
+                  Underlying_Element => X));
 
    ---------
    -- Get --
    ---------
 
    function Get (U : in Unique_Const_Ptr) return T_Const_Ptr is
-      (Access_Const_T_to_T_Const_Ptr(U.Element));
-   -- We know U.Element was set from a T_Ptr so the unchecked conversion will in
-   -- fact always be valid.
+      (U.Underlying_Element);
 
    ---------------------------
    -- Make_Unique_Conts_Ptr --
@@ -77,7 +61,7 @@ package body Unique_Ptrs is
                                    return Unique_Const_Ptr is
      (Unique_Const_Ptr'(Ada.Finalization.Limited_Controlled with
                         Element => X,
-                        Invalid => False));
+                        Underlying_Element => T_Const_Ptr(X)));
 
    ----------------
    -- Initialize --
@@ -94,17 +78,12 @@ package body Unique_Ptrs is
    --------------
 
    overriding procedure Finalize (Object : in out Unique_Ptr) is
-      Converted_Ptr : T_Ptr;
    begin
-      if not Object.Invalid then
-         Object.Invalid := True;
+      if Object.Underlying_Element /= null then
 
-         Delete (Object.Element.all);
+         Delete (Object.Underlying_Element.all);
 
-         Converted_Ptr := Access_T_to_T_Ptr(Object.Element);
-         -- We know U.Element was set from a T_Ptr so the unchecked conversion
-         -- will in fact always be valid.
-         Deallocate_T (Converted_Ptr);
+         Deallocate_T (Object.Underlying_Element);
       end if;
    end Finalize;
 
@@ -126,12 +105,9 @@ package body Unique_Ptrs is
    overriding procedure Finalize (Object : in out Unique_Const_Ptr) is
       Converted_Ptr : T_Ptr;
    begin
-      if not Object.Invalid then
-         Object.Invalid := True;
+      if Object.Underlying_Element /= null then
 
-         Converted_Ptr := Access_Const_T_to_T_Ptr(Object.Element);
-         -- We know U.Element was set from a T_Ptr so the unchecked conversion
-         -- will in fact always be valid.
+         Converted_Ptr := T_Const_Ptr_to_T_Ptr(Object.Underlying_Element);
 
          Delete (Converted_Ptr.all);
 
