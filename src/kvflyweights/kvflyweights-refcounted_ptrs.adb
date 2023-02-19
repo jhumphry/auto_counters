@@ -71,7 +71,7 @@ package body KVFlyweights.Refcounted_Ptrs is
       return Refcounted_Value_Ptr'(Ada.Finalization.Controlled
                                    with V => Value_Ptr,
                                    K => Key_Ptr,
-                                   Containing_KVFlyweight => F'Access,
+                                   Containing_KVFlyweight => F'Unchecked_Access,
                                    Containing_Bucket    => Bucket);
    end Insert_Ptr;
 
@@ -129,7 +129,7 @@ package body KVFlyweights.Refcounted_Ptrs is
       return Refcounted_Value_Ref'(Ada.Finalization.Controlled
                                    with V => Value_Ptr,
                                    K => Key_Ptr,
-                                   Containing_KVFlyweight => F'Access,
+                                   Containing_KVFlyweight => F'Unchecked_Access,
                                    Containing_Bucket    => Bucket);
    end Insert_Ref;
 

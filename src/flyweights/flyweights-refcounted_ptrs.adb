@@ -62,7 +62,7 @@ package body Flyweights.Refcounted_Ptrs is
                                    Data_Ptr => E);
       return Refcounted_Element_Ptr'(Ada.Finalization.Controlled
                                      with E => E,
-                                     Containing_Flyweight => F'Access,
+                                     Containing_Flyweight => F'Unchecked_Access,
                                      Containing_Bucket    => Bucket);
    end Insert_Ptr;
 
@@ -114,7 +114,7 @@ package body Flyweights.Refcounted_Ptrs is
                                    Data_Ptr => E);
       return Refcounted_Element_Ref'(Ada.Finalization.Controlled
                                      with E => E,
-                                     Containing_Flyweight => F'Access,
+                                     Containing_Flyweight => F'Unchecked_Access,
                                      Containing_Bucket    => Bucket);
    end Insert_Ref;
 
