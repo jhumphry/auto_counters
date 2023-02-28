@@ -6,7 +6,7 @@ This is an Ada 2012 project that implements reference counting approaches to
 resource management with an emphasis on safety and usability. The project is
 licensed under the ISC licence - see the file LICENSE for details.
 
-##`Smart_Ptrs`
+## `Smart_Ptrs`
 
 This generic package is based on the `smart_ptr` and `weak_ptr` types in C++.
 When it is instantiated it provides three types:
@@ -65,7 +65,7 @@ of the counters such as their task-safety can be selected at compile-time.
 before it is destroyed with `Ada.Unchecked_Deallocation`. This may be more
 convenient than making type `T` a controlled type.
 
-###`Counters_Spec`, `Basic_Counters` and `Protected_Counters`
+### `Counters_Spec`, `Basic_Counters` and `Protected_Counters`
 
 The `Counters_Spec` package describes the functions and procedures that are
 needed for a type to be usable as the counter. `Basic_Counters` and
@@ -79,7 +79,7 @@ pointers themselves are not protected and should not be shared between tasks.
 Also, the task-safety of the pointed-to object is outside the scope of this
 project.
 
-###`Basic_Smart_Ptrs` and `Protected_Smart_Ptrs`
+### `Basic_Smart_Ptrs` and `Protected_Smart_Ptrs`
 
 These convenience packages can be instantiated with just a reference to a type
 `T` and an optional `Delete` procedure. The child package `Ptr_Types` will be
@@ -88,7 +88,7 @@ child package can be `use`d or, to prevent namespace pollution, they can be
 renamed into the current scope with suitable unconstrained `subtype`
 declarations.
 
-##`Unique_Ptrs`
+## `Unique_Ptrs`
 
 This generic package declares two simple types which are somewhat similar to
 the `unique_ptr` type in C++. Only one `Unique_Ptr` can be created for a given
@@ -113,7 +113,7 @@ instantiation if additional work is required before `Finalization`.
 As with `Smart_Ptrs`, creating two `Unique_Ptr` from a raw access value will
 probably lead to errors and should be avoided.
 
-##`Smart_C_Resources` and `Unique_C_Resources`
+## `Smart_C_Resources` and `Unique_C_Resources`
 
 It is common for libraries exporting an API written in C to follow a pattern
 of requiring a context or resource handle to be passed to routines. Typically
