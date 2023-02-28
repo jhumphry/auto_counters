@@ -199,6 +199,7 @@ private
      new Ada.Finalization.Controlled with
       record
          Counter : Counter_Ptr := null;
+         Underlying_Element : T_Ptr;
       end record with
      Type_Invariant => Valid (Smart_Ref);
 

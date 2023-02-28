@@ -69,7 +69,7 @@ package body Smart_Ptrs is
       -- As we ensure Smart_Ref is always made from a T_Ptr, the unchecked
       -- reverse conversion is always safe.
       return Smart_Ptr'(Ada.Finalization.Controlled with
-                          Element => Access_T_to_T_Ptr(S.Element),
+                          Element => S.Underlying_Element,
                         Counter => S.Counter);
    end Make_Smart_Ptr;
 
@@ -83,7 +83,7 @@ package body Smart_Ptrs is
      (S.Element = null and S.Counter = null);
 
    function Get (S : in Smart_Ref) return T_Ptr is
-     (Access_T_to_T_Ptr(S.Element));
+     (S.Underlying_Element);
 
    ---------------
    -- Smart_Ref --
@@ -93,6 +93,7 @@ package body Smart_Ptrs is
    begin
       return Smart_Ref'(Ada.Finalization.Controlled with
                           Element => X,
+                        Underlying_Element => X,
                         Counter => Make_New_Counter
                        );
 
@@ -103,6 +104,7 @@ package body Smart_Ptrs is
       Check_Increment_Use_Count(S.Counter.all);
       return Smart_Ref'(Ada.Finalization.Controlled with
                           Element => S.Element,
+                        Underlying_Element => S.Element,
                         Counter => S.Counter);
    end Make_Smart_Ref;
 
@@ -130,7 +132,7 @@ package body Smart_Ptrs is
       Increment_Weak_Ptr_Count(S.Counter.all);
       return Weak_Ptr'
         (Ada.Finalization.Controlled
-         with Element => Access_T_to_T_Ptr(S.Element),
+         with Element => S.Underlying_Element,
          Counter => S.Counter);
    end Make_Weak_Ptr;
 
@@ -172,6 +174,7 @@ package body Smart_Ptrs is
       return Smart_Ref'
           (Ada.Finalization.Controlled with
            Element => W.Element,
+           Underlying_Element => W.Element,
            Counter => W.Counter);
    end Lock;
 
@@ -251,7 +254,6 @@ package body Smart_Ptrs is
    end Adjust;
 
    procedure Finalize (Object : in out Smart_Ref) is
-      Converted_Ptr : T_Ptr;
    begin
 
       if not (Object.Counter = null) then
@@ -262,12 +264,8 @@ package body Smart_Ptrs is
 
          if Use_Count(Object.Counter.all) = 0 then
 
-            Converted_Ptr := Access_T_to_T_Ptr(Object.Element);
-            -- We know U.Element was set from a T_Ptr so the unchecked
-            -- conversion will in fact always be valid.
-
-            Delete (Converted_Ptr.all);
-            Deallocate_T (Converted_Ptr);
+            Delete (Object.Underlying_Element.all);
+            Deallocate_T (Object.Underlying_Element);
 
             Deallocate_If_Unused(Object.Counter);
          end if;
