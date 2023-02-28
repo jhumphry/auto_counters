@@ -1,7 +1,7 @@
 -- flyweight_example.adb
 -- An example of using the Flyweight package
 
--- Copyright (c) 2016, James Humphry
+-- Copyright (c) 2016-2023, James Humphry
 --
 -- Permission to use, copy, modify, and/or distribute this software for any
 -- purpose with or without fee is hereby granted, provided that the above
@@ -76,8 +76,9 @@ begin
    Put_Line("An example of using the Flyweights package."); New_Line;
 
    Put_Line("The string ""Hello, World!"" has been added to the Resources");
-   Put_Line("Retrieving string via reference HelloWorld: " & HelloWorld_Ref);
-   Put_Line("Retrieving string via pointer HelloWorld: " &
+   Put_Line("Retrieving string via reference HelloWorld_Ref: " &
+              HelloWorld_Ref);
+   Put_Line("Retrieving string via pointer HelloWorld_Ptr: " &
               HelloWorld_Ptr.Get.all);
 
    Put_Line("Adding the same string again..."); Flush;
@@ -87,7 +88,8 @@ begin
       HelloWorld2_Ref : constant Element_Ref
         := Insert_Ref (F => Resources, E => HelloWorld2_Raw_Ptr);
    begin
-      Put_Line("Retrieving string via reference HelloWorld2: " & HelloWorld2_Ref);
+      Put_Line("Retrieving string via reference HelloWorld2_Ref: " &
+                 HelloWorld2_Ref);
       Put("Check references point to same copy: ");
       Put((if HelloWorld2_Ref.E = HelloWorld_Ref.E then "OK" else "ERROR"));
       New_Line; Flush;
@@ -95,7 +97,7 @@ begin
          HelloWorld3_Ptr : constant Element_Ptr
            := Make_Ptr (HelloWorld2_Ref);
       begin
-         Put_Line("Make a pointer HelloWorld3 from ref HelloWorld2: " &
+         Put_Line("Make a pointer HelloWorld3_Ptr from ref HelloWorld2_Ref: " &
                     HelloWorld3_Ptr.P); Flush;
       end;
    end;
