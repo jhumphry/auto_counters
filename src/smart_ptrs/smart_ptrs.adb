@@ -1,7 +1,7 @@
 -- smart_ptrs.adb
 -- A reference-counted "smart pointer" type similar to that in C++
 
--- Copyright (c) 2016, James Humphry
+-- Copyright (c) 2016-2023, James Humphry
 --
 -- Permission to use, copy, modify, and/or distribute this software for any
 -- purpose with or without fee is hereby granted, provided that the above

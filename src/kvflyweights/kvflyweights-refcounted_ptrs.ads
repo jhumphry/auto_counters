@@ -3,7 +3,7 @@
 -- resources inside a KVFlyweight. Resources are associated with a key that can
 -- be used to create them if they have not already been created.
 
--- Copyright (c) 2016, James Humphry
+-- Copyright (c) 2016-2023, James Humphry
 --
 -- Permission to use, copy, modify, and/or distribute this software for any
 -- purpose with or without fee is hereby granted, provided that the above
