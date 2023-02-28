@@ -95,6 +95,7 @@ private
          K : Key_Access := null;
          Containing_KVFlyweight : KVFlyweight_Ptr := null;
          Containing_Bucket : Ada.Containers.Hash_Type;
+         Underlying_V : Value_Access := null;
       end record;
 
    overriding procedure Initialize (Object : in out Refcounted_Value_Ref);

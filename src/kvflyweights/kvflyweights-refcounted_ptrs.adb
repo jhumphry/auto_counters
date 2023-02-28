@@ -52,7 +52,8 @@ package body KVFlyweights.Refcounted_Ptrs is
                                    with V => P.V,
                                    K => P.K,
                                    Containing_KVFlyweight => P.Containing_KVFlyweight,
-                                   Containing_Bucket    => P.Containing_Bucket);
+                                   Containing_Bucket    => P.Containing_Bucket,
+                                   Underlying_V => P.V);
    end Make_Ref;
 
    function Insert_Ptr (F : aliased in out KVFlyweight_Hashtables.KVFlyweight;
@@ -105,14 +106,14 @@ package body KVFlyweights.Refcounted_Ptrs is
                                        Bucket => R.Containing_Bucket,
                                        Key_Ptr => R.K);
       return Refcounted_Value_Ptr'(Ada.Finalization.Controlled
-                                   with V                 => Access_Value_To_Value_Access(R.V),
+                                   with V                 => R.Underlying_V,
                                    K                      => R.K,
                                    Containing_KVFlyweight => R.Containing_KVFlyweight,
                                    Containing_Bucket      => R.Containing_Bucket);
    end Make_Ptr;
 
    function Get (P : Refcounted_Value_Ref) return Value_Access is
-     (Access_Value_To_Value_Access(P.V));
+     (P.Underlying_V);
 
    function Insert_Ref (F : aliased in out KVFlyweight_Hashtables.KVFlyweight;
                         K : in Key) return Refcounted_Value_Ref is
@@ -130,7 +131,8 @@ package body KVFlyweights.Refcounted_Ptrs is
                                    with V => Value_Ptr,
                                    K => Key_Ptr,
                                    Containing_KVFlyweight => F'Unchecked_Access,
-                                   Containing_Bucket    => Bucket);
+                                   Containing_Bucket    => Bucket,
+                                   Underlying_V => Value_Ptr);
    end Insert_Ref;
 
    overriding procedure Initialize (Object : in out Refcounted_Value_Ref) is

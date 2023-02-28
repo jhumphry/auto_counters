@@ -88,6 +88,7 @@ private
       record
          Containing_Flyweight : Flyweight_Ptr := null;
          Containing_Bucket : Ada.Containers.Hash_Type;
+         Underlying_Element : Element_Access := null;
       end record;
 
    overriding procedure Initialize (Object : in out Refcounted_Element_Ref);

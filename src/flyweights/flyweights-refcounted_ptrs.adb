@@ -49,7 +49,8 @@ package body Flyweights.Refcounted_Ptrs is
       return Refcounted_Element_Ref'(Ada.Finalization.Controlled
                                      with E => P.E,
                                      Containing_Flyweight => P.Containing_Flyweight,
-                                     Containing_Bucket    => P.Containing_Bucket);
+                                     Containing_Bucket    => P.Containing_Bucket,
+                                     Underlying_Element   => P.E);
    end Make_Ref;
 
    function Insert_Ptr (F : aliased in out Flyweight_Hashtables.Flyweight;
@@ -94,15 +95,15 @@ package body Flyweights.Refcounted_Ptrs is
    begin
       Flyweight_Hashtables.Increment(F => R.Containing_Flyweight.all,
                                      Bucket => R.Containing_Bucket,
-                                     Data_Ptr => Access_Element_To_Element_Access(R.E));
+                                     Data_Ptr => R.Underlying_Element);
       return Refcounted_Element_Ptr'(Ada.Finalization.Controlled
-                                     with E               => Access_Element_To_Element_Access(R.E),
+                                     with E               => R.Underlying_Element,
                                      Containing_Flyweight => R.Containing_Flyweight,
                                      Containing_Bucket    => R.Containing_Bucket);
    end Make_Ptr;
 
    function Get (P : Refcounted_Element_Ref) return Element_Access is
-     (Access_Element_To_Element_Access(P.E));
+     (P.Underlying_Element);
 
    function Insert_Ref (F : aliased in out Flyweight_Hashtables.Flyweight;
                         E : in out Element_Access) return Refcounted_Element_Ref is
@@ -115,7 +116,8 @@ package body Flyweights.Refcounted_Ptrs is
       return Refcounted_Element_Ref'(Ada.Finalization.Controlled
                                      with E => E,
                                      Containing_Flyweight => F'Unchecked_Access,
-                                     Containing_Bucket    => Bucket);
+                                     Containing_Bucket    => Bucket,
+                                     Underlying_Element   => E);
    end Insert_Ref;
 
    overriding procedure Initialize (Object : in out Refcounted_Element_Ref) is
@@ -129,7 +131,7 @@ package body Flyweights.Refcounted_Ptrs is
       if Object.Containing_Flyweight /= null then
          Flyweight_Hashtables.Increment(F => Object.Containing_Flyweight.all,
                                         Bucket => Object.Containing_Bucket,
-                                        Data_Ptr => Access_Element_To_Element_Access(Object.E));
+                                        Data_Ptr => Object.Underlying_Element);
       end if;
    end Adjust;
 
@@ -138,7 +140,7 @@ package body Flyweights.Refcounted_Ptrs is
       if Object.Containing_Flyweight /= null then
          Flyweight_Hashtables.Remove(F => Object.Containing_Flyweight.all,
                                      Bucket => Object.Containing_Bucket,
-                                     Data_Ptr => Access_Element_To_Element_Access(Object.E));
+                                     Data_Ptr => Object.Underlying_Element);
          Object.Containing_Flyweight := null;
       end if;
    end Finalize;
